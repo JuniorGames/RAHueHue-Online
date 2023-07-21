@@ -14,7 +14,7 @@ Self-hosted **Javascript** emulation for various system.
 
 <br>
 
-Try out netplay [here](https://demo.emulatorjs.org/demos/netplay.html)!
+Este projeto foi alterado por Helton Jr. Todos os créditos da criação do código são dos seus desenvolvedores que estão citados no texto original abaixo. Não tenho nenhuma intenção de mudar as funcionalidades padrões, apenas fiz uma adaptação para uma versão RetroGames HueHue para o Brasil.
 
 <br>
 
