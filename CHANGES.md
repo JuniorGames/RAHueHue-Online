@@ -1,6 +1,6 @@
 # Changes
 
-# 3.1.5
+# 3.1.5 RetroGames HueHue Edition
 - Fixed iOS bug for iPads
 - Added netplay! (only working on new cores)
 
