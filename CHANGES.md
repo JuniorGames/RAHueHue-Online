@@ -1,11 +1,11 @@
 # Changes
-#3.1.5 Versão RetroGames HueHue
-- Alteração visual dos ícones da página e links de testes para meu google site
-- link direto para carregamento de roms teste e versão de carregamento no navegador
-
 # 3.1.5
 - Fixed iOS bug for iPads
 - Added netplay! (only working on new cores)
+
+- Versão RetroGames HueHue
+- Alteração visual dos ícones da página e links de testes para meu google site
+- link direto para carregamento de roms teste e versão de carregamento no navegador
 
 # 3.1.0 [View Tree](https://github.com/ethanaobrien/emulatorjs/tree/614f5cb55e2768199ba05b756b47d0ab7ab283fd)
 - Added ability to drag and drop save states.
