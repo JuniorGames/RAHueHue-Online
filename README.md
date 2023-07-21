@@ -14,7 +14,7 @@ Self-hosted **Javascript** emulation for various system.
 
 <br>
 
-Este projeto foi editado por Helton Jr. do canal Junior Games no Youtube (https://www.youtube.com/@juniorgameslives/featured). Todos os créditos da criação do código são dos seus desenvolvedores que estão citados no texto original abaixo. Não tenho nenhuma intenção de mudar as funcionalidades padrões, apenas fiz uma adaptação para uma versão RetroGames HueHue para o Brasil.
+Este projeto foi editado por Helton Jr. do canal Junior Games no Youtube (https://www.youtube.com/@juniorgameslives/featured). Todos os créditos da criação do código são para os desenvolvedores originais, se quiser saber mais veja as informações oficiais logo abaixo. Não tenho nenhuma intenção de mudar as funcionalidades padrões, apenas fiz uma adaptação para uma versão RetroGames HueHue para uma versão do Brasill com a marca da Zoeira BR.
 
 <br>
 
