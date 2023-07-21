@@ -2,7 +2,6 @@
 # 3.1.5
 - Fixed iOS bug for iPads
 - Added netplay! (only working on new cores)
-
 - Versão RetroGames HueHue
 - Alteração visual dos ícones da página e links de testes para meu google site
 - link direto para carregamento de roms teste e versão de carregamento no navegador
