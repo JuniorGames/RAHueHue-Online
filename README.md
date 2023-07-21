@@ -16,7 +16,7 @@ Self-hosted **Javascript** emulation for various system.
 
 Este projeto foi editado por Helton Jr. do canal Junior Games no Youtube.
 
-https://www.youtube.com/@juniorgameslives/featured
+https://www.youtube.com/@juniorgameslives
 
 Todos os créditos da criação do código são para os desenvolvedores originais, se quiser saber mais veja as informações oficiais logo abaixo. Não tenho intenção de mudar códigos padrões, fiz apenas uma adaptação para a versão RetroGames HueHue do Brasill com o MEME BR.
 
