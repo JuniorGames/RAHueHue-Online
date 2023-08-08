@@ -32,7 +32,7 @@ Todos os créditos da criação do código são para os desenvolvedores originai
  
 Join our Discord server:
 
-[![Join our Discord server!](https://invite.caspertheghost.me/?inviteCode=6akryGkETU&format=svg)](https://discord.gg/6akryGkETU)
+[Join our Discord server!](https://invite.caspertheghost.me/?inviteCode=6akryGkETU&format=svg)](https://discord.gg/6akryGkETU)
 
 </div>
 
