@@ -30,9 +30,9 @@ Todos os créditos da criação do código são para os desenvolvedores originai
     
 [![Button Contributors]][Contributors]   
  
-Join our Discord server:
+Official Discord server:
 
-(https://discord.gg/6akryGkETU)
+https://discord.gg/6akryGkETU
 
 </div>
 
