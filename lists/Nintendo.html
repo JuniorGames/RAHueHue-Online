@@ -58,7 +58,7 @@
         .search-input {
             font-family: 'ArcadeClassic', sans-serif;
             font-size: 30px;
-            color: yellow;
+            color: white;
             background: rgba(0, 0, 0, 0.5);
             border: 2px solid white;
             padding: 10px;
@@ -78,6 +78,7 @@
             height: 100%;
             position: relative;
             z-index: 5; /* Certifique-se de que o emulador fique acima das thumbnails */
+            outline: none;
         }
 
         .button-container {
@@ -1607,9 +1608,15 @@
 
         function updateThumbnail(index) {
             const game = filteredGames[index];
-            document.getElementById('gameThumbnail').src = game.thumbnail;
+            const thumbnailElement = document.getElementById('gameThumbnail');
             document.getElementById('gameTitle').textContent = game.title;
-            document.getElementById('gameThumbnail').style.display = 'block';
+            thumbnailElement.src = game.thumbnail;
+            thumbnailElement.style.display = 'block';
+
+            // Define uma imagem padrão caso a original não carregue
+            thumbnailElement.onerror = function() {
+                this.src = 'thumbnails/default.png';
+            };
         }
 
         function hideUIElements() {
@@ -1631,6 +1638,9 @@
                     isLoaderLoaded = true;
                     console.log('Loader carregado.');
                 };
+                script.onerror = () => {
+                    console.error('Falha ao carregar o emulador. Verifique sua conexão.');
+                };
                 document.body.appendChild(script);
             } else {
                 console.log('Carregando novo jogo: ', game.url);
@@ -1638,7 +1648,9 @@
         }
 
         function focusGame() {
-            document.getElementById('game').focus();
+            const gameElement = document.getElementById('game');
+            gameElement.focus();
+            gameElement.style.boxShadow = '0 0 10px 2px rgba(255, 255, 255, 0.8)'; // Indicador visual de foco
         }
 
         updateThumbnail(currentGameIndex);
