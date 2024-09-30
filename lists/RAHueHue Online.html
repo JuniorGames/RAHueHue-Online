@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAHueHue Online</title>
+    <style>
+        @font-face {
+            font-family: 'ArcadeClassic';
+            src: url('arcadeclassic.ttf') format('truetype');
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: url('wallpapers/Default Consoles.png') no-repeat center center fixed;
+            background-size: cover;
+            overflow: hidden;
+            font-family: 'ArcadeClassic', sans-serif;
+        }
+
+        .search-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 500px;
+            z-index: 10;
+        }
+
+        .search-input {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid white;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 20px; /* Aumentado para dar espaço para os links */
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+        }
+
+        .search-input::placeholder {
+            color: white;
+        }
+
+        /* Estilo da box de resultados com rolagem suave */
+        .results {
+            margin-top: 20px;
+            position: absolute;
+            top: 100px;
+            left: 20px;
+            width: 500px;
+            height: 70%; /* Ajuste a altura conforme necessário */
+            overflow-y: auto;
+            scrollbar-width: thin; /* Para navegadores que suportam */
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+
+        .results::-webkit-scrollbar {
+            width: 8px; /* Largura da barra de rolagem */
+        }
+
+        .results::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.5); /* Cor da barra de rolagem */
+            border-radius: 4px;
+        }
+
+        .result-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+            color: white;
+            text-decoration: none;
+            font-size: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            font-weight: bold; /* Fonte em negrito */
+        }
+
+        .result-item img {
+            width: 48px; /* Ajuste o tamanho do ícone conforme necessário */
+            height: 48px;
+            margin-right: 10px;
+        }
+
+        .result-item:hover {
+            text-decoration: underline;
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        /* Novo estilo para o botão Voltar */
+        .back-button {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid white;
+            padding: 10px;
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            cursor: pointer;
+            width: 200px;
+            text-align: center;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="Buscar Console...">
+    </div>
+    <div class="results" id="resultsContainer">
+        <!-- Resultados da busca aparecerão aqui -->
+    </div>
+
+    <!-- Novo botão Voltar -->
+    <div class="back-button" onclick="window.history.back()">Voltar</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('searchInput');
+            const resultsContainer = document.getElementById('resultsContainer');
+            
+            // Lista de arquivos HTML disponíveis
+            const pages = [
+                { name: 'Master System', file: 'Master System.html' },
+                { name: 'Mega Drive', file: 'Mega Drive.html' },
+                { name: 'Nintendo', file: 'Nintendo.html' },
+                { name: 'Super Nintendo', file: 'Super Nintendo.html' },
+                // Adicione mais páginas HTML aqui
+            ];
+
+            function displayResults(results) {
+                resultsContainer.innerHTML = '';
+                results.forEach(page => {
+                    const link = document.createElement('a');
+                    link.href = page.file;
+                    link.className = 'result-item';
+                    
+                    const icon = document.createElement('img');
+                    icon.src = `icons/${page.name}.png`; // Caminho para o ícone
+                    icon.alt = `${page.name} Icon`;
+
+                    link.appendChild(icon);
+                    link.appendChild(document.createTextNode(page.name));
+                    
+                    resultsContainer.appendChild(link);
+                });
+            }
+
+            function searchPages(query) {
+                const filteredPages = pages.filter(page => 
+                    page.name.toLowerCase().includes(query.toLowerCase())
+                );
+                displayResults(filteredPages);
+            }
+
+            searchInput.addEventListener('input', () => {
+                const query = searchInput.value;
+                searchPages(query);
+            });
+
+            // Exibe todas as páginas ao carregar
+            displayResults(pages);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emulador</title>
+    <style>
+        @font-face {
+            font-family: 'ArcadeClassic';
+            src: url('arcadeclassic.ttf') format('truetype');
+        }
+
+        body {
+            background: url('wallpapers/Mega Drive.png') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .thumbnail-container {
+            width: 525px;
+            height: 405px;
+            position: absolute;
+            margin: auto;
+            bottom: 0;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .thumbnail {
+            display: none;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .game-title {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: yellow;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .search-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 525px;
+            z-index: 10;
+        }
+
+        .search-input {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid white;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: yellow;
+        }
+
+        #game {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 5; /* Certifique-se de que o emulador fique acima das thumbnails */
+            outline: none;
+        }
+
+        .button-container {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .action-button {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: yellow;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid white;
+            padding: 10px;
+            cursor: pointer;
+            width: 230px;
+            text-align: center;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        .action-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffcc00;
+            border-color: #ffcc00;
+        }
+
+        .action-button:focus, .search-input:focus {
+            outline: 2px solid #fff;
+            outline-offset: 2px;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <main style="width:525px; height:405px; max-width:100%; margin: auto; position: absolute; top: 20px; bottom: 0; left: 20px;">
+        <div id="game" tabindex="0"></div>
+    </main>
+
+    <div class="thumbnail-container">
+        <div id="gameTitle" class="game-title"></div>
+        <img id="gameThumbnail" class="thumbnail" src="" alt="Thumbnail do Jogo" tabindex="0">
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="search" class="search-input" placeholder="Buscar Jogo..." aria-label="Buscar Jogo">
+    </div>
+
+    <div class="button-container">
+        <button class="action-button" onclick="window.history.back()" aria-label="Voltar">Voltar</button>
+        <button class="action-button" onclick="window.location.reload()" aria-label="Recarregar">Recarregar</button>
+    </div>
+
+    <script type="text/javascript">
+        const optionsHTML = `
+            <option value="path/to/game1">Game 1</option>
+            <option value="path/to/game2">Game 2</option>
+            <option value="path/to/game3">Game 3</option>
+<option value="https://archive.org/download/sega-mega-drive-genesis_202409/Sega%20-%20Mega%20Drive%20-%20Genesis.zip/Sega%20-%20Mega%20Drive%20-%20Genesis%2FZool.zip">Zool</option>
+<option value="https://archive.org/download/sega-mega-drive-genesis_202409/Sega%20-%20Mega%20Drive%20-%20Genesis.zip/Sega%20-%20Mega%20Drive%20-%20Genesis%2FZoom%21%20%28World%29.zip">Zoom! (World)</option>
+<option value="https://archive.org/download/sega-mega-drive-genesis_202409/Sega%20-%20Mega%20Drive%20-%20Genesis.zip/Sega%20-%20Mega%20Drive%20-%20Genesis%2FZoom%21.zip">Zoom!</option>
+<option value="https://archive.org/download/sega-mega-drive-genesis_202409/Sega%20-%20Mega%20Drive%20-%20Genesis.zip/Sega%20-%20Mega%20Drive%20-%20Genesis%2FZoop%20%28USA%29.zip">Zoop (USA)</option>
+<option value="https://archive.org/download/sega-mega-drive-genesis_202409/Sega%20-%20Mega%20Drive%20-%20Genesis.zip/Sega%20-%20Mega%20Drive%20-%20Genesis%2FZoop.zip">Zoop</option>
+            <!-- Adicione mais jogos conforme necessário -->
+        `;
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(optionsHTML, 'text/html');
+        const options = doc.querySelectorAll('option');
+
+        const games = Array.from(options).map(option => {
+            const title = option.textContent;
+            const url = option.value;
+            const thumbnail = `thumbnails/Sega - Mega Drive - Genesis/${title}.png`;
+            return { title, url, thumbnail };
+        });
+
+        let currentGameIndex = 0;
+        let filteredGames = games;
+        let isLoaderLoaded = false;
+        const EJS_player = '#game';
+        const EJS_core = 'segaMD';
+
+        function updateThumbnail(index) {
+            const game = filteredGames[index];
+            const thumbnailElement = document.getElementById('gameThumbnail');
+            document.getElementById('gameTitle').textContent = game.title;
+            thumbnailElement.src = game.thumbnail;
+            thumbnailElement.style.display = 'block';
+
+            // Define uma imagem padrão caso a original não carregue
+            thumbnailElement.onerror = function() {
+                this.src = 'thumbnails/default.png';
+            };
+        }
+
+        function hideUIElements() {
+            document.querySelector('.thumbnail-container').style.display = 'none';
+            document.querySelector('.search-container').style.display = 'none';
+        }
+
+        function loadGame() {
+            const game = filteredGames[currentGameIndex];
+            EJS_gameUrl = game.url;
+
+            hideUIElements();
+            focusGame();
+
+            if (!isLoaderLoaded) {
+                const script = document.createElement('script');
+                script.src = 'https://www.emulatorjs.com/loader.js';
+                script.onload = () => {
+                    isLoaderLoaded = true;
+                    console.log('Loader carregado.');
+                };
+                script.onerror = () => {
+                    console.error('Falha ao carregar o emulador. Verifique sua conexão.');
+                };
+                document.body.appendChild(script);
+            } else {
+                console.log('Carregando novo jogo: ', game.url);
+            }
+        }
+
+        function focusGame() {
+            const gameElement = document.getElementById('game');
+            gameElement.focus();
+            gameElement.style.boxShadow = '0 0 10px 2px rgba(255, 255, 255, 0.8)'; // Indicador visual de foco
+        }
+
+        updateThumbnail(currentGameIndex);
+
+        document.addEventListener('keydown', (e) => {
+            if (filteredGames.length > 0) {
+                if (e.key === 'ArrowDown') {
+                    currentGameIndex = (currentGameIndex + 1) % filteredGames.length;
+                    updateThumbnail(currentGameIndex);
+                } else if (e.key === 'ArrowUp') {
+                    currentGameIndex = (currentGameIndex - 1 + filteredGames.length) % filteredGames.length;
+                    updateThumbnail(currentGameIndex);
+                } else if (e.key === 'Enter') {
+                    loadGame();
+                }
+            }
+        });
+
+        document.addEventListener('wheel', (e) => {
+            if (filteredGames.length > 0) {
+                if (e.deltaY > 0) {
+                    currentGameIndex = (currentGameIndex + 1) % filteredGames.length;
+                } else {
+                    currentGameIndex = (currentGameIndex - 1 + filteredGames.length) % filteredGames.length;
+                }
+                updateThumbnail(currentGameIndex);
+            }
+        });
+
+        document.getElementById('search').addEventListener('input', function() {
+            const filter = this.value.toLowerCase();
+            filteredGames = games.filter(game => game.title.toLowerCase().includes(filter));
+            currentGameIndex = 0;
+
+            if (filteredGames.length > 0) {
+                updateThumbnail(currentGameIndex);
+            } else {
+                document.getElementById('gameTitle').textContent = 'Nenhum jogo encontrado';
+                document.getElementById('gameThumbnail').style.display = 'none';
+            }
+        });
+
+        document.getElementById('gameThumbnail').addEventListener('click', loadGame);
+        document.getElementById('gameThumbnail').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                loadGame();
+            }
+        });
+
+        document.getElementById('game').addEventListener('click', loadGame);
+    </script>
+</body>
+</html>
