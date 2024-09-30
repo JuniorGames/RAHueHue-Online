@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAHueWeb-JS</title>
+    <style>
+        /* Estilos gerais */
+        body, html {
+            height: 100%;
+            background: url('docs/bg_hue.png') no-repeat center center fixed;
+            background-size: cover;
+            color: yellow;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body, #box, #top {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        /* Estilos da caixa principal */
+        #box {
+            color: #aaa;
+            height: 22em;
+            width: 15em;
+            max-width: 80%;
+            max-height: 80%;
+            background-color: #333;
+            border-radius: 0.4em;
+            border: 2px solid #555;
+            position: relative;
+            transition: border-color 0.2s, color 0.2s, height 0.5s, width 0.5s;
+            overflow: hidden;
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 20px;
+            margin: 5px;
+            padding: 1em; /* Adicionando padding para melhor alinhamento dos botões */
+        }
+
+        #box:hover, #box[drag] {
+            border-color: #38f;
+            color: #ddd;
+        }
+
+        /* Estilos para botões e seleção */
+        select, button, input[type="text"] {
+            padding: 0.6em 0.4em;
+            margin: 0.5em;
+            width: 15em;
+            max-width: 100%;
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: 2px solid white;
+            border-radius: 0.4em;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        select:hover, button:hover, input[type="text"]:hover {
+            background-color: #45a049;
+        }
+
+        select {
+            color: white;
+            text-align: center;
+            border: 1px solid white;
+        }
+
+        /* Estilos para ícones e logo */
+        .logo {
+            width: 130px;
+            height: 130px;
+            filter: drop-shadow(0 0 10px white);
+        }
+
+        .icon-left, .icon-right {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+            max-width: 35%;
+            height: auto;
+            filter: drop-shadow(0 0 10px white) brightness(1.2);
+        }
+
+        .icon-left {
+            left: 10px;
+        }
+
+        .icon-right {
+            right: 10px;
+        }
+
+        /* Estilos para ícones de consoles */
+        #consoleIcon {
+            width: 120px;
+            height: 90px;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        /* Estilos para botões personalizados */
+        .custom-button {
+            background-color: #4CAF50;
+            color: white;
+            border: 2px solid white;
+            font-weight: bold;
+        }
+
+        .custom-button:hover {
+            background-color: #45a049;
+        }
+
+        /* Estilos para entrada de URL da ROM */
+        #romUrl {
+            width: 14em;
+            padding: 0.6em 0.4em;
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: 2px solid white;
+            border-radius: 0.4em;
+            transition: background-color 0.2s, color 0.2s;
+            margin: 0.5em;
+            max-width: 100%;
+            text-align: center;
+        }
+
+        /* Estilos para o rodapé */
+        #footer {
+            position: fixed;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 16px;
+            z-index: 1000;
+        }
+
+        /* Nova classe para posicionar o título */
+        .title {
+            position: fixed;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+            z-index: 1000;
+            font-size: 125%; /* Reduzir o tamanho da fonte para 125% */
+        }
+
+        /* Media query para ocultar ícones em dispositivos móveis */
+        @media (max-width: 768px) {
+            .icon-left, .icon-right {
+                display: none;
+            }
+        }
+
+        /* Estilos para exibição de miniaturas de jogos */
+        #gameThumbnail {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            width: 150px;
+            height: 150px;
+            border: 2px solid white;
+            border-radius: 0.4em;
+            background-color: #333;
+            display: none; /* Inicialmente oculto */
+        }
+
+        #gameThumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 0.4em;
+        }
+
+        /* Ajuste para o layout dos botões */
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .button-container button, .button-container select, .button-container input[type="text"] {
+            width: 15em;
+            margin: 0.5em 0; /* Alinhamento vertical */
+        }
+
+        /* Estilo para a mensagem de erro */
+        #error-message {
+            color: red;
+            font-weight: bold;
+            display: none; /* Inicialmente oculto */
+	    text-align: center; /* Centralizando a mensagem */
+        }
+
+        /* Novo estilo para o conteúdo do jogo */
+        #display {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Ícones e logo -->
+    <img src="docs/huehue.png" alt="Icon Left" class="icon-left">
+    <img src="docs/hue.png" alt="Icon Right" class="icon-right">
+    
+    <!-- Cabeçalho -->
+    <header id="top">
+        <h1 class="title"></h1>
+        <img src="docs/Logo-light.png" alt="Logo" class="logo">
+    </header>
+    
+    <!-- Caixa principal -->
+    <main id="box">
+        <div id="consoleIconContainer">
+            <img id="consoleIcon" src="icons/rahue.png" alt="Ícone do Console">
+        </div>
+        <div class="button-container">
+            <select id="selectCore">
+                <option value="" selected disabled hidden>👀Escolha o Console👀</option>
+                <!-- Opções de consoles -->
+                <option value="fbneo" data-icon="icons/fbneo.png">Arcades - FBNeo</option>
+                <option value="atari2600" data-icon="icons/atari2600.png">Atari - 2600</option>
+                <option value="atari7800" data-icon="icons/atari7800.png">Atari - 7800</option>
+                <option value="lynx" data-icon="icons/lynx.png">Atari - Lynx</option>
+                <option value="jaguar" data-icon="icons/jaguar.png">Atari - Jaguar</option>
+                <option value="ws" data-icon="icons/ws.png">Bandai - WonderSwan</option>
+                <option value="coleco" data-icon="icons/coleco.png">Coleco - Vision</option>
+                <option value="vice_x64sc" data-icon="icons/vice_x64sc.png">Commodore - 64</option>
+                <option value="vice_x128" data-icon="icons/vice_x128.png">Commodore - 128</option>
+                <option value="vice_xvic" data-icon="icons/vice_xvic.png">Commodore - VIC20</option>
+                <option value="vice_xplus4" data-icon="icons/vice_xplus4.png">Commodore - Plus/4</option>
+                <option value="vice_xpet" data-icon="icons/vice_xpet.png">Commodore - PET</option>
+                <option value="n64" data-icon="icons/n64.png">Nintendo - 64</option>
+                <option value="nds" data-icon="icons/nds.png">Nintendo - DS</option>
+                <option value="gb" data-icon="icons/gb.png">Nintendo - Game Boy</option>
+                <option value="gba" data-icon="icons/gba.png">Nintendo - Game Boy Advance</option>
+                <option value="gbc" data-icon="icons/gbc.png">Nintendo - Game Boy Color</option>
+                <option value="nes" data-icon="icons/nes.png">Nintendo - NES</option>
+                <option value="snes" data-icon="icons/snes.png">Nintendo - Super NES</option>
+                <option value="vb" data-icon="icons/vb.png">Nintendo - Virtual Boy</option>
+                <option value="pce" data-icon="icons/pce.png">NEC - TurboGrafx-16</option>
+                <option value="pce" data-icon="icons/pcen.png">NEC - PC Engine</option>
+                <option value="pce" data-icon="icons/pces.png">NEC - SuperGrafx</option>
+                <option value="sega32x" data-icon="icons/sega32x.png">Sega - 32X</option>
+                <option value="segaCD" data-icon="icons/segaCD.png">Sega - Mega CD</option>
+                <option value="segaGG" data-icon="icons/segaGG.png">Sega - Game Gear</option>
+                <option value="segaMD" data-icon="icons/segaMD.png">Sega - Mega Drive</option>
+                <option value="segaMS" data-icon="icons/segaMS.png">Sega - Master System</option>
+                <option value="picodrive" data-icon="icons/segaSG100.png">Sega - SG-1000</option>
+                <option value="segaSaturn" data-icon="icons/segaSaturn.png">Sega - Saturn</option>
+                <option value="ngp" data-icon="icons/ngp.png">SNK NeoGeo - Pocket</option>
+                <option value="psx" data-icon="icons/psx.png">Sony - PlayStation</option>
+            </select>
+            <button class="custom-button" id="loadLocalBtn" onclick="openFile()">📁Carregar ROM Local📁</button>
+            <input type="text" id="romUrl" placeholder="🌎Link URL da ROM🌎">
+            <button class="custom-button" onclick="loadRom()">🔥🎮Iniciar Jogo🎮🔥</button>
+            <button class="custom-button" id="raHueHueOnlineBtn" onclick="openRAHueHueOnline()">💣RAHueHue Oline💣</button>
+            <div id="error-message">Por favor, cole o link direto da ROM ou selecione um arquivo local.</div>
+        </div>
+    </main>
+
+    <!-- Rodapé -->
+    <div id="footer">
+        🔥🎮 RetroGames HueHue 🎮🔥
+    </div>
+
+    <!-- Miniatura do jogo -->
+    <div id="gameThumbnail">
+        <img id="gameThumbnailImage" src="" alt="Miniatura do Jogo">
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        let enableDebug = false;
+
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        if (urlParams.get('debug') === '1') {
+            enableDebug = true;
+        }
+
+        const selectCore = document.getElementById('selectCore');
+        const romUrlInput = document.getElementById('romUrl');
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.style.display = 'none';
+        document.body.appendChild(fileInput);
+
+        const loadLocalBtn = document.getElementById('loadLocalBtn');
+        const raHueHueOnlineBtn = document.getElementById('raHueHueOnlineBtn');
+        const consoleIcon = document.getElementById('consoleIcon');
+        const gameThumbnail = document.getElementById('gameThumbnail');
+        const gameThumbnailImage = document.getElementById('gameThumbnailImage');
+        const errorMessage = document.getElementById('error-message');
+
+        // Ordenar opções do select
+        const optionsArray = Array.from(selectCore.options);
+        optionsArray.sort((a, b) => a.text.localeCompare(b.text));
+        selectCore.innerHTML = "";
+        optionsArray.forEach(option => selectCore.appendChild(option));
+
+        // Atualizar ícone do console selecionado
+        selectCore.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const iconUrl = selectedOption.getAttribute('data-icon');
+            consoleIcon.src = iconUrl;
+        });
+
+        // Função para carregar ROMs a partir da URL ou arquivo local
+        function loadRom() {
+            const romUrl = romUrlInput.value;
+            const core = selectCore.value;
+
+            if (romUrl) {
+                loadGameFromUrl(romUrl, core);
+            } else if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                loadGameFromFile(file, core);
+            } else {
+                errorMessage.style.display = 'block';
+            }
+        }
+
+        // Função para carregar jogo a partir da URL
+        function loadGameFromUrl(romUrl, core) {
+            errorMessage.style.display = 'none';
+
+            const div = document.createElement("div");
+            const script = document.createElement("script");
+
+            div.id = "display";
+            const box = document.getElementById("box");
+            box.innerHTML = "";
+            box.appendChild(div);
+
+            window.EJS_player = "#display";
+            window.EJS_gameName = "ROM Carregada";
+            window.EJS_biosUrl = "";
+            window.EJS_gameUrl = romUrl;
+            window.EJS_core = core;
+            window.EJS_pathtodata = "data/";
+            window.EJS_startOnLoaded = true;
+            window.EJS_DEBUG_XX = enableDebug;
+            window.EJS_disableDatabases = true;
+
+            script.src = "data/loader.js";
+            document.body.appendChild(script);
+
+            hideIconsAndHeader();
+            expandBox();
+            hideFooter();
+
+            // Exibir miniatura do jogo
+            displayGameThumbnail(romUrl);
+        }
+
+        // Função para carregar jogo a partir de um arquivo local
+        function loadGameFromFile(file, core) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const romUrl = event.target.result;
+                loadGameFromUrl(romUrl, core);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Função para exibir a miniatura do jogo
+        function displayGameThumbnail(romUrl) {
+            const image = new Image();
+            image.src = romUrl;
+            image.onload = function() {
+                gameThumbnailImage.src = image.src;
+                gameThumbnail.style.display = 'block';
+            };
+            image.onerror = function() {
+                gameThumbnail.style.display = 'none';
+            };
+        }
+
+        // Função para abrir o seletor de arquivos
+        function openFile() {
+            fileInput.click();
+        }
+
+        // Função para abrir o link "RAHueHue Online"
+        function openRAHueHueOnline() {
+            window.location.href = 'lists/RAHueHue Online.html';
+        }
+
+        // Atualizar texto do botão "Carregar ROM Localmente"
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                loadLocalBtn.textContent = fileInput.files[0].name;
+            } else {
+                loadLocalBtn.textContent = 'Carregar ROM Localmente';
+            }
+        });
+
+        // Funções para ocultar ícones e cabeçalho e expandir a caixa
+        function hideIconsAndHeader() {
+            const icons = document.querySelectorAll('.icon-left, .icon-right');
+            const header = document.getElementById('top');
+            icons.forEach(icon => icon.style.display = 'none');
+            header.style.display = 'none';
+        }
+
+        function expandBox() {
+            const box = document.getElementById('box');
+            box.style.height = '65em';
+            box.style.width = '65em';
+            box.style.maxWidth = '95%';
+            box.style.maxHeight = '95%';
+        }
+
+        function hideFooter() {
+            document.getElementById('footer').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
