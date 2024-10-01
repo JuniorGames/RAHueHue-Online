@@ -1434,6 +1434,76 @@
         });
 
         document.getElementById('game').addEventListener('click', loadGame);
+
+        // Adicionando função para detectar os botões "Select" e "Start"
+        let selectPressed = false;
+        let startPressed = false;
+        let comboPressTimer;
+        let selectHoldTimer;
+
+        function checkComboPress() {
+            if (selectPressed && startPressed) {
+                console.log("Mudando para o modo navegação");
+                hideUIElements();
+                focusGame();
+            }
+        }
+
+        function toggleFullscreen() {
+            const gameElement = document.getElementById('game');
+            if (!document.fullscreenElement) {
+                gameElement.requestFullscreen().catch(err => {
+                    console.error(`Erro ao tentar entrar em fullscreen: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        window.addEventListener("gamepadconnected", function(e) {
+            console.log("Gamepad conectado: ", e.gamepad);
+        });
+
+        window.addEventListener("gamepaddisconnected", function(e) {
+            console.log("Gamepad desconectado: ", e.gamepad);
+        });
+
+        function monitorGamepad() {
+            const gamepads = navigator.getGamepads();
+            if (gamepads[0]) {
+                const gamepad = gamepads[0];
+
+                // Botão Select = 8, Botão Start = 9
+                selectPressed = gamepad.buttons[8].pressed;
+                startPressed = gamepad.buttons[9].pressed;
+
+                // Segurando o botão Select por 3 segundos para alternar fullscreen
+                if (selectPressed) {
+                    if (!selectHoldTimer) {
+                        selectHoldTimer = setTimeout(() => {
+                            toggleFullscreen();
+                            selectHoldTimer = null; // Resetando o timer
+                        }, 3000); // 3 segundos
+                    }
+                } else {
+                    clearTimeout(selectHoldTimer);
+                    selectHoldTimer = null; // Resetando o timer
+                }
+
+                if (selectPressed && startPressed) {
+                    if (!comboPressTimer) {
+                        comboPressTimer = setTimeout(checkComboPress, 1000); // Aguarda 1 segundo
+                    }
+                } else {
+                    clearTimeout(comboPressTimer);
+                    comboPressTimer = null;
+                }
+            }
+
+            requestAnimationFrame(monitorGamepad);
+        }
+
+        monitorGamepad();
     </script>
 </body>
 </html>
