@@ -37,7 +37,7 @@
             padding: 10px;
             width: 100%;
             box-sizing: border-box;
-            margin-bottom: 20px; /* Aumentado para dar espaço para os links */
+            margin-bottom: 20px;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
         }
 
@@ -45,58 +45,46 @@
             color: white;
         }
 
-        /* Estilo da box de resultados com rolagem suave */
-        .results {
-            margin-top: 20px;
+        .console-container {
             position: absolute;
-            top: 100px;
+            top: 200px;
             left: 20px;
+            text-align: center;
+        }
+
+        .console-link {
+            display: none;
             width: 500px;
-            height: 70%; /* Ajuste a altura conforme necessário */
-            overflow-y: auto;
-            scrollbar-width: thin; /* Para navegadores que suportam */
-            background: rgba(0, 0, 0, 0.5);
-            padding: 10px;
-            box-sizing: border-box;
-            z-index: 10;
-        }
-
-        .results::-webkit-scrollbar {
-            width: 8px; /* Largura da barra de rolagem */
-        }
-
-        .results::-webkit-scrollbar-thumb {
-            background-color: rgba(255, 255, 255, 0.5); /* Cor da barra de rolagem */
-            border-radius: 4px;
-        }
-
-        .result-item {
-            display: flex;
-            align-items: center;
-            margin: 5px 0;
-            color: white;
+            height: 400px;
+            margin-bottom: 20px;
+            text-align: center;
             text-decoration: none;
+            color: white;
+        }
+
+        .console-link.active {
+            display: block;
+        }
+
+        .console-link img {
+            width: 500px;
+            height: 400px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .console-link span {
             font-size: 30px;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
-            font-weight: bold; /* Fonte em negrito */
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
         }
 
-        .result-item img {
-            width: 48px; /* Ajuste o tamanho do ícone conforme necessário */
-            height: 48px;
-            margin-right: 10px;
+        .console-link:hover img {
+            filter: brightness(1.2);
         }
 
-        .result-item:hover {
-            text-decoration: underline;
-            background: rgba(0, 0, 0, 0.7);
-        }
-
-        /* Novo estilo para o botão Voltar */
-        .back-button {
+        .button {
             font-family: 'ArcadeClassic', sans-serif;
             font-size: 30px;
             color: white;
@@ -105,72 +93,160 @@
             padding: 10px;
             position: absolute;
             bottom: 20px;
-            left: 20px;
             cursor: pointer;
-            width: 200px;
+            width: 210px;
             text-align: center;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .button:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+        }
+
+        .back-button {
+            left: 20px;
+        }
+
+        .reload-button {
+            left: 270px;
         }
     </style>
 </head>
 <body>
+    <!-- Campo de busca -->
     <div class="search-container">
         <input type="text" id="searchInput" class="search-input" placeholder="Buscar Console...">
     </div>
-    <div class="results" id="resultsContainer">
-        <!-- Resultados da busca aparecerão aqui -->
+
+    <!-- Contêiner dos consoles -->
+    <div class="console-container" id="consoleContainer">
+        <!-- Ícones dos consoles aparecerão aqui -->
     </div>
 
-    <!-- Novo botão Voltar -->
-    <div class="back-button" onclick="window.history.back()">Voltar</div>
+    <!-- Botões de navegação -->
+    <div class="button back-button" onclick="window.history.back()">Voltar</div>
+    <div class="button reload-button" onclick="location.reload()">Recarregar</div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const searchInput = document.getElementById('searchInput');
-            const resultsContainer = document.getElementById('resultsContainer');
-            
-            // Lista de arquivos HTML disponíveis
-            const pages = [
-                { name: 'Master System', file: 'Master System.html' },
-                { name: 'Mega Drive', file: 'Mega Drive.html' },
-                { name: 'GameBoy Advance', file: 'GameBoy Advance.html' },
-                { name: 'Nintendo', file: 'Nintendo.html' },
-                { name: 'Super Nintendo', file: 'Super Nintendo.html' },
-                // Adicione mais páginas HTML aqui
+            const consoleContainer = document.getElementById('consoleContainer');
+
+            // Lista de consoles com arquivos HTML e ícones
+            const consoles = [
+                { name: 'Master System', file: 'Master System.html', icon: 'icons/Master System.png' },
+                { name: 'Mega Drive', file: 'Mega Drive.html', icon: 'icons/Mega Drive.png' },
+                { name: 'GameBoy Advance', file: 'GameBoy Advance.html', icon: 'icons/GameBoy Advance.png' },
+                { name: 'Nintendo', file: 'Nintendo.html', icon: 'icons/Nintendo.png' },
+                { name: 'Super Nintendo', file: 'Super Nintendo.html', icon: 'icons/Super Nintendo.png' },
             ];
 
-            function displayResults(results) {
-                resultsContainer.innerHTML = '';
-                results.forEach(page => {
-                    const link = document.createElement('a');
-                    link.href = page.file;
-                    link.className = 'result-item';
-                    
-                    const icon = document.createElement('img');
-                    icon.src = `icons/${page.name}.png`; // Caminho para o ícone
-                    icon.alt = `${page.name} Icon`;
+            let selectedIndex = 0;
+            let filteredConsoles = consoles; // Usado para armazenar a lista filtrada
 
-                    link.appendChild(icon);
-                    link.appendChild(document.createTextNode(page.name));
-                    
-                    resultsContainer.appendChild(link);
+            // Exibir o console selecionado
+            function displayConsole(index) {
+                const consoleLinks = consoleContainer.querySelectorAll('.console-link');
+                consoleLinks.forEach((link, idx) => {
+                    link.classList.toggle('active', idx === index);
                 });
             }
 
-            function searchPages(query) {
-                const filteredPages = pages.filter(page => 
-                    page.name.toLowerCase().includes(query.toLowerCase())
+            // Navegação entre os consoles
+            function navigateConsoles(direction) {
+                if (filteredConsoles.length === 0) return; // Evita navegação se não houver consoles visíveis
+
+                if (direction === 'up') {
+                    selectedIndex = (selectedIndex - 1 + filteredConsoles.length) % filteredConsoles.length;
+                } else if (direction === 'down') {
+                    selectedIndex = (selectedIndex + 1) % filteredConsoles.length;
+                }
+                displayConsole(selectedIndex);
+            }
+
+            // Abrir página do console
+            function openConsole() {
+                const selectedConsole = filteredConsoles[selectedIndex];
+                window.location.href = selectedConsole.file;
+            }
+
+            // Adicionar os consoles ao DOM
+            function renderConsoles(consoleList) {
+                consoleContainer.innerHTML = ''; // Limpar contêiner
+                consoleList.forEach((console, index) => {
+                    const link = document.createElement('a');
+                    link.href = console.file;
+                    link.className = 'console-link';
+                    if (index === 0) {
+                        link.classList.add('active');
+                    }
+
+                    const consoleName = document.createElement('span');
+                    consoleName.textContent = console.name;
+
+                    const icon = document.createElement('img');
+                    icon.src = console.icon;
+                    icon.alt = console.name;
+
+                    link.appendChild(consoleName);
+                    link.appendChild(icon);
+                    consoleContainer.appendChild(link);
+                });
+            }
+
+            // Inicializar consoles
+            renderConsoles(consoles);
+            displayConsole(selectedIndex);
+
+            // Eventos de teclado para navegação
+            document.addEventListener('keydown', (event) => {
+                switch (event.key) {
+                    case 'ArrowUp':
+                        navigateConsoles('up');
+                        break;
+                    case 'ArrowDown':
+                        navigateConsoles('down');
+                        break;
+                    case 'Enter':
+                        openConsole();
+                        break;
+                }
+            });
+
+            // Evento de scroll do mouse
+            window.addEventListener('wheel', function (event) {
+                if (event.deltaY < 0) {
+                    navigateConsoles('up');
+                } else {
+                    navigateConsoles('down');
+                }
+            });
+
+            // Função para busca de consoles
+            function displayResults(results) {
+                renderConsoles(results);
+                selectedIndex = 0; // Reseta a seleção ao filtrar
+                if (results.length > 0) {
+                    displayConsole(selectedIndex); // Exibe o primeiro item da lista filtrada
+                }
+            }
+
+            // Filtrar consoles pela busca
+            function searchConsoles(query) {
+                filteredConsoles = consoles.filter(console =>
+                    console.name.toLowerCase().includes(query.toLowerCase())
                 );
-                displayResults(filteredPages);
+                if (query === '') {
+                    filteredConsoles = consoles; // Exibe a lista completa se a busca estiver vazia
+                }
+                displayResults(filteredConsoles);
             }
 
             searchInput.addEventListener('input', () => {
                 const query = searchInput.value;
-                searchPages(query);
+                searchConsoles(query);
             });
-
-            // Exibe todas as páginas ao carregar
-            displayResults(pages);
         });
     </script>
 </body>
