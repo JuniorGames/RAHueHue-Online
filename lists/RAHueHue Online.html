@@ -39,10 +39,17 @@
             box-sizing: border-box;
             margin-bottom: 20px;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 0.3s ease; /* Adicionado para transição suave */
         }
 
         .search-input::placeholder {
             color: white;
+        }
+
+        .search-input:hover,
+        .search-input:focus {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1); /* Efeito de brilho ao passar o mouse ou focar */
+            outline: none; /* Remove a borda padrão do foco */
         }
 
         .console-container {
@@ -71,6 +78,12 @@
             height: 400px;
             display: block;
             margin: 0 auto;
+            transition: box-shadow 0.3s ease; /* Adicionado para transição suave */
+        }
+
+        .console-link:hover img {
+            filter: brightness(1.2);
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1); /* Efeito de brilho ao passar o mouse */
         }
 
         .console-link span {
@@ -78,10 +91,6 @@
             font-weight: bold;
             display: block;
             margin-bottom: 10px;
-        }
-
-        .console-link:hover img {
-            filter: brightness(1.2);
         }
 
         .button {
