@@ -792,13 +792,13 @@
                 selectPressed = gamepad.buttons[8].pressed;
                 startPressed = gamepad.buttons[9].pressed;
 
-                // Segurando o botão Select por 3 segundos para alternar fullscreen
+                // Segurando o botão Select por 2 segundos para alternar fullscreen
                 if (selectPressed) {
                     if (!selectHoldTimer) {
                         selectHoldTimer = setTimeout(() => {
                             toggleFullscreen();
                             selectHoldTimer = null; // Resetando o timer
-                        }, 3000); // 3 segundos
+                        }, 2000); // 2 segundos
                     }
                 } else {
                     clearTimeout(selectHoldTimer);
