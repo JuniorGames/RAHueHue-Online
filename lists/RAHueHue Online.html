@@ -53,9 +53,12 @@
 
         .console-container {
             position: absolute;
-            top: 200px;
             left: 20px;
-            text-align: center;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
         }
 
         .console-link {
@@ -133,6 +136,16 @@
     </style>
 </head>
 <body>
+    <audio autoplay loop>
+        <source src="sounds/HueHueBR.mp3" type="audio/mpeg">
+        Seu navegador não suporta o elemento de áudio.
+    </audio>
+
+    <audio id="menu-sound">
+        <source src="sounds/menu-sound.mp3" type="audio/mpeg">
+        Seu navegador não suporta o elemento de áudio.
+    </audio>
+
     <div class="search-container">
         <input type="text" id="searchInput" class="search-input" placeholder="Buscar Console...">
     </div>
@@ -146,6 +159,7 @@
             const searchInput = document.getElementById('searchInput');
             const consoleContainer = document.getElementById('consoleContainer');
             const noConsoleMessage = document.getElementById('noConsoleMessage');
+            const menuSound = document.getElementById('menu-sound'); // Referência ao som de menu
 
             const consoles = [
                 { name: 'Master System', file: 'Master System.html', icon: 'icons/Master System.png' },
@@ -168,6 +182,9 @@
 
             function navigateConsoles(direction) {
                 if (filteredConsoles.length === 0) return;
+
+                // Tocar som ao mudar a seleção
+                menuSound.play();
 
                 if (direction === 'up') {
                     selectedIndex = (selectedIndex - 1 + filteredConsoles.length) % filteredConsoles.length;
