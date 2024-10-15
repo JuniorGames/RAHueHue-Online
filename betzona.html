@@ -7,11 +7,15 @@
     <style>
         body {
             background-image: url('background.jpg'); /* Background da mesma pasta */
-            background-size: cover; /* A imagem cobre todo o fundo */
-            background-position: center; /* Centraliza a imagem no fundo */
+            background-size: contain; /* A imagem inteira é mostrada sem cortes */
+            background-repeat: no-repeat; /* Evita que a imagem se repita */
+            background-position: center center; /* Centraliza a imagem no centro horizontal e vertical */
+            background-attachment: fixed; /* Mantém o background fixo na tela */
+            height: 100vh; /* Garante que o body cubra 100% da altura da janela */
             font-family: Arial, sans-serif;
             text-align: center;
-            color: white;
+            color: blue;
+            margin: 0; /* Remove as margens padrão */
         }
         h1 {
             margin-top: 50px;
