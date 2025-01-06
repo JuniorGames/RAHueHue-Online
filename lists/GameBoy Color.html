@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="icons/GameBoy Color.png" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameBoy Advance</title>
+    <style>
+        @font-face {
+            font-family: 'ArcadeClassic';
+            src: url('arcadeclassic.ttf') format('truetype');
+        }
+
+        body {
+            background: url('wallpapers/GameBoy Color.png') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .thumbnail-container {
+            width: 525px;
+            height: 405px;
+            position: absolute;
+            margin: auto;
+            bottom: 0;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .thumbnail {
+            display: none;
+            width: 525px;
+            height: 405px;
+            object-fit: contain;
+            transition: box-shadow 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .thumbnail:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+        }
+
+        .game-title {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .search-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 525px;
+            z-index: 10;
+        }
+
+        .search-input {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid white;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: white;
+        }
+
+        .search-input:hover,
+        .search-input:focus {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+            outline: none;
+        }
+
+        #game {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 5;
+            outline: none;
+        }
+
+        .button-container {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .action-button {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid white;
+            padding: 10px;
+            cursor: pointer;
+            width: 250px;
+            text-align: center;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .action-button:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+        }
+    </style>
+</head>
+<body>
+    <main style="width:525px; height:405px; max-width:100%; margin: auto; position: absolute; top: 50px; bottom: 0; left: 20px;">
+        <div id="game" tabindex="0"></div>
+    </main>
+
+    <div class="thumbnail-container">
+        <div id="gameTitle" class="game-title"></div>
+        <img id="gameThumbnail" class="thumbnail" src="" alt="Thumbnail do Jogo" tabindex="0">
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="search" class="search-input" placeholder="Buscar Jogo..." aria-label="Buscar Jogo">
+    </div>
+
+    <div class="button-container">
+        <button class="action-button" onclick="window.history.back()" aria-label="Voltar">Voltar</button>
+        <button class="action-button" onclick="window.location.reload()" aria-label="Recarregar">Recarregar</button>
+    </div>
+
+    <script type="text/javascript">
+        const optionsHTML = `
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/007%20-%20Everything%20or%20Nothing.zip">007 - Everything or Nothing</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/007%20-%20Nightfire.zip">007 - Nightfire</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Activision%20Anthology.zip">Activision Anthology</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Advance%20Guardian%20Heroes.zip">Advance Guardian Heroes</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Advance%20Wars.zip">Advance Wars</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Advance%20Wars%202%20-%20Black%20Hole%20Rising.zip">Advance Wars 2 - Black Hole Rising</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Aero%20the%20Acro-Bat.zip">Aero the Acro-Bat</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/AirForce%20Delta%20Storm.zip">AirForce Delta Storm</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Aladdin.zip">Aladdin</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Alien%20Hominid.zip">Alien Hominid</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Altered%20Beast%20-%20Guardian%20of%20the%20Realms.zip">Altered Beast - Guardian of the Realms</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/American%20Bass%20Challenge.zip">American Bass Challenge</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Astro%20Boy%20-%20Omega%20Factor.zip">Astro Boy - Omega Factor</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Atari%20Anniversary%20Advance.zip">Atari Anniversary Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Baldur%27s%20Gate%20-%20Dark%20Alliance.zip">Baldur's Gate - Dark Alliance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Ballistic%20-%20Ecks%20vs.%20Sever.zip">Ballistic - Ecks vs. Sever</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Banjo-Kazooie%20-%20Grunty%27s%20Revenge.zip">Banjo-Kazooie - Grunty's Revenge</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Banjo-Pilot.zip">Banjo-Pilot</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Baseball%20Advance.zip">Baseball Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Batman%20-%20Rise%20of%20Sin%20Tzu.zip">Batman - Rise of Sin Tzu</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Batman%20-%20Vengeance.zip">Batman - Vengeance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Batman%20Begins.zip">Batman Begins</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Battle%20B-Daman%20-%20Fire%20Spirits%21.zip">Battle B-Daman - Fire Spirits!</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Battle%20B-Daman.zip">Battle B-Daman</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Beyblade%20G-Revolution.zip">Beyblade G-Revolution</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Blackthorne.zip">Blackthorne</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Blades%20of%20Thunder.zip">Blades of Thunder</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Blender%20Bros..zip">Blender Bros.</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Boktai%20-%20The%20Sun%20Is%20in%20Your%20Hand.zip">Boktai - The Sun Is in Your Hand</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Boktai%202%20-%20Solar%20Boy%20Django.zip">Boktai 2 - Solar Boy Django</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Bomberman%20Max%202%20-%20Blue%20Advance.zip">Bomberman Max 2 - Blue Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Bomberman%20Max%202%20-%20Red%20Advance.zip">Bomberman Max 2 - Red Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Bomberman%20Tournament.zip">Bomberman Tournament</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Boulder%20Dash%20EX.zip">Boulder Dash EX</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Breath%20of%20Fire.zip">Breath of Fire</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Breath%20of%20Fire%20II.zip">Breath of Fire II</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Broken%20Sword%20-%20The%20Shadow%20of%20the%20Templars.zip">Broken Sword - The Shadow of the Templars</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Bruce%20Lee%20-%20Return%20of%20the%20Legend.zip">Bruce Lee - Return of the Legend</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Bubble%20Bobble%20-%20Old%20%26%20New.zip">Bubble Bobble - Old & New</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/CIMA%20-%20The%20Enemy.zip">CIMA - The Enemy</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/CT%20Special%20Forces.zip">CT Special Forces</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/CT%20Special%20Forces%202%20-%20Back%20in%20the%20Trenches.zip">CT Special Forces 2 - Back in the Trenches</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/CT%20Special%20Forces%203%20-%20Bioterror.zip">CT Special Forces 3 - Bioterror</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Capcom%20Classics%20Mini%20Mix.zip">Capcom Classics Mini Mix</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Car%20Battler%20Joe.zip">Car Battler Joe</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Castlevania%20-%20Aria%20of%20Sorrow.zip">Castlevania - Aria of Sorrow</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Castlevania%20-%20Circle%20of%20the%20Moon.zip">Castlevania - Circle of the Moon</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Castlevania%20-%20Harmony%20of%20Dissonance.zip">Castlevania - Harmony of Dissonance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Centipede%2C%20Breakout%20%26%20Warlords.zip">Centipede, Breakout & Warlords</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/ChuChu%20Rocket%21.zip">ChuChu Rocket!</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Columns%20Crown.zip">Columns Crown</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Comix%20Zone.zip">Comix Zone</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Contra%20Advance%20-%20The%20Alien%20Wars%20EX.zip">Contra Advance - The Alien Wars EX</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Crash%20Bandicoot%20-%20The%20Huge%20Adventure.zip">Crash Bandicoot - The Huge Adventure</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Crash%20Bandicoot%202%20-%20N-Tranced.zip">Crash Bandicoot 2 - N-Tranced</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Crash%20Bandicoot%20Purple%20-%20Ripto%27s%20Rampage.zip">Crash Bandicoot Purple - Ripto's Rampage</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Crash%20Nitro%20Kart.zip">Crash Nitro Kart</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Crazy%20Taxi%20-%20Catch%20a%20Ride.zip">Crazy Taxi - Catch a Ride</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/DK%20-%20King%20of%20Swing.zip">DK - King of Swing</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Dark%20Arena.zip">Dark Arena</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/DemiKids%20-%20Dark%20Version.zip">DemiKids - Dark Version</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/DemiKids%20-%20Light%20Version.zip">DemiKids - Light Version</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Denki%20Blocks%21.zip">Denki Blocks!</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Densetsu%20no%20Stafy.zip">Densetsu no Stafy</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Desert%20Strike%20Advance.zip">Desert Strike Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Digimon%20Battle%20Spirit.zip">Digimon Battle Spirit</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Digimon%20Battle%20Spirit%202.zip">Digimon Battle Spirit 2</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Digimon%20Racing.zip">Digimon Racing</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Dinotopia%20-%20The%20Timestone%20Pirates.zip">Dinotopia - The Timestone Pirates</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Dokapon%20-%20Monster%20Hunter.zip">Dokapon - Monster Hunter</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Donald%20Duck%20Advance.zip">Donald Duck Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Donkey%20Kong%20Country.zip">Donkey Kong Country</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Donkey%20Kong%20Country%202.zip">Donkey Kong Country 2</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Donkey%20Kong%20Country%203.zip">Donkey Kong Country 3</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Doom.zip">Doom</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Doom%20II.zip">Doom II</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Double%20Dragon%20Advance.zip">Double Dragon Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Dr.%20Mario%20%26%20Puzzle%20League.zip">Dr. Mario & Puzzle League</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Dragon%20Ball%20-%20Advanced%20Adventure.zip">Dragon Ball - Advanced Adventure</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Dragon%20Ball%20GT%20-%20Transformation.zip">Dragon Ball GT - Transformation</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Dragon%20Ball%20Z%20-%20Buu%27s%20Fury.zip">Dragon Ball Z - Buu's Fury</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Dragon%20Ball%20Z%20-%20Collectible%20Card%20Game.zip">Dragon Ball Z - Collectible Card Game</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Dragon%20Ball%20Z%20-%20Supersonic%20Warriors.zip">Dragon Ball Z - Supersonic Warriors</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Dragon%20Ball%20Z%20-%20The%20Legacy%20of%20Goku.zip">Dragon Ball Z - The Legacy of Goku</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Dragon%20Ball%20Z%20-%20The%20Legacy%20of%20Goku%20II.zip">Dragon Ball Z - The Legacy of Goku II</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Dragon%20Quest%20Monsters%20-%20Caravan%20Heart.zip">Dragon Quest Monsters - Caravan Heart</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Drill%20Dozer.zip">Drill Dozer</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Driv3r.zip">Driv3r</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Driver%202%20Advance.zip">Driver 2 Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Drome%20Racers.zip">Drome Racers</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Dual%20Blades.zip">Dual Blades</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Duel%20Masters%20-%20Kaijudo%20Showdown.zip">Duel Masters - Kaijudo Showdown</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Duel%20Masters%20-%20Sempai%20Legends.zip">Duel Masters - Sempai Legends</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Duel%20Masters%20-%20Shadow%20of%20the%20Code.zip">Duel Masters - Shadow of the Code</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Duke%20Nukem%20Advance.zip">Duke Nukem Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Dungeons%20%26%20Dragons%20-%20Eye%20of%20the%20Beholder.zip">Dungeons & Dragons - Eye of the Beholder</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Dynasty%20Warriors%20Advance.zip">Dynasty Warriors Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Earthworm%20Jim.zip">Earthworm Jim</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Earthworm%20Jim%202.zip">Earthworm Jim 2</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Ecks%20vs.%20Sever.zip">Ecks vs. Sever</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Egg%20Mania.zip">Egg Mania</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/F-Zero%20-%20GP%20Legend.zip">F-Zero - GP Legend</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/F-Zero%20-%20Maximum%20Velocity.zip">F-Zero - Maximum Velocity</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/F-Zero%20Climax.zip">F-Zero Climax</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/FIFA%20Soccer%2007.zip">FIFA Soccer 07</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Family%20Feud.zip">Family Feud</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Final%20Fantasy%20I%20%26%20II%20-%20Dawn%20of%20Souls.zip">Final Fantasy I & II - Dawn of Souls</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Final%20Fantasy%20IV%20Advance.zip">Final Fantasy IV Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Final%20Fantasy%20Tactics%20Advance.zip">Final Fantasy Tactics Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Final%20Fantasy%20V%20Advance.zip">Final Fantasy V Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Final%20Fantasy%20VI%20Advance.zip">Final Fantasy VI Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Final%20Fight%20One.zip">Final Fight One</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Fire%20Emblem%20-%20Fuuin%20no%20Tsurugi.zip">Fire Emblem - Fuuin no Tsurugi</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Fire%20Emblem%20-%20The%20Sacred%20Stones.zip">Fire Emblem - The Sacred Stones</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Fire%20Emblem.zip">Fire Emblem</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Fire%20Pro%20Wrestling.zip">Fire Pro Wrestling</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Fire%20Pro%20Wrestling%202.zip">Fire Pro Wrestling 2</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Fortress.zip">Fortress</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Frogger%27s%20Adventures%20-%20Temple%20of%20the%20Frog.zip">Frogger's Adventures - Temple of the Frog</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Frogger%27s%20Adventures%202%20-%20The%20Lost%20Wand.zip">Frogger's Adventures 2 - The Lost Wand</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Frogger%27s%20Journey%20-%20The%20Forgotten%20Relic.zip">Frogger's Journey - The Forgotten Relic</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Frogger%20Advance%20-%20The%20Great%20Quest.zip">Frogger Advance - The Great Quest</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/GT%20Advance%20-%20Championship%20Racing.zip">GT Advance - Championship Racing</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/GT%20Advance%202%20-%20Rally%20Racing.zip">GT Advance 2 - Rally Racing</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/GT%20Advance%203%20-%20Pro%20Concept%20Racing.zip">GT Advance 3 - Pro Concept Racing</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Gadget%20Racers.zip">Gadget Racers</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Game%20%26%20Watch%20Gallery%204.zip">Game & Watch Gallery 4</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Garfield%20and%20His%20Nine%20Lives.zip">Garfield and His Nine Lives</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Gauntlet%20%26%20Rampart.zip">Gauntlet & Rampart</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Gauntlet%20-%20Dark%20Legacy.zip">Gauntlet - Dark Legacy</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Gekido%20Advance%20-%20Kintaro%27s%20Revenge.zip">Gekido Advance - Kintaro's Revenge</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Gem%20Smashers.zip">Gem Smashers</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Gensou%20Suikoden%20Card%20Stories.zip">Gensou Suikoden Card Stories</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Ghost%20Rider.zip">Ghost Rider</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Godzilla%20-%20Domination%21.zip">Godzilla - Domination!</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Golden%20Sun%20-%20The%20Lost%20Age.zip">Golden Sun - The Lost Age</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Golden%20Sun.zip">Golden Sun</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Gradius%20Galaxies.zip">Gradius Galaxies</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Grand%20Theft%20Auto%20Advance.zip">Grand Theft Auto Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Guilty%20Gear%20X%20-%20Advance%20Edition.zip">Guilty Gear X - Advance Edition</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Gumby%20vs.%20the%20Astrobots.zip">Gumby vs. the Astrobots</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Gunstar%20Super%20Heroes.zip">Gunstar Super Heroes</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Gyakuten%20Saiban%203.zip">Gyakuten Saiban 3</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Hagane%20no%20Renkinjutsushi%20-%20Meisou%20no%20Rondo.zip">Hagane no Renkinjutsushi - Meisou no Rondo</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Hagane%20no%20Renkinjutsushi%20-%20Omoide%20no%20Sonata.zip">Hagane no Renkinjutsushi - Omoide no Sonata</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Hajime%20no%20Ippo%20-%20The%20Fighting%21.zip">Hajime no Ippo - The Fighting!</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Hamtaro%20-%20Ham-Ham%20Games.zip">Hamtaro - Ham-Ham Games</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Hamtaro%20-%20Ham-Ham%20Heartbreak.zip">Hamtaro - Ham-Ham Heartbreak</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Hamtaro%20-%20Rainbow%20Rescue.zip">Hamtaro - Rainbow Rescue</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Harry%20Potter%20-%20Quidditch%20World%20Cup.zip">Harry Potter - Quidditch World Cup</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Harry%20Potter%20and%20the%20Chamber%20of%20Secrets.zip">Harry Potter and the Chamber of Secrets</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Harry%20Potter%20and%20the%20Goblet%20of%20Fire.zip">Harry Potter and the Goblet of Fire</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Harry%20Potter%20and%20the%20Order%20of%20the%20Phoenix.zip">Harry Potter and the Order of the Phoenix</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Harry%20Potter%20and%20the%20Prisoner%20of%20Azkaban.zip">Harry Potter and the Prisoner of Azkaban</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Harry%20Potter%20and%20the%20Sorcerer%27s%20Stone.zip">Harry Potter and the Sorcerer's Stone</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Harvest%20Moon%20-%20Friends%20of%20Mineral%20Town.zip">Harvest Moon - Friends of Mineral Town</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Harvest%20Moon%20-%20More%20Friends%20of%20Mineral%20Town.zip">Harvest Moon - More Friends of Mineral Town</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Hobbit%2C%20The%20-%20The%20Prelude%20to%20The%20Lord%20of%20the%20Rings.zip">Hobbit, The - The Prelude to The Lord of the Rings</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/I%20Spy%20Challenger%21.zip">I Spy Challenger!</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Ice%20Nine.zip">Ice Nine</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Incredible%20Hulk%2C%20The.zip">Incredible Hulk, The</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Incredibles%2C%20The.zip">Incredibles, The</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/International%20Superstar%20Soccer.zip">International Superstar Soccer</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/International%20Superstar%20Soccer%20Advance.zip">International Superstar Soccer Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Invader.zip">Invader</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Invincible%20Iron%20Man%2C%20The.zip">Invincible Iron Man, The</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Iridion%203D.zip">Iridion 3D</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Iridion%20II.zip">Iridion II</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/It%27s%20Mr.%20Pants.zip">It's Mr. Pants</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Jackie%20Chan%20Adventures%20-%20Legend%20of%20the%20Dark%20Hand.zip">Jackie Chan Adventures - Legend of the Dark Hand</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/James%20Pond%20-%20Codename%20RoboCod.zip">James Pond - Codename RoboCod</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Jazz%20Jackrabbit.zip">Jazz Jackrabbit</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Jet%20Grind%20Radio.zip">Jet Grind Radio</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Jungle%20Book%2C%20The.zip">Jungle Book, The</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Jurassic%20Park%20III%20-%20Park%20Builder.zip">Jurassic Park III - Park Builder</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Justice%20League%20Heroes%20-%20The%20Flash.zip">Justice League Heroes - The Flash</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Karnaaj%20Rally.zip">Karnaaj Rally</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Kill.Switch.zip">Kill.Switch</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Kim%20Possible%20-%20Revenge%20of%20Monkey%20Fist.zip">Kim Possible - Revenge of Monkey Fist</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Kim%20Possible%202%20-%20Drakken%27s%20Demise.zip">Kim Possible 2 - Drakken's Demise</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Kim%20Possible%203%20-%20Team%20Possible.zip">Kim Possible 3 - Team Possible</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Kingdom%20Hearts%20-%20Chain%20of%20Memories.zip">Kingdom Hearts - Chain of Memories</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/King%20of%20Fighters%20EX%2C%20The%20-%20Neo%20Blood.zip">King of Fighters EX, The - Neo Blood</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/King%20of%20Fighters%20EX2%2C%20The%20-%20Howling%20Blood.zip">King of Fighters EX2, The - Howling Blood</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Kirby%20%26%20the%20Amazing%20Mirror.zip">Kirby & the Amazing Mirror</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Kirby%20-%20Nightmare%20in%20Dream%20Land.zip">Kirby - Nightmare in Dream Land</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Klonoa%20-%20Empire%20of%20Dreams.zip">Klonoa - Empire of Dreams</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Klonoa%202%20-%20Dream%20Champ%20Tournament.zip">Klonoa 2 - Dream Champ Tournament</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Konami%20Collector%27s%20Series%20-%20Arcade%20Advanced.zip">Konami Collector's Series - Arcade Advanced</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Konami%20Krazy%20Racers.zip">Konami Krazy Racers</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Kuru%20Kuru%20Kururin.zip">Kuru Kuru Kururin</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/LEGO%20Bionicle.zip">LEGO Bionicle</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/LEGO%20Racers%202.zip">LEGO Racers 2</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/LEGO%20Star%20Wars%20-%20The%20Video%20Game.zip">LEGO Star Wars - The Video Game</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/LEGO%20Star%20Wars%20II%20-%20The%20Original%20Trilogy.zip">LEGO Star Wars II - The Original Trilogy</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Lady%20Sia.zip">Lady Sia</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Legend%20of%20Spyro%2C%20The%20-%20A%20New%20Beginning.zip">Legend of Spyro, The - A New Beginning</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Legend%20of%20Spyro%2C%20The%20-%20The%20Eternal%20Night.zip">Legend of Spyro, The - The Eternal Night</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Legend%20of%20Zelda%2C%20The%20-%20A%20Link%20to%20the%20Past%20%26%20Four%20Swords.zip">Legend of Zelda, The - A Link to the Past & Four Swords</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Legend%20of%20Zelda%2C%20The%20-%20The%20Minish%20Cap.zip">Legend of Zelda, The - The Minish Cap</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Lilo%20%26%20Stitch.zip">Lilo & Stitch</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Lilo%20%26%20Stitch%202%20-%20Haemsterviel%20Havoc.zip">Lilo & Stitch 2 - Haemsterviel Havoc</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Lion%20King%201%201-2%2C%20The.zip">Lion King 1 1-2, The</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Lord%20of%20the%20Rings%2C%20The%20-%20The%20Fellowship%20of%20the%20Ring.zip">Lord of the Rings, The - The Fellowship of the Ring</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Lord%20of%20the%20Rings%2C%20The%20-%20The%20Return%20of%20the%20King.zip">Lord of the Rings, The - The Return of the King</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Lord%20of%20the%20Rings%2C%20The%20-%20The%20Third%20Age.zip">Lord of the Rings, The - The Third Age</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Lord%20of%20the%20Rings%2C%20The%20-%20The%20Two%20Towers.zip">Lord of the Rings, The - The Two Towers</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Lost%20Vikings%2C%20The.zip">Lost Vikings, The</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Lucky%20Luke%20-%20Wanted%21.zip">Lucky Luke - Wanted!</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Lufia%20-%20The%20Ruins%20of%20Lore.zip">Lufia - The Ruins of Lore</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Lunar%20Legend.zip">Lunar Legend</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Magical%20Quest%202%20Starring%20Mickey%20%26%20Minnie.zip">Magical Quest 2 Starring Mickey & Minnie</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Magical%20Quest%203%20Starring%20Mickey%20%26%20Donald.zip">Magical Quest 3 Starring Mickey & Donald</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Magical%20Quest%20Starring%20Mickey%20%26%20Minnie.zip">Magical Quest Starring Mickey & Minnie</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Magical%20Vacation.zip">Magical Vacation</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Manic%20Miner.zip">Manic Miner</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Marble%20Madness%20%26%20Klax.zip">Marble Madness & Klax</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mario%20%26%20Luigi%20-%20Superstar%20Saga.zip">Mario & Luigi - Superstar Saga</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mario%20Golf%20-%20Advance%20Tour.zip">Mario Golf - Advance Tour</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mario%20Kart%20-%20Super%20Circuit.zip">Mario Kart - Super Circuit</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mario%20Party%20Advance.zip">Mario Party Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mario%20Pinball%20Land.zip">Mario Pinball Land</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mario%20Tennis%20-%20Power%20Tour.zip">Mario Tennis - Power Tour</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mario%20vs.%20Donkey%20Kong.zip">Mario vs. Donkey Kong</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Marvel%20-%20Ultimate%20Alliance.zip">Marvel - Ultimate Alliance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Max%20Payne.zip">Max Payne</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mazes%20of%20Fate.zip">Mazes of Fate</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mech%20Platoon.zip">Mech Platoon</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Medabots%20-%20Metabee%20Version.zip">Medabots - Metabee Version</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Medabots%20-%20Rokusho%20Version.zip">Medabots - Rokusho Version</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Medabots%20AX%20-%20Metabee%20Ver..zip">Medabots AX - Metabee Ver.</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Medabots%20AX%20-%20Rokusho%20Ver..zip">Medabots AX - Rokusho Ver.</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Medal%20of%20Honor%20-%20Infiltrator.zip">Medal of Honor - Infiltrator</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mega%20Man%20%26%20Bass.zip">Mega Man & Bass</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mega%20Man%20Battle%20Chip%20Challenge.zip">Mega Man Battle Chip Challenge</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mega%20Man%20Battle%20Network.zip">Mega Man Battle Network</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mega%20Man%20Battle%20Network%202.zip">Mega Man Battle Network 2</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mega%20Man%20Battle%20Network%203%20-%20Blue%20Version.zip">Mega Man Battle Network 3 - Blue Version</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mega%20Man%20Battle%20Network%203%20-%20White%20Version.zip">Mega Man Battle Network 3 - White Version</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mega%20Man%20Battle%20Network%204%20-%20Blue%20Moon.zip">Mega Man Battle Network 4 - Blue Moon</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mega%20Man%20Battle%20Network%204%20-%20Red%20Sun.zip">Mega Man Battle Network 4 - Red Sun</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mega%20Man%20Battle%20Network%205%20-%20Team%20Colonel.zip">Mega Man Battle Network 5 - Team Colonel</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mega%20Man%20Battle%20Network%205%20-%20Team%20Protoman.zip">Mega Man Battle Network 5 - Team Protoman</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mega%20Man%20Battle%20Network%206%20-%20Cybeast%20Falzar.zip">Mega Man Battle Network 6 - Cybeast Falzar</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mega%20Man%20Battle%20Network%206%20-%20Cybeast%20Gregar.zip">Mega Man Battle Network 6 - Cybeast Gregar</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mega%20Man%20Zero.zip">Mega Man Zero</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mega%20Man%20Zero%202.zip">Mega Man Zero 2</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mega%20Man%20Zero%203.zip">Mega Man Zero 3</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mega%20Man%20Zero%204.zip">Mega Man Zero 4</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Metal%20Slug%20Advance.zip">Metal Slug Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Metroid%20-%20Zero%20Mission.zip">Metroid - Zero Mission</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Metroid%20Fusion%20%28Jap-Eng%29.zip">Metroid Fusion (Jap-Eng)</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Metroid%20Fusion.zip">Metroid Fusion</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Micro%20Machines.zip">Micro Machines</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Midway%27s%20Greatest%20Arcade%20Hits.zip">Midway's Greatest Arcade Hits</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Millipede%2C%20Super%20Breakout%20%26%20Lunar%20Lander.zip">Millipede, Super Breakout & Lunar Lander</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mobile%20Suit%20Gundam%20SEED%20-%20Battle%20Assault.zip">Mobile Suit Gundam SEED - Battle Assault</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Monopoly.zip">Monopoly</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Monster%20Force.zip">Monster Force</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Monster%20House.zip">Monster House</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Monster%20Rancher%20Advance.zip">Monster Rancher Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Monster%20Rancher%20Advance%202.zip">Monster Rancher Advance 2</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Monster%20Truck%20Madness.zip">Monster Truck Madness</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mortal%20Kombat%20-%20Deadly%20Alliance.zip">Mortal Kombat - Deadly Alliance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mortal%20Kombat%20-%20Tournament%20Edition.zip">Mortal Kombat - Tournament Edition</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mortal%20Kombat%20Advance.zip">Mortal Kombat Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mother%201%2B2.zip">Mother 1+2</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mother%203.zip">Mother 3</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/MotoGP.zip">MotoGP</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Moto%20Racer%20Advance.zip">Moto Racer Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Motocross%20Maniacs%20Advance.zip">Motocross Maniacs Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mr.%20Driller%202.zip">Mr. Driller 2</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Mr.%20Nutz.zip">Mr. Nutz</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Ms.%20Pac-Man%20-%20Maze%20Madness.zip">Ms. Pac-Man - Maze Madness</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/NBA%20Jam%202002.zip">NBA Jam 2002</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Namco%20Museum%20-%2050th%20Anniversary.zip">Namco Museum - 50th Anniversary</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Namco%20Museum.zip">Namco Museum</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Napoleon.zip">Napoleon</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Naruto%20-%20Ninja%20Council.zip">Naruto - Ninja Council</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Naruto%20-%20Ninja%20Council%202.zip">Naruto - Ninja Council 2</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Need%20for%20Speed%20-%20Most%20Wanted.zip">Need for Speed - Most Wanted</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Need%20for%20Speed%20-%20Porsche%20Unleashed.zip">Need for Speed - Porsche Unleashed</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Need%20for%20Speed%20-%20Underground.zip">Need for Speed - Underground</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Need%20for%20Speed%20-%20Underground%202.zip">Need for Speed - Underground 2</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Need%20for%20Speed%20Carbon%20-%20Own%20the%20City.zip">Need for Speed Carbon - Own the City</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Nightmare%20Before%20Christmas%2C%20The%20-%20The%20Pumpkin%20King.zip">Nightmare Before Christmas, The - The Pumpkin King</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Ninja%20Five-O.zip">Ninja Five-O</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Oddworld%20-%20Munch%27s%20Oddysee.zip">Oddworld - Munch's Oddysee</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/One%20Piece.zip">One Piece</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Onimusha%20Tactics.zip">Onimusha Tactics</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Oriental%20Blue%20-%20Ao%20no%20Tengai.zip">Oriental Blue - Ao no Tengai</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Pac-Man%20Collection.zip">Pac-Man Collection</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Pac-Man%20World.zip">Pac-Man World</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Pac-Man%20World%202.zip">Pac-Man World 2</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Paperboy%20%26%20Rampage.zip">Paperboy & Rampage</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Phalanx.zip">Phalanx</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Phantasy%20Star%20Collection.zip">Phantasy Star Collection</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Pinball%20Advance.zip">Pinball Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Pinball%20of%20the%20Dead%2C%20The.zip">Pinball of the Dead, The</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Pinobee%20-%20Wings%20of%20Adventure.zip">Pinobee - Wings of Adventure</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Pirates%20of%20the%20Caribbean%20-%20Dead%20Man%27s%20Chest.zip">Pirates of the Caribbean - Dead Man's Chest</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Pirates%20of%20the%20Caribbean%20-%20The%20Curse%20of%20the%20Black%20Pearl.zip">Pirates of the Caribbean - The Curse of the Black Pearl</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Pitfall%20-%20The%20Lost%20Expedition.zip">Pitfall - The Lost Expedition</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Planet%20Monsters.zip">Planet Monsters</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Play%20Novel%20-%20Silent%20Hill.zip">Play Novel - Silent Hill</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Pocky%20%26%20Rocky%20with%20Becky.zip">Pocky & Rocky with Becky</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Pokemon%20Emerald%20Version.zip">Pokemon Emerald Version</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Pokemon%20FireRed%20Version.zip">Pokemon FireRed Version</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Pokemon%20LeafGreen%20Version.zip">Pokemon LeafGreen Version</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Pokemon%20Mystery%20Dungeon%20-%20Red%20Rescue%20Team.zip">Pokemon Mystery Dungeon - Red Rescue Team</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Pokemon%20Pinball%20-%20Ruby%20%26%20Sapphire.zip">Pokemon Pinball - Ruby & Sapphire</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Pokemon%20Ruby%20Version.zip">Pokemon Ruby Version</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Pokemon%20Sapphire%20Version.zip">Pokemon Sapphire Version</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Polarium%20Advance.zip">Polarium Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Pong%2C%20Asteroids%20%26%20Yars%27%20Revenge.zip">Pong, Asteroids & Yars' Revenge</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Prehistorik%20Man.zip">Prehistorik Man</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Prince%20of%20Persia%20-%20The%20Sands%20of%20Time.zip">Prince of Persia - The Sands of Time</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Puyo%20Pop.zip">Puyo Pop</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Puyo%20Pop%20Fever.zip">Puyo Pop Fever</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/R-Type%20III%20-%20The%20Third%20Lightning.zip">R-Type III - The Third Lightning</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Racing%20Gears%20Advance.zip">Racing Gears Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Rave%20Master%20-%20Special%20Attack%20Force%21.zip">Rave Master - Special Attack Force!</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Rayman%20-%20Hoodlum%27s%20Revenge.zip">Rayman - Hoodlum's Revenge</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Rayman%20-%20Raving%20Rabbids.zip">Rayman - Raving Rabbids</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Rayman%203%20-%20Hoodlum%20Havoc.zip">Rayman 3 - Hoodlum Havoc</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Rayman%20Advance.zip">Rayman Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Rebelstar%20-%20Tactical%20Command.zip">Rebelstar - Tactical Command</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Revenge%20of%20Shinobi%2C%20The.zip">Revenge of Shinobi, The</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Rhythm%20Tengoku.zip">Rhythm Tengoku</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/River%20City%20Ransom%20EX.zip">River City Ransom EX</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Riviera%20-%20The%20Promised%20Land.zip">Riviera - The Promised Land</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Road%20Rash%20-%20Jailbreak.zip">Road Rash - Jailbreak</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Road%20Trip%20-%20Shifting%20Gears.zip">Road Trip - Shifting Gears</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Robopon%202%20-%20Cross%20Version.zip">Robopon 2 - Cross Version</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Robopon%202%20-%20Ring%20Version.zip">Robopon 2 - Ring Version</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Robotech%20-%20The%20Macross%20Saga.zip">Robotech - The Macross Saga</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Rockman%20EXE%204.5%20-%20Real%20Operation.zip">Rockman EXE 4.5 - Real Operation</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Rock%20n%27%20Roll%20Racing.zip">Rock n' Roll Racing</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/SD%20Gundam%20Force.zip">SD Gundam Force</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Sabre%20Wulf.zip">Sabre Wulf</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Samurai%20Deeper%20Kyo.zip">Samurai Deeper Kyo</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Samurai%20Jack%20-%20The%20Amulet%20of%20Time.zip">Samurai Jack - The Amulet of Time</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Scooby-Doo%21%20Mystery%20Mayhem.zip">Scooby-Doo! Mystery Mayhem</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Scorpion%20King%2C%20The%20-%20Sword%20of%20Osiris.zip">Scorpion King, The - Sword of Osiris</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Scurge%20-%20Hive.zip">Scurge - Hive</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Sega%20Arcade%20Gallery.zip">Sega Arcade Gallery</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Sega%20Smash%20Pack.zip">Sega Smash Pack</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Shaman%20King%20-%20Legacy%20of%20the%20Spirits%20-%20Soaring%20Hawk.zip">Shaman King - Legacy of the Spirits - Soaring Hawk</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Shaman%20King%20-%20Legacy%20of%20the%20Spirits%20-%20Sprinting%20Wolf.zip">Shaman King - Legacy of the Spirits - Sprinting Wolf</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Shaman%20King%20-%20Master%20of%20Spirits.zip">Shaman King - Master of Spirits</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Shaman%20King%20-%20Master%20of%20Spirits%202.zip">Shaman King - Master of Spirits 2</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Shin%20Bokura%20no%20Taiyou%20-%20Gyakushuu%20no%20Sabata.zip">Shin Bokura no Taiyou - Gyakushuu no Sabata</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Shin%20Megami%20Tensei.zip">Shin Megami Tensei</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Shinchan%20Aventuras%20en%20Cineland.zip">Shinchan Aventuras en Cineland</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Shining%20Force%20-%20Resurrection%20of%20the%20Dark%20Dragon.zip">Shining Force - Resurrection of the Dark Dragon</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Shining%20Soul.zip">Shining Soul</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Shining%20Soul%20II.zip">Shining Soul II</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Shrek%202.zip">Shrek 2</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Sigma%20Star%20Saga.zip">Sigma Star Saga</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Silent%20Scope.zip">Silent Scope</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/SimCity%202000.zip">SimCity 2000</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Simpsons%2C%20The%20-%20Road%20Rage.zip">Simpsons, The - Road Rage</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Sims%202%2C%20The%20-%20Pets.zip">Sims 2, The - Pets</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Sims%202%2C%20The.zip">Sims 2, The</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Sims%20Bustin%27%20Out%2C%20The.zip">Sims Bustin' Out, The</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Smashing%20Drive.zip">Smashing Drive</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Snood.zip">Snood</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Snood%202%20-%20On%20Vacation.zip">Snood 2 - On Vacation</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Sonic%20Advance.zip">Sonic Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Sonic%20Advance%202.zip">Sonic Advance 2</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Sonic%20Advance%203.zip">Sonic Advance 3</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Sonic%20Battle.zip">Sonic Battle</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Sonic%20Pinball%20Party.zip">Sonic Pinball Party</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Sonic%20the%20Hedgehog%20Genesis.zip">Sonic the Hedgehog Genesis</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Space%20Channel%205%20-%20Ulala%27s%20Cosmic%20Attack.zip">Space Channel 5 - Ulala's Cosmic Attack</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Space%20Invaders.zip">Space Invaders</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Spider-Man%20-%20Battle%20for%20New%20York.zip">Spider-Man - Battle for New York</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Spider-Man%20-%20Mysterio%27s%20Menace.zip">Spider-Man - Mysterio's Menace</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Spider-Man.zip">Spider-Man</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Spider-Man%202.zip">Spider-Man 2</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Spider-Man%203.zip">Spider-Man 3</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Spirits%20%26%20Spells.zip">Spirits & Spells</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/SpongeBob%20SquarePants%20-%20Battle%20for%20Bikini%20Bottom.zip">SpongeBob SquarePants - Battle for Bikini Bottom</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Spy%20Hunter%20%26%20Super%20Sprint.zip">Spy Hunter & Super Sprint</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Spy%20Hunter.zip">Spy Hunter</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Spyro%20-%20Attack%20of%20the%20Rhynocs.zip">Spyro - Attack of the Rhynocs</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Spyro%20-%20Season%20of%20Ice.zip">Spyro - Season of Ice</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Spyro%202%20-%20Season%20of%20Flame.zip">Spyro 2 - Season of Flame</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Spyro%20Orange%20-%20The%20Cortex%20Conspiracy.zip">Spyro Orange - The Cortex Conspiracy</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Star%20Wars%20-%20The%20New%20Droid%20Army.zip">Star Wars - The New Droid Army</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Star%20Wars%20Episode%20I%20-%20Jedi%20Power%20Battles.zip">Star Wars Episode I - Jedi Power Battles</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Star%20Wars%20Episode%20II%20-%20Attack%20of%20the%20Clones.zip">Star Wars Episode II - Attack of the Clones</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Star%20Wars%20Episode%20III%20-%20Revenge%20of%20the%20Sith.zip">Star Wars Episode III - Revenge of the Sith</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Star%20Wars%20Trilogy%20-%20Apprentice%20of%20the%20Force.zip">Star Wars Trilogy - Apprentice of the Force</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Star%20X.zip">Star X</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Steel%20Empire.zip">Steel Empire</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Street%20Fighter%20Alpha%203.zip">Street Fighter Alpha 3</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Stuntman.zip">Stuntman</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Summon%20Night%20-%20Swordcraft%20Story.zip">Summon Night - Swordcraft Story</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Summon%20Night%20-%20Swordcraft%20Story%202.zip">Summon Night - Swordcraft Story 2</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Super%20Army%20War.zip">Super Army War</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Super%20Bust-A-Move.zip">Super Bust-A-Move</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Super%20Dodge%20Ball%20Advance.zip">Super Dodge Ball Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Super%20Ghouls%20%27n%20Ghosts.zip">Super Ghouls 'n Ghosts</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Super%20Mario%20Advance.zip">Super Mario Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Super%20Mario%20Advance%202%20-%20Super%20Mario%20World.zip">Super Mario Advance 2 - Super Mario World</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Super%20Mario%20Advance%203%20-%20Yoshi%27s%20Island.zip">Super Mario Advance 3 - Yoshi's Island</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Super%20Mario%20Advance%204%20-%20Super%20Mario%20Bros.%203.zip">Super Mario Advance 4 - Super Mario Bros. 3</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Super%20Monkey%20Ball%20Jr..zip">Super Monkey Ball Jr.</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Super%20Puzzle%20Fighter%20II.zip">Super Puzzle Fighter II</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Super%20Robot%20Taisen%20-%20Original%20Generation.zip">Super Robot Taisen - Original Generation</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Super%20Robot%20Taisen%20-%20Original%20Generation%202.zip">Super Robot Taisen - Original Generation 2</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Super%20Robot%20Taisen%20J.zip">Super Robot Taisen J</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Super%20Street%20Fighter%20II%20Turbo%20-%20Revival.zip">Super Street Fighter II Turbo - Revival</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Sword%20of%20Mana.zip">Sword of Mana</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/TMNT.zip">TMNT</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tactics%20Ogre%20-%20The%20Knight%20of%20Lodis.zip">Tactics Ogre - The Knight of Lodis</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tak%20-%20The%20Great%20Juju%20Challenge.zip">Tak - The Great Juju Challenge</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tak%202%20-%20The%20Staff%20of%20Dreams.zip">Tak 2 - The Staff of Dreams</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tak%20and%20the%20Power%20of%20Juju.zip">Tak and the Power of Juju</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tales%20of%20Phantasia.zip">Tales of Phantasia</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tang%20Tang.zip">Tang Tang</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tarzan%20-%20Return%20to%20the%20Jungle.zip">Tarzan - Return to the Jungle</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Teen%20Titans.zip">Teen Titans</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Teen%20Titans%202.zip">Teen Titans 2</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Teenage%20Mutant%20Ninja%20Turtles.zip">Teenage Mutant Ninja Turtles</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Teenage%20Mutant%20Ninja%20Turtles%202%20-%20Battle%20Nexus.zip">Teenage Mutant Ninja Turtles 2 - Battle Nexus</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tekken%20Advance.zip">Tekken Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Terminator%203%20-%20Rise%20of%20the%20Machines.zip">Terminator 3 - Rise of the Machines</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tetris%20Worlds.zip">Tetris Worlds</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tiny%20Toon%20Adventures%20-%20Scary%20Dreams.zip">Tiny Toon Adventures - Scary Dreams</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tiny%20Toon%20Adventures%20-%20Wacky%20Stackers.zip">Tiny Toon Adventures - Wacky Stackers</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tokyo%20Xtreme%20Racer%20Advance.zip">Tokyo Xtreme Racer Advance</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tom%20Clancy%27s%20Rainbow%20Six%20-%20Rogue%20Spear.zip">Tom Clancy's Rainbow Six - Rogue Spear</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tom%20Clancy%27s%20Splinter%20Cell%20-%20Pandora%20Tomorrow.zip">Tom Clancy's Splinter Cell - Pandora Tomorrow</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tom%20Clancy%27s%20Splinter%20Cell.zip">Tom Clancy's Splinter Cell</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tomb%20Raider%20-%20Legend.zip">Tomb Raider - Legend</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tomb%20Raider%20-%20The%20Prophecy.zip">Tomb Raider - The Prophecy</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tony%20Hawk%27s%20American%20Sk8land.zip">Tony Hawk's American Sk8land</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tony%20Hawk%27s%20Downhill%20Jam.zip">Tony Hawk's Downhill Jam</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tony%20Hawk%27s%20Pro%20Skater%202.zip">Tony Hawk's Pro Skater 2</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tony%20Hawk%27s%20Pro%20Skater%203.zip">Tony Hawk's Pro Skater 3</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tony%20Hawk%27s%20Pro%20Skater%204.zip">Tony Hawk's Pro Skater 4</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tony%20Hawk%27s%20Underground.zip">Tony Hawk's Underground</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tony%20Hawk%27s%20Underground%202.zip">Tony Hawk's Underground 2</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Top%20Gear%20Rally.zip">Top Gear Rally</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tower%20SP%2C%20The.zip">Tower SP, The</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tron%202.0%20-%20Killer%20App.zip">Tron 2.0 - Killer App</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Turbo%20Turtle%20Adventure.zip">Turbo Turtle Adventure</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Turok%20-%20Evolution.zip">Turok - Evolution</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Tweety%20and%20the%20Magic%20Gems.zip">Tweety and the Magic Gems</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Ultimate%20Brain%20Games.zip">Ultimate Brain Games</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Ultimate%20Card%20Games.zip">Ultimate Card Games</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Ultimate%20Muscle%20-%20The%20Kinnikuman%20Legacy%20-%20The%20Path%20of%20the%20Superhero.zip">Ultimate Muscle - The Kinnikuman Legacy - The Path of the Superhero</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Ultimate%20Spider-Man.zip">Ultimate Spider-Man</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Uno%2052.zip">Uno 52</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Uno%20Free%20Fall.zip">Uno Free Fall</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Urbz%2C%20The%20-%20Sims%20in%20the%20City.zip">Urbz, The - Sims in the City</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/V-Rally%203.zip">V-Rally 3</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Virtua%20Tennis.zip">Virtua Tennis</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Virtual%20Kasparov.zip">Virtual Kasparov</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/WWE%20Road%20to%20WrestleMania%20X8.zip">WWE Road to WrestleMania X8</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/WWE%20Survivor%20Series.zip">WWE Survivor Series</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/WWF%20Road%20to%20WrestleMania.zip">WWF Road to WrestleMania</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Wade%20Hixton%27s%20Counter%20Punch.zip">Wade Hixton's Counter Punch</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Wario%20Land%204.zip">Wario Land 4</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/WarioWare%2C%20Inc.%20-%20Mega%20Microgames%21.zip">WarioWare, Inc. - Mega Microgames!</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/WarioWare%20-%20Twisted%21.zip">WarioWare - Twisted!</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Wing%20Commander%20-%20Prophecy.zip">Wing Commander - Prophecy</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Wings.zip">Wings</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Wolfenstein%203D.zip">Wolfenstein 3D</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Woody%20Woodpecker%20in%20Crazy%20Castle%205.zip">Woody Woodpecker in Crazy Castle 5</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/World%20Soccer%20Winning%20Eleven.zip">World Soccer Winning Eleven</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Worms%20Blast.zip">Worms Blast</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Worms%20World%20Party.zip">Worms World Party</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/X-Men%20-%20Reign%20of%20Apocalypse.zip">X-Men - Reign of Apocalypse</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/X-Men%20-%20The%20Official%20Game.zip">X-Men - The Official Game</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/X-Men%202%20-%20Wolverine%27s%20Revenge.zip">X-Men 2 - Wolverine's Revenge</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Yggdra%20Union%20-%20We%27ll%20Never%20Fight%20Alone.zip">Yggdra Union - We'll Never Fight Alone</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Yoshi%20Topsy-Turvy.zip">Yoshi Topsy-Turvy</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Yu-Gi-Oh%21%207%20Trials%20to%20Glory%20-%20World%20Championship%20Tournament%202005.zip">Yu-Gi-Oh! 7 Trials to Glory - World Championship Tournament 2005</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Yu-Gi-Oh%21%20Destiny%20Board%20Traveler.zip">Yu-Gi-Oh! Destiny Board Traveler</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Yu-Gi-Oh%21%20Dungeon%20Dice%20Monsters.zip">Yu-Gi-Oh! Dungeon Dice Monsters</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Yu-Gi-Oh%21%20GX%20-%20Duel%20Academy.zip">Yu-Gi-Oh! GX - Duel Academy</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Yu-Gi-Oh%21%20Reshef%20of%20Destruction.zip">Yu-Gi-Oh! Reshef of Destruction</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Yu-Gi-Oh%21%20The%20Eternal%20Duelist%20Soul.zip">Yu-Gi-Oh! The Eternal Duelist Soul</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Yu-Gi-Oh%21%20The%20Sacred%20Cards.zip">Yu-Gi-Oh! The Sacred Cards</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Yu-Gi-Oh%21%20Ultimate%20Masters%20-%20World%20Championship%20Tournament%202006.zip">Yu-Gi-Oh! Ultimate Masters - World Championship Tournament 2006</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Yu-Gi-Oh%21%20World%20Championship%20Tournament%202004.zip">Yu-Gi-Oh! World Championship Tournament 2004</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Yu-Gi-Oh%21%20Worldwide%20Edition%20-%20Stairway%20to%20the%20Destined%20Duel.zip">Yu-Gi-Oh! Worldwide Edition - Stairway to the Destined Duel</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Yu%20Yu%20Hakusho%20-%20Ghostfiles%20-%20Spirit%20Detective.zip">Yu Yu Hakusho - Ghostfiles - Spirit Detective</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Yu%20Yu%20Hakusho%20-%20Ghostfiles%20-%20Tournament%20Tactics.zip">Yu Yu Hakusho - Ghostfiles - Tournament Tactics</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Zatch%20Bell%21%20Electric%20Arena.zip">Zatch Bell! Electric Arena</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Zoids%20Legacy.zip">Zoids Legacy</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Zone%20of%20the%20Enders%20-%20The%20Fist%20of%20Mars.zip">Zone of the Enders - The Fist of Mars</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/ZooCube.zip">ZooCube</option>
+<option value="https://archive.org/download/nitendo-game-boy-advance/Nintendo%20-%20GameBoy%20Advance.zip/Zooo%20-%20Action%20Puzzle%20Game.zip">Zooo - Action Puzzle Game</option>
+        `;
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(optionsHTML, 'text/html');
+        const options = doc.querySelectorAll('option');
+
+        const games = Array.from(options).map(option => {
+            const title = option.textContent;
+            const url = option.value;
+            const thumbnail = `thumbnails/Nintendo - GameBoy Advance/${title}.png`;
+            return { title, url, thumbnail };
+        });
+
+        let currentGameIndex = 0;
+        let filteredGames = games;
+        let isLoaderLoaded = false;
+        const EJS_player = '#game';
+        const EJS_core = 'gba';
+
+        function updateThumbnail(index) {
+            const game = filteredGames[index];
+            const thumbnailElement = document.getElementById('gameThumbnail');
+            document.getElementById('gameTitle').textContent = game.title;
+            thumbnailElement.src = game.thumbnail;
+            thumbnailElement.style.display = 'block';
+            thumbnailElement.style.zIndex = '5';
+
+            thumbnailElement.onerror = function() {
+                this.src = 'thumbnails/default.png';
+            };
+        }
+
+        function hideUIElements() {
+            document.querySelector('.thumbnail-container').style.display = 'none';
+            document.querySelector('.search-container').style.display = 'none';
+        }
+
+        function loadGame() {
+            const game = filteredGames[currentGameIndex];
+            EJS_gameUrl = game.url;
+
+            hideUIElements();
+            focusGame();
+
+            if (!isLoaderLoaded) {
+                const script = document.createElement('script');
+                script.src = 'https://www.emulatorjs.com/loader.js';
+                script.onload = () => {
+                    isLoaderLoaded = true;
+                    console.log('Loader carregado.');
+                };
+                script.onerror = () => {
+                    console.error('Falha ao carregar o emulador. Verifique sua conexão.');
+                };
+                document.body.appendChild(script);
+            } else {
+                console.log('Carregando novo jogo: ', game.url);
+            }
+        }
+
+        function focusGame() {
+            const gameElement = document.getElementById('game');
+            gameElement.focus();
+            gameElement.style.boxShadow = '0 0 10px 2px rgba(255, 255, 255, 0.8)';
+        }
+
+        updateThumbnail(currentGameIndex);
+
+        document.addEventListener('keydown', (e) => {
+            if (filteredGames.length > 0) {
+                if (e.key === 'ArrowDown') {
+                    currentGameIndex = (currentGameIndex + 1) % filteredGames.length;
+                    updateThumbnail(currentGameIndex);
+                } else if (e.key === 'ArrowUp') {
+                    currentGameIndex = (currentGameIndex - 1 + filteredGames.length) % filteredGames.length;
+                    updateThumbnail(currentGameIndex);
+                } else if (e.key === 'Enter') {
+                    loadGame();
+                }
+            }
+        });
+
+        document.addEventListener('wheel', (e) => {
+            if (filteredGames.length > 0) {
+                if (e.deltaY > 0) {
+                    currentGameIndex = (currentGameIndex + 1) % filteredGames.length;
+                } else {
+                    currentGameIndex = (currentGameIndex - 1 + filteredGames.length) % filteredGames.length;
+                }
+                updateThumbnail(currentGameIndex);
+            }
+        });
+
+        document.getElementById('search').addEventListener('input', function() {
+            const filter = this.value.toLowerCase();
+            filteredGames = games.filter(game => game.title.toLowerCase().includes(filter));
+            currentGameIndex = 0;
+
+            if (filteredGames.length > 0) {
+                updateThumbnail(currentGameIndex);
+            } else {
+                document.getElementById('gameTitle').textContent = 'Nenhum jogo encontrado';
+                document.getElementById('gameThumbnail').style.display = 'none';
+            }
+        });
+
+        document.getElementById('gameThumbnail').addEventListener('click', loadGame);
+        document.getElementById('gameThumbnail').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                loadGame();
+            }
+        });
+
+        document.getElementById('game').addEventListener('click', loadGame);
+
+        let selectPressed = false;
+        let startPressed = false;
+        let comboPressTimer;
+        let selectHoldTimer;
+
+        function checkComboPress() {
+            if (selectPressed && startPressed) {
+                console.log("Mudando para o modo navegação");
+                hideUIElements();
+                focusGame();
+            }
+        }
+
+        function toggleFullscreen() {
+            const gameElement = document.getElementById('game');
+            if (!document.fullscreenElement) {
+                gameElement.requestFullscreen().catch(err => {
+                    console.error(`Erro ao tentar entrar em fullscreen: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        window.addEventListener("gamepadconnected", function(e) {
+            console.log("Gamepad conectado: ", e.gamepad);
+        });
+
+        window.addEventListener("gamepaddisconnected", function(e) {
+            console.log("Gamepad desconectado: ", e.gamepad);
+        });
+
+        function monitorGamepad() {
+            const gamepads = navigator.getGamepads();
+            if (gamepads[0]) {
+                const gamepad = gamepads[0];
+
+                selectPressed = gamepad.buttons[8].pressed;
+                startPressed = gamepad.buttons[9].pressed;
+
+                if (selectPressed) {
+                    if (!selectHoldTimer) {
+                        selectHoldTimer = setTimeout(() => {
+                            toggleFullscreen();
+                            selectHoldTimer = null;
+                        }, 2000);
+                    }
+                } else {
+                    clearTimeout(selectHoldTimer);
+                    selectHoldTimer = null;
+                }
+
+                if (selectPressed && startPressed) {
+                    if (!comboPressTimer) {
+                        comboPressTimer = setTimeout(checkComboPress, 1000);
+                    }
+                } else {
+                    clearTimeout(comboPressTimer);
+                    comboPressTimer = null;
+                }
+            }
+
+            requestAnimationFrame(monitorGamepad);
+        }
+
+        monitorGamepad();
+    </script>
+</body>
+</html>
