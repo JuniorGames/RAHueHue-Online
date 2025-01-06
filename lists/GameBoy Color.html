@@ -652,7 +652,7 @@
         const games = Array.from(options).map(option => {
             const title = option.textContent;
             const url = option.value;
-            const thumbnail = `thumbnails/Nintendo - GameBoy Advance/${title}.png`;
+            const thumbnail = `thumbnails/Nintendo - GameBoy Color/${title}.png`;
             return { title, url, thumbnail };
         });
 
@@ -660,7 +660,7 @@
         let filteredGames = games;
         let isLoaderLoaded = false;
         const EJS_player = '#game';
-        const EJS_core = 'gba';
+        const EJS_core = 'gb';
 
         function updateThumbnail(index) {
             const game = filteredGames[index];
