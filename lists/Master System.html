@@ -914,6 +914,7 @@
         let isLoaderLoaded = false;
         const EJS_player = '#game';
         const EJS_core = 'segaMS';
+        const soundEffect = new Audio('sounds/menu-sound.mp3');
 
         function updateThumbnail(index) {
             const game = filteredGames[index];
@@ -926,6 +927,10 @@
             thumbnailElement.onerror = function() {
                 this.src = 'thumbnails/default.png';
             };
+
+            soundEffect.play().catch(error => {
+                console.error('Erro ao reproduzir o som:', error);
+            });
         }
 
         function hideUIElements() {
