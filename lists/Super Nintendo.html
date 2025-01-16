@@ -19,6 +19,13 @@
             overflow: hidden;
         }
 
+        /* Ajuste para dispositivos móveis */
+        @media (max-width: 768px) {
+            body {
+                background-position: left center;
+            }
+        }
+
         .thumbnail-container {
             width: 525px;
             height: 405px;
@@ -121,6 +128,35 @@
         .action-button:hover {
             box-shadow: 0 0 15px rgba(255, 255, 0, 1);
         }
+
+        /* Adição dos botões de navegação */
+        .navigation-buttons {
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .arrow-button {
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: 2px solid white;
+            padding: 10px;
+            font-size: 30px;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            text-align: center;
+            margin-bottom: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+        }
+
+        .arrow-button:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+        }
     </style>
 </head>
 <body>
@@ -140,6 +176,12 @@
     <div class="button-container">
         <button class="action-button" onclick="window.history.back()" aria-label="Voltar">Voltar</button>
         <button class="action-button" onclick="window.location.reload()" aria-label="Recarregar">Recarregar</button>
+    </div>
+
+    <!-- Botões de navegação (setas) -->
+    <div class="navigation-buttons">
+        <button class="arrow-button" id="arrow-up" aria-label="Jogo Anterior">↑</button>
+        <button class="arrow-button" id="arrow-down" aria-label="Próximo Jogo">↓</button>
     </div>
 
     <script type="text/javascript">
@@ -1398,6 +1440,17 @@
         }
 
         monitorGamepad();
+
+        // Ação dos botões de setas para navegação
+        document.getElementById('arrow-up').addEventListener('click', () => {
+            currentGameIndex = (currentGameIndex - 1 + filteredGames.length) % filteredGames.length;
+            updateThumbnail(currentGameIndex);
+        });
+
+        document.getElementById('arrow-down').addEventListener('click', () => {
+            currentGameIndex = (currentGameIndex + 1) % filteredGames.length;
+            updateThumbnail(currentGameIndex);
+        });
     </script>
 </body>
 </html>
