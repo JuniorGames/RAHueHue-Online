@@ -81,6 +81,12 @@
             display: block;
             margin: 0 auto;
             transition: box-shadow 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .console-link.active img {
+            border: 3px solid #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
         }
 
         .console-link:hover img {
@@ -143,28 +149,52 @@
             text-align: center;
         }
 
-        /* Foco na parte esquerda para dispositivos móveis */
+        /* Setas para Mobile */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            left: 20px;
+            width: calc(100% - 40px);
+            height: 100vh;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .arrow-btn {
+            position: absolute;
+            font-size: 100px;
+            color: yellow;
+            cursor: pointer;
+            text-shadow: 0 0 10px rgba(255,255,0,0.5);
+            pointer-events: auto;
+            user-select: none;
+        }
+
+        .arrow-up {
+            top: 9%;
+        }
+
+        .arrow-down {
+            bottom: 18%;
+        }
+
         @media only screen and (max-width: 768px) {
             body {
                 overflow: hidden;
-                background-position: left center; /* Ajusta o background para mostrar só o lado esquerdo */
-                padding-left: 10px; /* Ajusta o padding para mais proximidade à borda esquerda */
+                background-position: left center;
+                padding-left: 10px;
             }
 
             .search-container {
-                width: auto;
+                width: 95%;
                 top: 10px;
                 left: 10px;
-                width: 95%;
             }
 
             .console-container {
                 left: 10px;
                 top: 50%;
                 transform: translateY(-50%);
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
             }
 
             .button {
@@ -186,19 +216,21 @@
                 left: 150px;
                 bottom: 60px;
                 width: 80px;
-                height: 15px;
                 font-size: 12px;
             }
 
             .console-link {
                 width: 90%;
                 height: auto;
-                margin-bottom: 10px;
             }
 
             .console-link img {
                 width: 100%;
                 height: auto;
+            }
+
+            .mobile-nav {
+                display: block;
             }
         }
     </style>
@@ -206,173 +238,118 @@
 <body>
     <audio id="background-music" autoplay loop>
         <source src="sounds/HueHueBR.mp3" type="audio/mpeg">
-        Seu navegador não suporta o elemento de áudio.
+        Seu navegador não suporta áudio.
     </audio>
 
     <audio id="menu-sound">
         <source src="sounds/menu-sound.mp3" type="audio/mpeg">
-        Seu navegador não suporta o elemento de áudio.
+        Seu navegador não suporta áudio.
     </audio>
 
+    <!-- Navegação Mobile -->
+    <div class="mobile-nav">
+        <div class="arrow-btn arrow-up" onclick="navigateConsoles('up')">▲</div>
+        <div class="arrow-btn arrow-down" onclick="navigateConsoles('down')">▼</div>
+    </div>
+
     <div class="search-container">
-        <input type="text" id="searchInput" class="search-input" placeholder="Buscar Console...">
+        <input type="text" id="searchInput" class="search-input" placeholder="Buscar Console..." aria-label="Buscar consoles">
     </div>
     <div class="no-console-message" id="noConsoleMessage">Nenhum console encontrado</div>
     <div class="console-container" id="consoleContainer"></div>
-    <div class="button back-button" onclick="window.history.back()">Voltar</div>
-    <div class="button reload-button" onclick="location.reload()">Recarregar</div>
-    <div class="button mute-button" onclick="toggleMute()">Pausar Música</div>
+    
+    <div class="button back-button" onclick="window.history.back()" aria-label="Voltar">Voltar</div>
+    <div class="button reload-button" onclick="location.reload()" aria-label="Recarregar">Recarregar</div>
+    <div class="button mute-button" onclick="toggleMute()" aria-label="Mute">Pausar Música</div>
 
     <script>
+        // Configurações Globais
+        let selectedIndex = 0;
+        let filteredConsoles = [];
+        const consoles = [
+            { name: 'GameBoy Color', file: 'GameBoy Color.html', icon: 'icons/GameBoy Color.png' },
+            { name: 'GameBoy Advance', file: 'GameBoy Advance.html', icon: 'icons/GameBoy Advance.png' },
+            { name: 'Mega Drive', file: 'Mega Drive.html', icon: 'icons/Mega Drive.png' },
+            { name: 'Master System', file: 'Master System.html', icon: 'icons/Master System.png' },
+            { name: 'Nintendo', file: 'Nintendo.html', icon: 'icons/Nintendo.png' },
+            { name: 'Super Nintendo', file: 'Super Nintendo.html', icon: 'icons/Super Nintendo.png' },
+        ];
+
+        // Funções Principais
         function toggleMute() {
-            const backgroundMusic = document.getElementById('background-music');
-            backgroundMusic.muted = !backgroundMusic.muted;
+            const music = document.getElementById('background-music');
+            music.muted = !music.muted;
+            document.querySelector('.mute-button').textContent = music.muted ? "Voltar Música" : "Pausar Música";
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const searchInput = document.getElementById('searchInput');
-            const consoleContainer = document.getElementById('consoleContainer');
-            const noConsoleMessage = document.getElementById('noConsoleMessage');
+        function navigateConsoles(direction) {
             const menuSound = document.getElementById('menu-sound');
-
-            const consoles = [
-                { name: 'GameBoy Color', file: 'GameBoy Color.html', icon: 'icons/GameBoy Color.png' },
-                { name: 'GameBoy Advance', file: 'GameBoy Advance.html', icon: 'icons/GameBoy Advance.png' },
-                { name: 'Mega Drive', file: 'Mega Drive.html', icon: 'icons/Mega Drive.png' },
-                { name: 'Master System', file: 'Master System.html', icon: 'icons/Master System.png' },
-                { name: 'Nintendo', file: 'Nintendo.html', icon: 'icons/Nintendo.png' },
-                { name: 'Super Nintendo', file: 'Super Nintendo.html', icon: 'icons/Super Nintendo.png' },
-            ];
-
-            let selectedIndex = 0;
-            let filteredConsoles = consoles;
-
-            function displayConsole(index) {
-                const consoleLinks = consoleContainer.querySelectorAll('.console-link');
-                consoleLinks.forEach((link, idx) => {
-                    link.classList.toggle('active', idx === index);
-                });
-                noConsoleMessage.style.display = filteredConsoles.length === 0 ? 'block' : 'none';
-            }
-
-            function navigateConsoles(direction) {
-                if (filteredConsoles.length === 0) return;
-                menuSound.play();
-
-                if (direction === 'up') {
-                    selectedIndex = (selectedIndex - 1 + filteredConsoles.length) % filteredConsoles.length;
-                } else if (direction === 'down') {
-                    selectedIndex = (selectedIndex + 1) % filteredConsoles.length;
-                }
-                displayConsole(selectedIndex);
-            }
-
-            function openConsole() {
-                const selectedConsole = filteredConsoles[selectedIndex];
-                window.location.href = selectedConsole.file;
-            }
-
-            function renderConsoles(consoleList) {
-                consoleContainer.innerHTML = '';
-                consoleList.forEach((console, index) => {
-                    const link = document.createElement('a');
-                    link.href = console.file;
-                    link.className = 'console-link';
-                    if (index === 0) {
-                        link.classList.add('active');
-                    }
-
-                    const consoleName = document.createElement('span');
-                    consoleName.textContent = console.name;
-
-                    const icon = document.createElement('img');
-                    icon.src = console.icon;
-                    icon.alt = `${console.name} console`;
-
-                    link.appendChild(consoleName);
-                    link.appendChild(icon);
-                    consoleContainer.appendChild(link);
-                });
-                noConsoleMessage.style.display = consoleList.length === 0 ? 'block' : 'none';
-            }
-
-            renderConsoles(consoles);
+            if (filteredConsoles.length === 0) return;
+            
+            menuSound.play();
+            selectedIndex = direction === 'up' 
+                ? (selectedIndex - 1 + filteredConsoles.length) % filteredConsoles.length 
+                : (selectedIndex + 1) % filteredConsoles.length;
+            
             displayConsole(selectedIndex);
+        }
 
-            document.addEventListener('keydown', (event) => {
-                switch (event.key) {
-                    case 'ArrowUp':
-                        navigateConsoles('up');
-                        break;
-                    case 'ArrowDown':
-                        navigateConsoles('down');
-                        break;
-                    case 'Enter':
-                        openConsole();
-                        break;
-                }
+        function displayConsole(index) {
+            document.querySelectorAll('.console-link').forEach((link, idx) => {
+                link.classList.toggle('active', idx === index);
+            });
+        }
+
+        function openConsole() {
+            if (filteredConsoles[selectedIndex]) {
+                window.location.href = filteredConsoles[selectedIndex].file;
+            }
+        }
+
+        function renderConsoles(list) {
+            const container = document.getElementById('consoleContainer');
+            container.innerHTML = '';
+            
+            list.forEach((console, index) => {
+                const link = document.createElement('a');
+                link.className = `console-link${index === 0 ? ' active' : ''}`;
+                link.href = console.file;
+                link.innerHTML = `
+                    <span>${console.name}</span>
+                    <img src="${console.icon}" alt="${console.name}" loading="lazy">
+                `;
+                container.appendChild(link);
+            });
+            
+            document.getElementById('noConsoleMessage').style.display = list.length ? 'none' : 'block';
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            filteredConsoles = [...consoles];
+            renderConsoles(consoles);
+            
+            // Controles de Teclado/Mouse
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowUp') navigateConsoles('up');
+                if (e.key === 'ArrowDown') navigateConsoles('down');
+                if (e.key === 'Enter') openConsole();
             });
 
-            document.addEventListener('wheel', (event) => {
-                if (event.deltaY > 0) {
-                    navigateConsoles('down');
-                } else {
-                    navigateConsoles('up');
-                }
+            document.addEventListener('wheel', (e) => {
+                navigateConsoles(e.deltaY > 0 ? 'down' : 'up');
             });
 
-            let isDragging = false;
-            let startY = 0;
-            let endY = 0;
-
-            document.addEventListener('touchstart', (event) => {
-                if (!event.target.closest('.button') && event.target !== searchInput) {
-                    isDragging = true;
-                    startY = event.touches[0].clientY;
-                }
-            });
-
-            document.addEventListener('touchmove', (event) => {
-                if (isDragging) {
-                    endY = event.touches[0].clientY;
-                }
-            });
-
-            document.addEventListener('touchend', () => {
-                if (isDragging) {
-                    const deltaY = startY - endY;
-                    if (deltaY > 50) {
-                        navigateConsoles('down');
-                    } else if (deltaY < -50) {
-                        navigateConsoles('up');
-                    }
-                }
-                isDragging = false;
-            });
-
-            function displayResults(results) {
-                renderConsoles(results);
+            // Sistema de Busca
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                filteredConsoles = query 
+                    ? consoles.filter(c => c.name.toLowerCase().includes(query)) 
+                    : [...consoles];
+                
+                renderConsoles(filteredConsoles);
                 selectedIndex = 0;
-                if (results.length > 0) {
-                    displayConsole(selectedIndex);
-                } else {
-                    noConsoleMessage.style.display = 'block';
-                }
-            }
-
-            function searchConsoles(query) {
-                filteredConsoles = consoles.filter(console =>
-                    console.name.toLowerCase().includes(query.toLowerCase())
-                );
-                if (query === '') {
-                    filteredConsoles = consoles;
-                }
-                displayResults(filteredConsoles);
-            }
-
-            searchInput.addEventListener('input', () => {
-                const query = searchInput.value;
-                searchConsoles(query);
+                displayConsole(0);
             });
         });
     </script>
