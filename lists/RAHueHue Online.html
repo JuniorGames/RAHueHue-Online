@@ -113,14 +113,15 @@
         }
 
         .button {
-            font-size: 30px;
+            font-size: 20px;
             color: white;
             background: rgba(0, 0, 0, 0.5);
             border: 2px solid white;
             padding: 10px;
             position: absolute;
             cursor: pointer;
-            width: 230px;
+            height: 25px;
+            width: 150px;
             text-align: center;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
             transition: box-shadow 0.3s ease;
@@ -136,16 +137,16 @@
         }
 
         .reload-button {
-            left: 290px;
+            left: 370px;
             bottom: 20px;
         }
 
-        .mute-button {
-            left: 220px;
-            bottom: 80px;
-            width: 100px;
-            height: 15px;
-            font-size: 15px;
+        .music-button {
+            left: 200px;
+            bottom: 20px;
+            width: 140px;
+            height: 25px;
+            font-size: 20px;
             text-align: center;
         }
 
@@ -212,11 +213,12 @@
                 bottom: 10px;
             }
 
-            .button.mute-button {
-                left: 150px;
-                bottom: 60px;
-                width: 80px;
-                font-size: 12px;
+            .button.music-button {
+                left: 140px;
+                bottom: 10px;
+                height: 25px;
+                width: 100px;
+                font-size: 16px;
             }
 
             .console-link {
@@ -243,7 +245,7 @@
     </style>
 </head>
 <body>
-    <audio id="background-music" autoplay loop>
+    <audio id="background-music" loop>
         <source src="sounds/HueHueBR.mp3" type="audio/mpeg">
         Seu navegador não suporta áudio.
     </audio>
@@ -267,7 +269,7 @@
     
     <div class="button back-button" onclick="window.history.back()" aria-label="Voltar">Voltar</div>
     <div class="button reload-button" onclick="location.reload()" aria-label="Recarregar">Recarregar</div>
-    <div class="button mute-button" onclick="toggleMute()" aria-label="Mute">Pausar Música</div>
+    <div class="button music-button" onclick="toggleMusic()" aria-label="Música">Tocar Música</div>
 
     <script>
         // Configurações Globais
@@ -283,10 +285,17 @@
         ];
 
         // Funções Principais
-        function toggleMute() {
+        function toggleMusic() {
             const music = document.getElementById('background-music');
-            music.muted = !music.muted;
-            document.querySelector('.mute-button').textContent = music.muted ? "Voltar Música" : "Pausar Música";
+            const musicButton = document.querySelector('.music-button');
+
+            if (music.paused) {
+                music.play();
+                musicButton.textContent = "Parar Música";
+            } else {
+                music.pause();
+                musicButton.textContent = "Voltar Música";
+            }
         }
 
         function navigateConsoles(direction) {
