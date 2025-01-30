@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <link rel="icon" href="icons/Nintendo.png" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nintendo</title>
+    <title>Mega Drive</title>
     <style>
         @font-face {
             font-family: 'ArcadeClassic';
@@ -17,13 +17,6 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
-        }
-
-        /* Ajuste para dispositivos móveis */
-        @media (max-width: 768px) {
-            body {
-                background-position: left center;
-            }
         }
 
         .thumbnail-container {
@@ -129,18 +122,11 @@
             box-shadow: 0 0 15px rgba(255, 255, 0, 1);
         }
 
-        /* Adição dos botões de navegação */
-        .navigation-buttons {
-            position: absolute;
-            top: 50%;
-            left: 10px;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            z-index: 10;
-        }
-
         .arrow-button {
+            display: none;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.5);
             color: white;
             border: 2px solid white;
@@ -150,12 +136,110 @@
             height: 50px;
             cursor: pointer;
             text-align: center;
-            margin-bottom: 10px;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 0.3s ease;
+            z-index: 11;
         }
 
         .arrow-button:hover {
             box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+        }
+
+        #arrow-up {
+            top: -80px;
+        }
+
+        #arrow-down {
+            bottom: -80px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                background-position: left center;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                min-height: 100vh;
+                padding: 20px;
+                overflow: auto;
+            }
+
+            .search-container {
+                position: fixed !important;
+                top: 10px !important;
+                left: 50% !important;
+                transform: translateX(-50%);
+                width: 90% !important;
+                max-width: 525px;
+                margin: 0 auto;
+                z-index: 1000;
+                background: rgba(0, 0, 0, 0.7);
+                backdrop-filter: blur(5px);
+            }
+
+            .thumbnail-container {
+                position: fixed !important;
+                top: 0px !important;
+                left: 50% !important;
+                transform: translateX(-50%);
+                width: 95% !important;
+                max-width: 525px;
+                height: 350px !important;
+                aspect-ratio: 525/405;
+                margin: none !important;
+                z-index: 1000;
+            }
+
+            .thumbnail {
+                width: 100% !important;
+                height: 100% !important;
+                max-height: none !important;
+            }
+
+            main {
+                position: relative !important;
+                width: 100% !important;
+                max-width: 525px !important;
+                height: auto !important;
+                aspect-ratio: 525/405;
+                top: auto !important;
+                left: auto !important;
+                margin: 20px auto;
+            }
+
+            .button-container {
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90%;
+                max-width: 525px;
+                gap: 10px;
+                justify-content: space-between;
+            }
+
+            .action-button {
+                width: 48%;
+                font-size: 5vw;
+                padding: 10px;
+                margin: 0;
+            }
+
+            .arrow-button {
+                display: block !important;
+                width: 70px;
+                height: 90px;
+                font-size: 24px;
+            }
+
+            #arrow-up {
+                top: -110px;
+            }
+
+            #arrow-down {
+                bottom: -110px;
+            }
         }
     </style>
 </head>
@@ -167,6 +251,8 @@
     <div class="thumbnail-container">
         <div id="gameTitle" class="game-title"></div>
         <img id="gameThumbnail" class="thumbnail" src="" alt="Thumbnail do Jogo" tabindex="0">
+        <button class="arrow-button" id="arrow-up" aria-label="Jogo Anterior">▲</button>
+        <button class="arrow-button" id="arrow-down" aria-label="Próximo Jogo">▼</button>
     </div>
 
     <div class="search-container">
@@ -176,12 +262,6 @@
     <div class="button-container">
         <button class="action-button" onclick="window.history.back()" aria-label="Voltar">Voltar</button>
         <button class="action-button" onclick="window.location.reload()" aria-label="Recarregar">Recarregar</button>
-    </div>
-
-    <!-- Botões de navegação (setas) -->
-    <div class="navigation-buttons">
-        <button class="arrow-button" id="arrow-up" aria-label="Jogo Anterior">↑</button>
-        <button class="arrow-button" id="arrow-down" aria-label="Próximo Jogo">↓</button>
     </div>
 
     <script type="text/javascript">
@@ -1630,6 +1710,7 @@
         function hideUIElements() {
             document.querySelector('.thumbnail-container').style.display = 'none';
             document.querySelector('.search-container').style.display = 'none';
+            document.querySelectorAll('.arrow-button').forEach(arrow => arrow.style.display = 'none');
         }
 
         function loadGame() {
@@ -1777,7 +1858,6 @@
 
         monitorGamepad();
 
-        // Ação dos botões de setas para navegação
         document.getElementById('arrow-up').addEventListener('click', () => {
             currentGameIndex = (currentGameIndex - 1 + filteredGames.length) % filteredGames.length;
             updateThumbnail(currentGameIndex);
@@ -1789,4 +1869,4 @@
         });
     </script>
 </body>
-</html>
+</html
