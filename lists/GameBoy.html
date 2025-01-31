@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="icons/GameBoy.png" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameBoy</title>
+    <style>
+        @font-face {
+            font-family: 'ArcadeClassic';
+            src: url('arcadeclassic.ttf') format('truetype');
+        }
+
+        body {
+            background: url('wallpapers/GameBoy.png') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .thumbnail-container {
+            width: 525px;
+            height: 405px;
+            position: absolute;
+            margin: auto;
+            bottom: 0;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .thumbnail {
+            display: none;
+            width: 525px;
+            height: 405px;
+            object-fit: contain;
+            transition: box-shadow 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .thumbnail:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+        }
+
+        .game-title {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .search-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 525px;
+            z-index: 10;
+        }
+
+        .search-input {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid white;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: white;
+        }
+
+        .search-input:hover,
+        .search-input:focus {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+            outline: none;
+        }
+
+        #game {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 5;
+            outline: none;
+        }
+
+        .button-container {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .action-button {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid white;
+            padding: 10px;
+            cursor: pointer;
+            width: 250px;
+            text-align: center;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .action-button:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+        }
+
+        .arrow-button {
+            display: none;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: 2px solid white;
+            padding: 10px;
+            font-size: 30px;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 0.3s ease;
+            z-index: 11;
+        }
+
+        .arrow-button:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+        }
+
+        #arrow-up {
+            top: -80px;
+        }
+
+        #arrow-down {
+            bottom: -80px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                background-position: left center;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                min-height: 100vh;
+                padding: 20px;
+                overflow: auto;
+            }
+
+            .search-container {
+                position: fixed !important;
+                top: 10px !important;
+                left: 50% !important;
+                transform: translateX(-50%);
+                width: 90% !important;
+                max-width: 525px;
+                margin: 0 auto;
+                z-index: 1000;
+                background: rgba(0, 0, 0, 0.7);
+                backdrop-filter: blur(5px);
+            }
+
+            .thumbnail-container {
+                position: fixed !important;
+                top: 0px !important;
+                left: 50% !important;
+                transform: translateX(-50%);
+                width: 95% !important;
+                max-width: 525px;
+                height: 350px !important;
+                aspect-ratio: 525/405;
+                margin: none !important;
+                z-index: 1000;
+            }
+
+            .thumbnail {
+                width: 100% !important;
+                height: 100% !important;
+                max-height: none !important;
+            }
+
+            main {
+                position: relative !important;
+                width: 100% !important;
+                max-width: 525px !important;
+                height: auto !important;
+                aspect-ratio: 525/405;
+                top: auto !important;
+                left: auto !important;
+                margin: 20px auto;
+            }
+
+            .button-container {
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90%;
+                max-width: 525px;
+                gap: 10px;
+                justify-content: space-between;
+            }
+
+            .action-button {
+                width: 48%;
+                font-size: 5vw;
+                padding: 10px;
+                margin: 0;
+            }
+
+            .arrow-button {
+                display: block !important;
+                width: 70px;
+                height: 90px;
+                font-size: 24px;
+            }
+
+            #arrow-up {
+                top: -110px;
+            }
+
+            #arrow-down {
+                bottom: -110px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main style="width:525px; height:405px; max-width:100%; margin: auto; position: absolute; top: 50px; bottom: 0; left: 20px;">
+        <div id="game" tabindex="0"></div>
+    </main>
+
+    <div class="thumbnail-container">
+        <div id="gameTitle" class="game-title"></div>
+        <img id="gameThumbnail" class="thumbnail" src="" alt="Thumbnail do Jogo" tabindex="0">
+        <button class="arrow-button" id="arrow-up" aria-label="Jogo Anterior">▲</button>
+        <button class="arrow-button" id="arrow-down" aria-label="Próximo Jogo">▼</button>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="search" class="search-input" placeholder="Buscar Jogo..." aria-label="Buscar Jogo">
+    </div>
+
+    <div class="button-container">
+        <button class="action-button" onclick="window.history.back()" aria-label="Voltar">Voltar</button>
+        <button class="action-button" onclick="window.location.reload()" aria-label="Recarregar">Recarregar</button>
+    </div>
+
+    <script type="text/javascript">
+        const optionsHTML = `
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/4-in-1%20Fun%20Pak%20%28USA%2C%20Europe%29.zip">4-in-1 Fun Pak (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/4-in-1%20Fun%20Pak%20Volume%20II%20%28USA%2C%20Europe%29.zip">4-in-1 Fun Pak Volume II (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/A-mazing%20Tater%20%28USA%29.zip">A-mazing Tater (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Addams%20Family%2C%20The%20%28USA%29.zip">Addams Family, The (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Addams%20Family%2C%20The%20-%20Pugsley%27s%20Scavenger%20Hunt%20%28USA%2C%20Europe%29.zip">Addams Family, The - Pugsley's Scavenger Hunt (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Adventure%20Island%20%28USA%2C%20Europe%29.zip">Adventure Island (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Adventure%20Island%20II%20-%20Aliens%20in%20Paradise%20%28USA%2C%20Europe%29.zip">Adventure Island II - Aliens in Paradise (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Adventure%20Island%20II.zip">Adventure Island II</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Adventures%20of%20Lolo.zip">Adventures of Lolo</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Adventures%20of%20Rocky%20and%20Bullwinkle%20and%20Friends%2C%20The%20%28USA%29.zip">Adventures of Rocky and Bullwinkle and Friends, The (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Adventures%20of%20Star%20Saver%2C%20The%20%28USA%2C%20Europe%29.zip">Adventures of Star Saver, The (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Adventures%20of%20Tintin%20-%20Prisoners%20Sun.zip">Adventures of Tintin - Prisoners Sun</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Aerostar%20%28USA%2C%20Europe%29.zip">Aerostar (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Aladdin%20%28USA%29%20%28SGB%20Enhanced%29.zip">Aladdin (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Alfred%20Chicken%20%28USA%29.zip">Alfred Chicken (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Alien%203%20%28USA%2C%20Europe%29.zip">Alien 3 (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Alien%20vs%20Predator%20-%20The%20Last%20of%20His%20Clan%20%28USA%29.zip">Alien vs Predator - The Last of His Clan (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/All-Star%20Baseball%20%2799.zip">All-Star Baseball '99</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/All-Star%20Baseball%2099%20%28USA%29.zip">All-Star Baseball 99 (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Alleyway%20%28World%29.zip">Alleyway (World)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Altered%20Space%20-%20A%203-D%20Alien%20Adventure%20%28USA%29.zip">Altered Space - A 3-D Alien Adventure (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Amazing%20Penguin%20%28USA%2C%20Europe%29.zip">Amazing Penguin (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Amazing%20Spider-Man%2C%20The%20%28USA%2C%20Europe%29.zip">Amazing Spider-Man, The (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Animaniacs%20%28USA%29%20%28SGB%20Enhanced%29.zip">Animaniacs (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Animaniacs.zip">Animaniacs</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Arcade%20Classic%20No.%201%20-%20Asteroids%20%26%20Missile%20Command%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Arcade Classic No. 1 - Asteroids & Missile Command (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Arcade%20Classic%20No.%202%20-%20Centipede%20%26%20Millipede%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Arcade Classic No. 2 - Centipede & Millipede (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Arcade%20Classic%20No.%203%20-%20Galaga%20%26%20Galaxian%20%28USA%29%20%28SGB%20Enhanced%29.zip">Arcade Classic No. 3 - Galaga & Galaxian (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Arcade%20Classic%20No.%204%20-%20Defender%20%26%20Joust%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Arcade Classic No. 4 - Defender & Joust (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Asteroids%20%28USA%2C%20Europe%29.zip">Asteroids (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Atomic%20Punk%20%28USA%29.zip">Atomic Punk (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Attack%20of%20the%20Killer%20Tomatoes%20%28USA%2C%20Europe%29.zip">Attack of the Killer Tomatoes (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Avenging%20Spirit%20%28USA%2C%20Europe%29.zip">Avenging Spirit (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Avenging%20Spirit.zip">Avenging Spirit</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Balloon%20Kid%20%28USA%2C%20Europe%29.zip">Balloon Kid (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Barbie%20-%20Game%20Girl%20%28USA%2C%20Europe%29.zip">Barbie - Game Girl (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Bart%20Simpson%27s%20Escape%20from%20Camp%20Deadly%20%28USA%2C%20Europe%29.zip">Bart Simpson's Escape from Camp Deadly (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Baseball%20%28World%29.zip">Baseball (World)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Bases%20Loaded%20for%20Game%20Boy%20%28USA%29.zip">Bases Loaded for Game Boy (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Batman%20-%20Return%20of%20the%20Joker%20%28USA%2C%20Europe%29.zip">Batman - Return of the Joker (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Batman%20-%20The%20Animated%20Series%20%28USA%2C%20Europe%29.zip">Batman - The Animated Series (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Batman%20-%20The%20Video%20Game%20%28World%29.zip">Batman - The Video Game (World)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Batman%20Forever%20%28USA%2C%20Europe%29.zip">Batman Forever (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Batman%20Forever.zip">Batman Forever</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Battle%20Arena%20Toshinden%20%28USA%29%20%28SGB%20Enhanced%29.zip">Battle Arena Toshinden (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Battle%20Arena%20Toshinden.zip">Battle Arena Toshinden</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Battle%20Bull%20%28USA%29.zip">Battle Bull (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Battle%20Unit%20Zeoth%20%28USA%2C%20Europe%29.zip">Battle Unit Zeoth (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Battle%20Zone%20%26%20Super%20Breakout.zip">Battle Zone & Super Breakout</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Battle%20of%20Olympus.zip">Battle of Olympus</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Battleship%20%28USA%2C%20Europe%29.zip">Battleship (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Battletoads%20%26%20Double%20Dragon.zip">Battletoads & Double Dragon</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Battletoads%20%28USA%2C%20Europe%29.zip">Battletoads (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Battletoads-Double%20Dragon%20%28USA%29.zip">Battletoads-Double Dragon (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Battletoads.zip">Battletoads</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Battletoads%20in%20Ragnarok%27s%20World%20%28USA%29.zip">Battletoads in Ragnarok's World (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Battletoads%20in%20Ragnarok%27s%20World.zip">Battletoads in Ragnarok's World</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Beavis%20and%20Butt-Head%20%28USA%2C%20Europe%29.zip">Beavis and Butt-Head (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Beavis%20and%20Butthead.zip">Beavis and Butthead</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Beetlejuice%20%28USA%29.zip">Beetlejuice (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Best%20of%20the%20Best%20-%20Championship%20Karate%20%28USA%29.zip">Best of the Best - Championship Karate (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Best%20of%20the%20Best%20-%20Championship%20Karate.zip">Best of the Best - Championship Karate</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Bill%20%26%20Ted%27s%20Excellent%20Game%20Boy%20Adventure%20%28USA%2C%20Europe%29.zip">Bill & Ted's Excellent Game Boy Adventure (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Bill%20Elliott%27s%20NASCAR%20Fast%20Tracks%20%28USA%29.zip">Bill Elliott's NASCAR Fast Tracks (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Bionic%20Battler%20%28USA%29.zip">Bionic Battler (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Bionic%20Commando%20%28USA%29.zip">Bionic Commando (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Bionic%20Commando.zip">Bionic Commando</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Black%20Bass%20-%20Lure%20Fishing%20%28USA%29.zip">Black Bass - Lure Fishing (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Blades%20of%20Steel%20%28USA%29.zip">Blades of Steel (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Blaster%20Master%20Boy%20%28USA%29.zip">Blaster Master Boy (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Blues%20Brothers%2C%20The%20%28USA%2C%20Europe%29.zip">Blues Brothers, The (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Bo%20Jackson%20-%20Two%20Games%20in%20One%20%28USA%29.zip">Bo Jackson - Two Games in One (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Boggle%20Plus%20%28USA%29.zip">Boggle Plus (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Bomberman%20GB%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Bomberman GB (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Bonk%27s%20Adventure%20%28USA%29.zip">Bonk's Adventure (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Bonk%27s%20Revenge%20%28USA%29%20%28SGB%20Enhanced%29.zip">Bonk's Revenge (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Bonk%20II%20-%20Bonk%27s%20Revenge.zip">Bonk II - Bonk's Revenge</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Boomer%27s%20Adventure%20in%20ASMIK%20World%20%28USA%29.zip">Boomer's Adventure in ASMIK World (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Boxxle%20II%20%28USA%2C%20Europe%29.zip">Boxxle II (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Brain%20Bender%20%28USA%29.zip">Brain Bender (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Brain%20Drain%20%28USA%29%20%28SGB%20Enhanced%29.zip">Brain Drain (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Bram%20Stoker%27s%20Dracula%20%28USA%2C%20Europe%29.zip">Bram Stoker's Dracula (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/BreakThru%21%20%28USA%29.zip">BreakThru! (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Bubble%20Bobble%20%28USA%2C%20Europe%29.zip">Bubble Bobble (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Bubble%20Bobble%20Part%202%20%28USA%2C%20Europe%29.zip">Bubble Bobble Part 2 (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Bubble%20Ghost%20%28USA%2C%20Europe%29.zip">Bubble Ghost (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Bubsy%20II%20%28USA%29.zip">Bubsy II (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Bubsy%20II.zip">Bubsy II</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Bugs%20Bunny%20Crazy%20Castle%2C%20The%20%28USA%2C%20Europe%29.zip">Bugs Bunny Crazy Castle, The (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Bugs%20Bunny%20Crazy%20Castle%202%2C%20The%20%28USA%29.zip">Bugs Bunny Crazy Castle 2, The (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Burai%20Fighter%20Deluxe%20%28USA%2C%20Europe%29.zip">Burai Fighter Deluxe (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/BurgerTime%20Deluxe%20%28World%29.zip">BurgerTime Deluxe (World)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Bust-A-Move%202%20-%20Arcade%20Edition%20%28USA%2C%20Europe%29.zip">Bust-A-Move 2 - Arcade Edition (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Buster%20Bros.%20%28USA%29.zip">Buster Bros. (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Caesars%20Palace%20%28USA%29.zip">Caesars Palace (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Captain%20America%20and%20the%20Avengers%20%28USA%29.zip">Captain America and the Avengers (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Casino%20FunPak%20%28USA%2C%20Europe%29.zip">Casino FunPak (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Casper%20%28USA%29.zip">Casper (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Castelian%20%28USA%29.zip">Castelian (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Castlevania%20-%20Legends.zip">Castlevania - Legends</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Castlevania%20-%20The%20Adventure%20%28USA%29.zip">Castlevania - The Adventure (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Castlevania%20II%20-%20Belmont%27s%20Revenge%20%28USA%2C%20Europe%29.zip">Castlevania II - Belmont's Revenge (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Castlevania%20Legends%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Castlevania Legends (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Catrap%20%28USA%29.zip">Catrap (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Centipede%20%28USA%29.zip">Centipede (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Centipede%20%28USA%2C%20Europe%29.zip">Centipede (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Championship%20Pool%20%28USA%29.zip">Championship Pool (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Chase%20H.Q.%20%28USA%2C%20Europe%29.zip">Chase H.Q. (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Chessmaster%2C%20The%20%28DMG-N5%29%20%28USA%29.zip">Chessmaster, The (DMG-N5) (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Choplifter%20II%20-%20Rescue%20%26%20Survive%20%28USA%29.zip">Choplifter II - Rescue & Survive (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Chuck%20Rock%20%28USA%2C%20Europe%29.zip">Chuck Rock (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Cliffhanger%20%28USA%2C%20Europe%29.zip">Cliffhanger (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/College%20Slam%20%28USA%29.zip">College Slam (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/College%20Slam.zip">College Slam</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Contra%20-%20The%20Alien%20Wars%20%28USA%29%20%28SGB%20Enhanced%29.zip">Contra - The Alien Wars (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Cool%20Ball%20%28USA%29.zip">Cool Ball (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Cool%20Hand.zip">Cool Hand</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Cool%20Spot%20%28USA%29.zip">Cool Spot (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Cool%20World%20%28USA%2C%20Europe%29.zip">Cool World (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Cosmo%20Tank%20%28USA%29.zip">Cosmo Tank (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Crystal%20Quest%20%28USA%29.zip">Crystal Quest (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/CutThroat%20Island%20%28USA%2C%20Europe%29.zip">CutThroat Island (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Cutthroat%20Island.zip">Cutthroat Island</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Cyraid%20%28USA%29.zip">Cyraid (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Daedalian%20Opus%20%28USA%29.zip">Daedalian Opus (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Daffy%20Duck%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Daffy Duck (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Darkman%20%28USA%2C%20Europe%29.zip">Darkman (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Darkwing%20Duck%20%28USA%29.zip">Darkwing Duck (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/David%20Crane%27s%20The%20Rescue%20of%20Princess%20Blobette%20Starring%20A%20Boy%20and%20His%20Blob%20%28USA%29.zip">David Crane's The Rescue of Princess Blobette Starring A Boy and His Blob (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Days%20of%20Thunder%20%28USA%2C%20Europe%29.zip">Days of Thunder (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Dead%20Heat%20Scramble%20%28USA%29.zip">Dead Heat Scramble (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Dennis%20the%20Menace%20%28USA%29.zip">Dennis the Menace (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Desert%20Strike%20-%20Return%20to%20the%20Gulf%20%28USA%29%20%28SGB%20Enhanced%29.zip">Desert Strike - Return to the Gulf (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Desert%20Strike%20-%20Return%20to%20the%20Gulf.zip">Desert Strike - Return to the Gulf</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Dexterity%20%28USA%2C%20Europe%29.zip">Dexterity (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Dick%20Tracy%20%28USA%29.zip">Dick Tracy (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Die%20Maus.zip">Die Maus</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Dig%20Dug%20%28USA%29.zip">Dig Dug (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Disney%27s%20Aladdin.zip">Disney's Aladdin</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Disney%27s%20Hercules.zip">Disney's Hercules</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Disney%27s%20Lion%20King.zip">Disney's Lion King</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Disney%27s%20Mulan.zip">Disney's Mulan</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Disney%27s%20Pinocchio.zip">Disney's Pinocchio</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Disney%27s%20Pocahontas.zip">Disney's Pocahontas</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Disney%27s%20The%20Hunchback%20of%20Notre%20Dame.zip">Disney's The Hunchback of Notre Dame</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Donkey%20Kong%20%28World%29%20%28Rev%20A%29%20%28SGB%20Enhanced%29.zip">Donkey Kong (World) (Rev A) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Donkey%20Kong.zip">Donkey Kong</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Donkey%20Kong%20Land%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Donkey Kong Land (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Donkey%20Kong%20Land%202%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Donkey Kong Land 2 (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Donkey%20Kong%20Land%20I.zip">Donkey Kong Land I</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Donkey%20Kong%20Land%20II.zip">Donkey Kong Land II</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Donkey%20Kong%20Land%20III%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Donkey Kong Land III (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Donkey%20Kong%20Land%20III.zip">Donkey Kong Land III</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Double%20Dragon%20%28USA%2C%20Europe%29.zip">Double Dragon (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Double%20Dragon%203%20-%20The%20Arcade%20Game%20%28USA%2C%20Europe%29.zip">Double Dragon 3 - The Arcade Game (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Double%20Dragon%20II%20%28USA%2C%20Europe%29.zip">Double Dragon II (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Double%20Dribble%20-%205%20on%205%20%28USA%29.zip">Double Dribble - 5 on 5 (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Dr.%20Franken%20%28USA%29.zip">Dr. Franken (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Dr.%20Franken%20II%20%28USA%2C%20Europe%29%20%28En%2CFr%2CDe%2CEs%2CIt%2CNl%2CSv%29.zip">Dr. Franken II (USA, Europe) (En,Fr,De,Es,It,Nl,Sv)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Dr.%20Mario%20%28World%29.zip">Dr. Mario (World)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Dr%20Franken%20II.zip">Dr Franken II</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Dragon%27s%20Lair%20-%20The%20Legend%20%28USA%29.zip">Dragon's Lair - The Legend (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/DragonHeart%20%28USA%2C%20Europe%29.zip">DragonHeart (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Dragon%20Heart.zip">Dragon Heart</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/DuckTales%20%28USA%29.zip">DuckTales (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/DuckTales%202%20%28USA%29.zip">DuckTales 2 (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Earthworm%20Jim%20%28USA%29.zip">Earthworm Jim (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Earthworm%20Jim.zip">Earthworm Jim</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Elden%20Ring%20%28USA%29.zip">Elden Ring (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Elevator%20Action%20%28USA%2C%20Europe%29.zip">Elevator Action (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Elite%20Soccer%20%28USA%29%20%28SGB%20Enhanced%29.zip">Elite Soccer (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Exodus%20-%20Journey%20to%20the%20Promised%20Land%20%28USA%29%20%28Unl%29.zip">Exodus - Journey to the Promised Land (USA) (Unl)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Exodus%20-%20Journey%20to%20the%20Promised%20Land.zip">Exodus - Journey to the Promised Land</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Extra%20Bases%21%20%28USA%29.zip">Extra Bases! (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/F-1%20Pole%20Position.zip">F-1 Pole Position</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/F-1%20Race%20%28World%29.zip">F-1 Race (World)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/F-15%20Strike%20Eagle%20%28USA%2C%20Europe%29.zip">F-15 Strike Eagle (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/F1%20Pole%20Position%20%28USA%2C%20Europe%29.zip">F1 Pole Position (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/FIFA%20International%20Soccer%20%28USA%2C%20Europe%29%20%28En%2CFr%2CDe%2CEs%29%20%28SGB%20Enhanced%29.zip">FIFA International Soccer (USA, Europe) (En,Fr,De,Es) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/FIFA%20International%20Soccer.zip">FIFA International Soccer</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/FIFA%20Soccer%20%2796%20%28USA%2C%20Europe%29%20%28En%2CFr%2CDe%2CEs%29%20%28SGB%20Enhanced%29.zip">FIFA Soccer '96 (USA, Europe) (En,Fr,De,Es) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/FIFA%20Soccer%20%2796.zip">FIFA Soccer '96</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/FIFA%20Soccer%20%2797%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">FIFA Soccer '97 (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/FIFA%20Soccer%20%2797.zip">FIFA Soccer '97</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/FIFA%20Soccer%20%2798%20-%20Road%20to%20World%20Cup.zip">FIFA Soccer '98 - Road to World Cup</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Faceball%202000%20%28USA%29.zip">Faceball 2000 (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Felix%20the%20Cat%20%28USA%2C%20Europe%29.zip">Felix the Cat (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Ferrari%20Grand%20Prix%20Challenge%20%28USA%2C%20Europe%29.zip">Ferrari Grand Prix Challenge (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Fidgetts%2C%20The%20%28USA%2C%20Europe%29%20%28En%2CFr%2CDe%2CEs%2CIt%2CNl%2CSv%29.zip">Fidgetts, The (USA, Europe) (En,Fr,De,Es,It,Nl,Sv)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Fidgetts.zip">Fidgetts</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Fighting%20Simulator%202%20in%201%20%28USA%2C%20Europe%29.zip">Fighting Simulator 2 in 1 (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Final%20Fantasy%20Adventure%20%28USA%29.zip">Final Fantasy Adventure (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Final%20Fantasy%20Adventure.zip">Final Fantasy Adventure</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Final%20Fantasy%20Legend%2C%20The%20%28USA%29.zip">Final Fantasy Legend, The (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Final%20Fantasy%20Legend%20II%20%28USA%29.zip">Final Fantasy Legend II (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Final%20Fantasy%20Legend%20II.zip">Final Fantasy Legend II</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Final%20Fantasy%20Legend%20III%20%28USA%29.zip">Final Fantasy Legend III (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Final%20Fantasy%20Legend%20III.zip">Final Fantasy Legend III</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Fish%20Dude%20%28USA%29.zip">Fish Dude (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Fist%20of%20the%20North%20Star%20%28USA%29.zip">Fist of the North Star (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Flash%2C%20The%20%28USA%2C%20Europe%29.zip">Flash, The (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Flintstones%2C%20The%20%28USA%2C%20Europe%29.zip">Flintstones, The (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Flintstones%2C%20The%20-%20King%20Rock%20Treasure%20Island%20%28USA%2C%20Europe%29.zip">Flintstones, The - King Rock Treasure Island (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Flintstones.zip">Flintstones</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Flipull%20%28USA%29.zip">Flipull (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Foreman%20for%20Real%20%28USA%2C%20Europe%29.zip">Foreman for Real (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Foreman%20for%20Real.zip">Foreman for Real</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Fortified%20Zone%20%28USA%2C%20Europe%29.zip">Fortified Zone (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Frank%20Thomas%27%20Big%20Hurt%20Baseball.zip">Frank Thomas' Big Hurt Baseball</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Frank%20Thomas%20Big%20Hurt%20Baseball%20%28USA%2C%20Europe%29.zip">Frank Thomas Big Hurt Baseball (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Frogger%20%28USA%29.zip">Frogger (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Game%20%26%20Watch%20Gallery%20%28USA%29%20%28SGB%20Enhanced%29.zip">Game & Watch Gallery (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Game%20%26%20Watch%20Gallery%20I.zip">Game & Watch Gallery I</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Game%20of%20Harmony%2C%20The%20%28USA%29.zip">Game of Harmony, The (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Gargoyle%27s%20Quest%20%28USA%2C%20Europe%29.zip">Gargoyle's Quest (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Gauntlet%20II%20%28USA%2C%20Europe%29.zip">Gauntlet II (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Gauntlet%20II.zip">Gauntlet II</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Gear%20Works%20%28USA%2C%20Europe%29.zip">Gear Works (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/George%20Foreman%27s%20KO%20Boxing%20%28USA%2C%20Europe%29.zip">George Foreman's KO Boxing (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Getaway%2C%20The%20%28USA%29.zip">Getaway, The (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Ghostbusters%20II%20%28USA%2C%20Europe%29.zip">Ghostbusters II (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Go%21%20Go%21%20Tank%20%28USA%29.zip">Go! Go! Tank (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Goal%21%20%28USA%29.zip">Goal! (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Godzilla%20%28USA%2C%20Europe%29.zip">Godzilla (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Golf%20%28World%29.zip">Golf (World)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Gradius%20-%20The%20Interstellar%20Assault%20%28USA%29.zip">Gradius - The Interstellar Assault (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Gradius%20-%20The%20Interstellar%20Assault.zip">Gradius - The Interstellar Assault</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Great%20Greed%20%28USA%29.zip">Great Greed (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Great%20Greed.zip">Great Greed</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Gremlins%202%20-%20The%20New%20Batch%20%28World%29.zip">Gremlins 2 - The New Batch (World)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/HAL%20Wrestling%20%28USA%29.zip">HAL Wrestling (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Hammerin%27%20Harry%20-%20Ghost%20Building%20Co.zip">Hammerin' Harry - Ghost Building Co</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Harvest%20Moon%20GB%20%28USA%29%20%28SGB%20Enhanced%29.zip">Harvest Moon GB (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Harvest%20Moon%20I.zip">Harvest Moon I</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Heavyweight%20Championship%20Boxing%20%28USA%29.zip">Heavyweight Championship Boxing (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Heiankyo%20Alien%20%28USA%29.zip">Heiankyo Alien (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Hercules%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Hercules (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/High%20Stakes%20%28USA%29.zip">High Stakes (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Hit%20the%20Ice%20-%20VHL%20-%20The%20Official%20Video%20Hockey%20League%20%28USA%2C%20Europe%29.zip">Hit the Ice - VHL - The Official Video Hockey League (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Home%20Alone%20%28USA%2C%20Europe%29.zip">Home Alone (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Home%20Alone%202%20-%20Lost%20In%20New%20York%20%28USA%2C%20Europe%29.zip">Home Alone 2 - Lost In New York (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Hook%20%28USA%29.zip">Hook (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Hook.zip">Hook</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Hudson%20Hawk%20%28USA%29.zip">Hudson Hawk (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Humans%2C%20The%20%28USA%29.zip">Humans, The (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Hunchback%20of%20Notre%20Dame%2C%20The%20-%205%20Foolishly%20Fun%20Topsy%20Turvy%20Games%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Hunchback of Notre Dame, The - 5 Foolishly Fun Topsy Turvy Games (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Hunt%20for%20Red%20October%2C%20The%20%28USA%2C%20Europe%29.zip">Hunt for Red October, The (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Hyper%20Lode%20Runner%20%28World%29%20%28Rev%20A%29.zip">Hyper Lode Runner (World) (Rev A)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/In%20Your%20Face%20%28USA%29.zip">In Your Face (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Incredible%20Crash%20Dummies%2C%20The%20%28USA%2C%20Europe%29.zip">Incredible Crash Dummies, The (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Indiana%20Jones%20and%20the%20Last%20Crusade%20%28USA%2C%20Europe%29.zip">Indiana Jones and the Last Crusade (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/International%20Superstar%20Soccer%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">International Superstar Soccer (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/International%20Superstar%20Soccer.zip">International Superstar Soccer</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Into%20the%20Blue.zip">Into the Blue</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/IronMan%20%26%20X-O%20Manowar%20in%20Heavy%20Metal.zip">IronMan & X-O Manowar in Heavy Metal</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Iron%20Man%20X-O%20Manowar%20in%20Heavy%20Metal%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Iron Man X-O Manowar in Heavy Metal (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Ishido%20-%20The%20Way%20of%20Stones%20%28USA%29.zip">Ishido - The Way of Stones (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Jack%20Nicklaus%20Golf%20%28USA%2C%20Europe%29.zip">Jack Nicklaus Golf (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/James%20Bond%20007%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">James Bond 007 (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/James%20Bond%20007.zip">James Bond 007</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Jeep%20Jamboree%20%28USA%29.zip">Jeep Jamboree (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Jelly%20Boy.zip">Jelly Boy</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Jeopardy%21%20%28USA%29.zip">Jeopardy! (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Jeopardy%21%20-%20Platinum%20Edition%20%28USA%29%20%28SGB%20Enhanced%29.zip">Jeopardy! - Platinum Edition (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Jeopardy%21%20-%20Sports%20Edition%20%28USA%29.zip">Jeopardy! - Sports Edition (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Jeopardy%21%20-%20Teen%20Tournament%20%28USA%29%20%28SGB%20Enhanced%29.zip">Jeopardy! - Teen Tournament (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Jetsons%2C%20The%20-%20Robot%20Panic%20%28USA%2C%20Europe%29.zip">Jetsons, The - Robot Panic (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Jimmy%20Connors%20Tennis%20%28USA%2C%20Europe%29.zip">Jimmy Connors Tennis (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Joe%20%26%20Mac%20%28USA%29.zip">Joe & Mac (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Joe%20%26%20Mac%20-%20Caveman%20Ninja.zip">Joe & Mac - Caveman Ninja</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Jordan%20vs%20Bird%20-%20One%20on%20One%20%28USA%2C%20Europe%29.zip">Jordan vs Bird - One on One (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Joshua%20%26%20the%20Battle%20of%20Jericho%20%28USA%29%20%28Unl%29.zip">Joshua & the Battle of Jericho (USA) (Unl)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Judge%20Dredd%20%28USA%2C%20Europe%29.zip">Judge Dredd (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Judge%20Dredd.zip">Judge Dredd</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Jungle%20Book%2C%20The%20%28USA%2C%20Europe%29.zip">Jungle Book, The (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Jungle%20Strike%20%28USA%2C%20Europe%29.zip">Jungle Strike (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Jungle%20Strike.zip">Jungle Strike</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Jurassic%20Park%20%28USA%29.zip">Jurassic Park (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Jurassic%20Park%20-%20Lost%20World.zip">Jurassic Park - Lost World</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Jurassic%20Park%20II%20-%20The%20Chaos%20Continues.zip">Jurassic Park II - The Chaos Continues</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Jurassic%20Park%20Part%202%20-%20The%20Chaos%20Continues%20%28USA%2C%20Europe%29%20%28En%2CFr%2CDe%2CIt%29.zip">Jurassic Park Part 2 - The Chaos Continues (USA, Europe) (En,Fr,De,It)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Ken%20Griffey%20Jr%20-%20Major%20League%20Baseball.zip">Ken Griffey Jr - Major League Baseball</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Ken%20Griffey%20Jr.%20Presents%20Major%20League%20Baseball%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Ken Griffey Jr. Presents Major League Baseball (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Kid%20Dracula%20%28USA%2C%20Europe%29.zip">Kid Dracula (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Kid%20Dracula.zip">Kid Dracula</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Kid%20Icarus%20-%20Of%20Myths%20and%20Monsters%20%28USA%2C%20Europe%29.zip">Kid Icarus - Of Myths and Monsters (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Killer%20Instinct%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Killer Instinct (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Killer%20Instinct.zip">Killer Instinct</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/King%20James%20Bible%20%28USA%29%20%28Unl%29.zip">King James Bible (USA) (Unl)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/king%20of%20fighters%20%2795.zip">King of fighters '95</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/King%20James%20Bible.zip">King James Bible</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Kingdom%20Crusade%20%28USA%29.zip">Kingdom Crusade (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/King%20of%20Fighters%20%2795%2C%20The%20%28USA%29%20%28SGB%20Enhanced%29.zip">King of Fighters '95, The (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/King%20of%20Fighters%20-%20Heat%20of%20Battle.zip">King of Fighters - Heat of Battle</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Kirby%27s%20Block%20Ball%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Kirby's Block Ball (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Kirby%27s%20Block%20Ball.zip">Kirby's Block Ball</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Kirby%27s%20Dream%20Land%20%28USA%2C%20Europe%29.zip">Kirby's Dream Land (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Kirby%27s%20Dream%20Land%202%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Kirby's Dream Land 2 (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Kirby%27s%20Dream%20Land%20I.zip">Kirby's Dream Land I</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Kirby%27s%20Dream%20Land%20II.zip">Kirby's Dream Land II</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Kirby%27s%20Pinball%20Land%20%28USA%2C%20Europe%29.zip">Kirby's Pinball Land (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Kirby%27s%20Pinball%20Land.zip">Kirby's Pinball Land</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Kirby%27s%20Star%20Stacker%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Kirby's Star Stacker (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Kirby%27s%20Star%20Stacker.zip">Kirby's Star Stacker</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Klax%20%28USA%29.zip">Klax (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Knight%20Quest%20%28USA%29.zip">Knight Quest (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Krusty%27s%20Fun%20House%20%28USA%2C%20Europe%29.zip">Krusty's Fun House (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Kung-Fu%20Master%20%28USA%2C%20Europe%29.zip">Kung-Fu Master (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Kwirk%20-%20He%27s%20A-maze-ing%21%20%28USA%2C%20Europe%29.zip">Kwirk - He's A-maze-ing! (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Lamborghini%20American%20Challenge%20%28USA%2C%20Europe%29.zip">Lamborghini American Challenge (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Last%20Action%20Hero%20%28USA%2C%20Europe%29.zip">Last Action Hero (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Lazlos%27%20Leap%20%28USA%29.zip">Lazlos' Leap (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Legend%20of%20Zelda%2C%20The%20-%20Link%27s%20Awakening%20%28USA%2C%20Europe%29.zip">Legend of Zelda, The - Link's Awakening (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Legend%20of%20Zelda%20-%20Link%27s%20Awakening.zip">Legend of Zelda - Link's Awakening</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Legend%20of%20the%20River%20King%20GB%20%28USA%29%20%28SGB%20Enhanced%29.zip">Legend of the River King GB (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Legend%20of%20the%20River%20King%20I.zip">Legend of the River King I</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Lemmings%20%28USA%29.zip">Lemmings (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Lemmings%20I.zip">Lemmings I</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Lemmings%20II%20-%20The%20Tribes.zip">Lemmings II - The Tribes</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Lethal%20Weapon%20%28USA%2C%20Europe%29.zip">Lethal Weapon (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Lion%20King%2C%20The%20%28USA%29.zip">Lion King, The (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Little%20Mermaid%2C%20The%20%28USA%29.zip">Little Mermaid, The (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Lock%20n%27%20Chase%20~%20Lock%20%27n%27%20Chase%20%28World%29.zip">Lock n' Chase ~ Lock 'n' Chase (World)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Looney%20Tunes%20%28USA%2C%20Europe%29.zip">Looney Tunes (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Loopz%20%28World%29.zip">Loopz (World)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Lost%20World%2C%20The%20-%20Jurassic%20Park%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Lost World, The - Jurassic Park (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Lucky%20Luke.zip">Lucky Luke</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Madden%20%2795%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Madden '95 (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Madden%20%2795.zip">Madden '95</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Madden%20%2796%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Madden '96 (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Madden%20%2796.zip">Madden '96</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Madden%20%2797%20%28USA%29%20%28SGB%20Enhanced%29.zip">Madden '97 (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Madden%20%2797.zip">Madden '97</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Malibu%20Beach%20Volleyball%20%28USA%29.zip">Malibu Beach Volleyball (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Marble%20Madness%20%28USA%2C%20Europe%29.zip">Marble Madness (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mario%27s%20Picross%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Mario's Picross (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Maru%27s%20Mission%20%28USA%29.zip">Maru's Mission (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Matthias%20Sammer%20Soccer.zip">Matthias Sammer Soccer</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Maui%20Mallard%20%28USA%29.zip">Maui Mallard (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mega%20Man%20-%20Dr.%20Wily%27s%20Revenge%20%28USA%29.zip">Mega Man - Dr. Wily's Revenge (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mega%20Man%20I.zip">Mega Man I</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mega%20Man%20II%20%28USA%29.zip">Mega Man II (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mega%20Man%20III%20%28USA%29.zip">Mega Man III (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mega%20Man%20III.zip">Mega Man III</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mega%20Man%20IV%20%28USA%29.zip">Mega Man IV (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mega%20Man%20IV.zip">Mega Man IV</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mega%20Man%20V%20%28USA%29%20%28SGB%20Enhanced%29.zip">Mega Man V (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mega%20Man%20V.zip">Mega Man V</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Megalit%20%28USA%2C%20Europe%29.zip">Megalit (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mercenary%20Force%20%28USA%2C%20Europe%29.zip">Mercenary Force (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Metal%20Masters%20%28USA%29.zip">Metal Masters (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Metroid%20II%20-%20Return%20of%20Samus%20%28World%29.zip">Metroid II - Return of Samus (World)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Metroid%20II%20-%20Return%20of%20Samus.zip">Metroid II - Return of Samus</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mickey%27s%20Dangerous%20Chase%20%28USA%29.zip">Mickey's Dangerous Chase (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mickey%27s%20Ultimate%20Challenge%20%28USA%2C%20Europe%29.zip">Mickey's Ultimate Challenge (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mickey%20Mouse%20-%20Magic%20Wands%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Mickey Mouse - Magic Wands (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Micro%20Machines%20%28USA%2C%20Europe%29.zip">Micro Machines (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Micro%20Machines%20I.zip">Micro Machines I</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Micro%20Machines%20II.zip">Micro Machines II</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mighty%20Morphin%20Power%20Rangers%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Mighty Morphin Power Rangers (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mighty%20Morphin%20Power%20Rangers%20-%20Movie.zip">Mighty Morphin Power Rangers - Movie</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mighty%20Morphin%20Power%20Rangers%20-%20The%20Movie%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Mighty Morphin Power Rangers - The Movie (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mighty%20Morphin%20Power%20Rangers.zip">Mighty Morphin Power Rangers</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Milon%27s%20Secret%20Castle%20%28USA%2C%20Europe%29.zip">Milon's Secret Castle (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Miner%202049er%20Starring%20Bounty%20Bob%20%28USA%29.zip">Miner 2049er Starring Bounty Bob (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Missile%20Command%20%28USA%2C%20Europe%29.zip">Missile Command (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mole%20Mania%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Mole Mania (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mole%20Mania.zip">Mole Mania</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Monopoly%20%28USA%29.zip">Monopoly (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Monster%20Max.zip">Monster Max</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Monster%20Truck%20Wars%20%28USA%2C%20Europe%29.zip">Monster Truck Wars (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Montezuma%27s%20Return%21.zip">Montezuma's Return!</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mortal%20Kombat%20%26%20Mortal%20Kombat%20II%20%28USA%2C%20Europe%29.zip">Mortal Kombat & Mortal Kombat II (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mortal%20Kombat%20%28USA%2C%20Europe%29.zip">Mortal Kombat (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mortal%20Kombat%203%20%28USA%29.zip">Mortal Kombat 3 (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mortal%20Kombat%20II%20%28USA%2C%20Europe%29.zip">Mortal Kombat II (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mortal%20Kombat%20II.zip">Mortal Kombat II</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mortal%20Kombat%20III.zip">Mortal Kombat III</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Motocross%20Maniacs%20%28USA%29.zip">Motocross Maniacs (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mouse%20Trap%20Hotel%20%28USA%29.zip">Mouse Trap Hotel (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mr.%20Chin%27s%20Gourmet%20Paradise%20%28USA%29.zip">Mr. Chin's Gourmet Paradise (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mr.%20Do%21%20%28USA%29.zip">Mr. Do! (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mr%20Nutz.zip">Mr Nutz</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Ms.%20Pac-Man%20%28USA%29.zip">Ms. Pac-Man (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Muhammad%20Ali%20Heavyweight%20Boxing%20%28USA%2C%20Europe%29.zip">Muhammad Ali Heavyweight Boxing (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mulan%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Mulan (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mysterium%20%28USA%29.zip">Mysterium (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mystical%20Ninja.zip">Mystical Ninja</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Mystical%20Ninja%20Starring%20Goemon%20%28USA%29%20%28SGB%20Enhanced%29.zip">Mystical Ninja Starring Goemon (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/NBA%20All%20Star%20Challenge%20%28USA%2C%20Europe%29.zip">NBA All Star Challenge (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/NBA%20All%20Star%20Challenge%202%20%28USA%2C%20Europe%29.zip">NBA All Star Challenge 2 (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/NBA%20Jam%20%28USA%2C%20Europe%29.zip">NBA Jam (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/NBA%20Jam%20-%20Tournament%20Edition%20%28USA%2C%20Europe%29.zip">NBA Jam - Tournament Edition (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/NBA%20Jam.zip">NBA Jam</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/NBA%20Jam%20Tournament%20Edition.zip">NBA Jam Tournament Edition</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/NBA%20Live%20%2796.zip">NBA Live '96</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/NBA%20Live%2096%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">NBA Live 96 (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/NFL%20Football%20%28USA%29.zip">NFL Football (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/NFL%20Quarterback%20Club%20%2796%20%28USA%2C%20Europe%29.zip">NFL Quarterback Club '96 (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/NFL%20Quarterback%20Club%20%28USA%2C%20Europe%29.zip">NFL Quarterback Club (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/NFL%20Quarterback%20Club%20II%20%28USA%2C%20Europe%29.zip">NFL Quarterback Club II (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/NHL%20%2796%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">NHL '96 (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/NHL%20Hockey%20%2795%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">NHL Hockey '95 (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/NHL%20Hockey%20%2795.zip">NHL Hockey '95</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/NHL%20Hockey%20%2796.zip">NHL Hockey '96</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/NIV%20Bible%20%26%20the%2020%20Lost%20Levels%20of%20Joshua%20%28USA%29%20%28Unl%29.zip">NIV Bible & the 20 Lost Levels of Joshua (USA) (Unl)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Nail%27n%20Scale%20%28USA%2C%20Europe%29.zip">Nail'n Scale (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Navy%20Seals%20%28USA%2C%20Europe%29.zip">Navy Seals (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Nemesis%20%28USA%29.zip">Nemesis (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/New%20Chessmaster%2C%20The%20%28USA%2C%20Europe%29.zip">New Chessmaster, The (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Nigel%20Mansell%27s%20World%20Championship%20%28USA%29.zip">Nigel Mansell's World Championship (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Ninja%20Boy%20%28USA%2C%20Europe%29.zip">Ninja Boy (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Ninja%20Boy%202%20%28USA%2C%20Europe%29.zip">Ninja Boy 2 (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Ninja%20Boy%20II.zip">Ninja Boy II</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Ninja%20Gaiden%20Shadow%20%28USA%29.zip">Ninja Gaiden Shadow (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Ninja%20Taro%20%28USA%29.zip">Ninja Taro (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Nintendo%20World%20Cup%20%28USA%2C%20Europe%29.zip">Nintendo World Cup (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Nobunaga%27s%20Ambition%20%28USA%29.zip">Nobunaga's Ambition (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Obelix.zip">Obelix</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Oddworld%20Adventures%20%28USA%2C%20Europe%29.zip">Oddworld Adventures (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Oddworld%20Adventures%20I.zip">Oddworld Adventures I</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Olympic%20Summer%20Games%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Olympic Summer Games (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Olympic%20Summer%20Games.zip">Olympic Summer Games</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Operation%20C%20%28USA%29.zip">Operation C (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Otto%27s%20Ottifanten.zip">Otto's Ottifanten</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Out%20of%20Gas%20%28USA%29.zip">Out of Gas (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/PGA%20European%20Tour%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">PGA European Tour (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/PGA%20European%20Tour.zip">PGA European Tour</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/PGA%20Tour%20%2796.zip">PGA Tour '96</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/PGA%20Tour%2096%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">PGA Tour 96 (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Pac-Attack%20%28USA%29%20%28SGB%20Enhanced%29.zip">Pac-Attack (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Pac-In-Time%20%28USA%29%20%28SGB%20Enhanced%29.zip">Pac-In-Time (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Pac-In-Time.zip">Pac-In-Time</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Pac-Man%20%28USA%29.zip">Pac-Man (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Pagemaster%2C%20The%20%28USA%29%20%28SGB%20Enhanced%29.zip">Pagemaster, The (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Pagemaster.zip">Pagemaster</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Panel%20Action%20Bingo%20%28USA%29.zip">Panel Action Bingo (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Paperboy%20%28USA%2C%20Europe%29.zip">Paperboy (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Paperboy%202%20%28USA%2C%20Europe%29.zip">Paperboy 2 (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Parodius.zip">Parodius</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Penguin%20Wars%20%28USA%29.zip">Penguin Wars (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Pinball%20-%20Revenge%20of%20the%20%27Gator%20%28USA%2C%20Europe%29.zip">Pinball - Revenge of the 'Gator (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Pinball%20Deluxe.zip">Pinball Deluxe</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Pinball%20Dreams%20%28USA%2C%20Europe%29.zip">Pinball Dreams (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Pinball%20Fantasies%20%28USA%2C%20Europe%29.zip">Pinball Fantasies (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Pinball%20Mania.zip">Pinball Mania</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Pinocchio%20%28USA%29.zip">Pinocchio (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Pipe%20Dream%20%28USA%29.zip">Pipe Dream (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Pit%20Fighter%20%28USA%2C%20Europe%29.zip">Pit Fighter (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Pit%20Fighter.zip">Pit Fighter</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Play%20Action%20Football%20%28USA%29.zip">Play Action Football (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Pocahontas%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Pocahontas (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Pocket%20Bomberman.zip">Pocket Bomberman</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Pokemon%20-%20Blue%20Version%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Pokemon - Blue Version (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Pokemon%20-%20Blue%20Version.zip">Pokemon - Blue Version</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Pokemon%20-%20Red%20Version%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Pokemon - Red Version (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Pokemon%20-%20Red%20Version.zip">Pokemon - Red Version</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Pokemon%20-%20Yellow%20Version%20-%20Special%20Pikachu%20Edition%20%28USA%2C%20Europe%29%20%28GBC%2CSGB%20Enhanced%29.zip">Pokemon - Yellow Version - Special Pikachu Edition (USA, Europe) (GBC,SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Popeye%202%20%28USA%29.zip">Popeye 2 (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Power%20Mission%20%28USA%29.zip">Power Mission (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Power%20Racer%20%28USA%29.zip">Power Racer (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Prehistorik%20Man%20%28USA%2C%20Europe%29.zip">Prehistorik Man (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Primal%20Rage%20%28USA%2C%20Europe%29.zip">Primal Rage (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Primal%20Rage.zip">Primal Rage</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Prince%20of%20Persia%20%28USA%29.zip">Prince of Persia (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Prophecy%20-%20The%20Viking%20Child%20%28USA%29.zip">Prophecy - The Viking Child (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Prophecy%20-%20The%20Viking%20Child.zip">Prophecy - The Viking Child</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Punisher%2C%20The%20-%20The%20Ultimate%20Payback%20%28USA%29.zip">Punisher, The - The Ultimate Payback (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Pyramids%20of%20Ra%20%28USA%29.zip">Pyramids of Ra (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Q-bert%20for%20Game%20Boy%20%28USA%2C%20Europe%29.zip">Q-bert for Game Boy (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Q%20Billion%20%28USA%29.zip">Q Billion (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Qix%20%28World%29.zip">Qix (World)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Quarth%20%28USA%2C%20Europe%29.zip">Quarth (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/R-Type%20%28USA%2C%20Europe%29.zip">R-Type (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Race%20Days%20%28USA%29.zip">Race Days (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Race%20Days.zip">Race Days</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Race%20Drivin%27%20%28USA%2C%20Europe%29.zip">Race Drivin' (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Radar%20Mission%20%28USA%2C%20Europe%29.zip">Radar Mission (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Raging%20Fighter%20%28USA%2C%20Europe%29.zip">Raging Fighter (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Raging%20Fighter.zip">Raging Fighter</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Rampart%20%28USA%2C%20Europe%29.zip">Rampart (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Real%20Ghostbusters%2C%20The%20%28USA%29.zip">Real Ghostbusters, The (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Ren%20%26%20Stimpy%20-%20Space%20Cadet%20Adevntures.zip">Ren & Stimpy - Space Cadet Adevntures</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Ren%20%26%20Stimpy%20-%20Veediots%21.zip">Ren & Stimpy - Veediots!</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Ren%20%26%20Stimpy%20Show%2C%20The%20-%20Space%20Cadet%20Adventures%20%28USA%29.zip">Ren & Stimpy Show, The - Space Cadet Adventures (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Ren%20%26%20Stimpy%20Show%2C%20The%20-%20Veediots%21%20%28USA%2C%20Europe%29.zip">Ren & Stimpy Show, The - Veediots! (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Reservoir%20Rat.zip">Reservoir Rat</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Riddick%20Bowe%20Boxing%20%28USA%29.zip">Riddick Bowe Boxing (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Ring%20Rage%20%28USA%29.zip">Ring Rage (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Road%20Rash%20%28USA%2C%20Europe%29.zip">Road Rash (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Robin%20Hood%20-%20Prince%20of%20Thieves%20%28USA%29.zip">Robin Hood - Prince of Thieves (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Robin%20Hood%20-%20Prince%20of%20Thieves.zip">Robin Hood - Prince of Thieves</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/RoboCop%20%28USA%29.zip">RoboCop (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/RoboCop%202%20%28USA%2C%20Europe%29.zip">RoboCop 2 (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/RoboCop%20vs.%20The%20Terminator%20%28USA%29.zip">RoboCop vs. The Terminator (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Roger%20Clemens%27%20MVP%20Baseball%20%28USA%29.zip">Roger Clemens' MVP Baseball (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Rolan%27s%20Curse%20%28USA%29.zip">Rolan's Curse (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Rolan%27s%20Curse%20II%20%28USA%29.zip">Rolan's Curse II (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Rugrats%20-%20The%20Movie.zip">Rugrats - The Movie</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Rugrats%20Movie%2C%20The%20%28USA%29%20%28SGB%20Enhanced%29.zip">Rugrats Movie, The (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Samurai%20Shodown%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Samurai Shodown (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Samurai%20Shodown.zip">Samurai Shodown</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/SeaQuest%20DSV%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">SeaQuest DSV (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/SeaQuest%20DSV.zip">SeaQuest DSV</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Serpent%20%28USA%29.zip">Serpent (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Shanghai%20%28USA%29.zip">Shanghai (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Shaq%20Fu%20%28USA%29%20%28SGB%20Enhanced%29.zip">Shaq Fu (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Shaq%20Fu.zip">Shaq Fu</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Side%20Pocket%20%28World%29.zip">Side Pocket (World)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Simpsons%2C%20The%20-%20Bart%20%26%20the%20Beanstalk%20%28USA%2C%20Europe%29.zip">Simpsons, The - Bart & the Beanstalk (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Simpsons%2C%20The%20-%20Bart%20vs.%20the%20Juggernauts%20%28USA%2C%20Europe%29.zip">Simpsons, The - Bart vs. the Juggernauts (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Simpsons%20Itchy%20%26%20Scratchy%2C%20The%20-%20Miniature%20Golf%20Madness%20%28USA%2C%20Europe%29.zip">Simpsons Itchy & Scratchy, The - Miniature Golf Madness (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Skate%20or%20Die%20-%20Bad%20%27N%20Rad%20%28USA%29.zip">Skate or Die - Bad 'N Rad (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Skate%20or%20Die%20-%20Tour%20de%20Thrash%20%28USA%29.zip">Skate or Die - Tour de Thrash (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Small%20Soldiers%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Small Soldiers (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Small%20Soldiers.zip">Small Soldiers</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Smurfs%20III%20-%20Smurf%27s%20Nightmare.zip">Smurfs III - Smurf's Nightmare</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Sneaky%20Snakes%20%28USA%2C%20Europe%29.zip">Sneaky Snakes (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Snoopy%20-%20Magic%20Show%20%28USA%2C%20Europe%29.zip">Snoopy - Magic Show (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Snow%20Bros.%20Jr.%20%28USA%29.zip">Snow Bros. Jr. (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Soccer%20Mania%20%28USA%29.zip">Soccer Mania (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/SolarStriker%20%28World%29.zip">SolarStriker (World)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Solitaire%20FunPak%20%28USA%2C%20Europe%29.zip">Solitaire FunPak (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Solomon%27s%20Club%20%28USA%29.zip">Solomon's Club (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Soukoban%20%28Japan%29.zip">Soukoban (Japan)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Space%20Invaders%20%2794.zip">Space Invaders '94</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Space%20Invaders%20%28USA%29%20%28SGB%20Enhanced%29.zip">Space Invaders (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Spanky%27s%20Quest%20%28USA%29.zip">Spanky's Quest (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Speedball%202%20-%20Brutal%20Deluxe%20%28USA%2C%20Europe%29.zip">Speedball 2 - Brutal Deluxe (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Speedy%20Gonzales%20%28USA%2C%20Europe%29.zip">Speedy Gonzales (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Speedy%20Gonzales.zip">Speedy Gonzales</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Spider-Man%20-%20X-Men%20%28USA%2C%20Europe%29.zip">Spider-Man - X-Men (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Spider-Man%202%20%28USA%2C%20Europe%29.zip">Spider-Man 2 (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Spider-Man%203%20-%20Invasion%20of%20the%20Spider-Slayers%20%28USA%2C%20Europe%29.zip">Spider-Man 3 - Invasion of the Spider-Slayers (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Spiritual%20Warfare%20%28USA%29%20%28Unl%29.zip">Spiritual Warfare (USA) (Unl)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Spiritual%20Warfare.zip">Spiritual Warfare</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Sports%20Illustrated%20-%20Football%20%26%20Baseball%20%28USA%29.zip">Sports Illustrated - Football & Baseball (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Sports%20Illustrated%20-%20Golf%20Classic%20%28USA%29%20%28SGB%20Enhanced%29.zip">Sports Illustrated - Golf Classic (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Sports%20Illustrated%20-%20Golf%20Classic.zip">Sports Illustrated - Golf Classic</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Sports%20Illustrated%20Champ%20Footb%20%26%20Baseb.zip">Sports Illustrated Champ Footb & Baseb</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Sports%20Illustrated%20for%20Kids%20-%20The%20Ultimate%20Triple%20Dare%21%20%28USA%29.zip">Sports Illustrated for Kids - The Ultimate Triple Dare! (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Sports%20Illustrated%20for%20Kids.zip">Sports Illustrated for Kids</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Spot%20%28USA%29.zip">Spot (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Spot%20-%20The%20Cool%20Adventure%20%28USA%29.zip">Spot - The Cool Adventure (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Spud%27s%20Adventure%20%28USA%29.zip">Spud's Adventure (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Spy%20vs%20Spy%20-%20Operation%20Boobytrap%20%28USA%29.zip">Spy vs Spy - Operation Boobytrap (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Square%20Deal%20-%20The%20Game%20of%20Two-Dimensional%20Poker%20%28USA%29.zip">Square Deal - The Game of Two-Dimensional Poker (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Star%20Trek%20-%2025th%20Anniversary%20%28USA%2C%20Europe%29.zip">Star Trek - 25th Anniversary (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Star%20Trek%20-%20The%20Next%20Generation%20%28USA%2C%20Europe%29.zip">Star Trek - The Next Generation (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Star%20Trek%20Generations%20-%20Beyond%20the%20Nexus%20%28USA%29%20%28SGB%20Enhanced%29.zip">Star Trek Generations - Beyond the Nexus (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Star%20Wars%20%28USA%29.zip">Star Wars (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Star%20Wars%20%28gb%29.zip">Star Wars (gb)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Star%20Wars%20-%20Super%20Return%20of%20the%20Jedi.zip">Star Wars - Super Return of the Jedi</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Star%20Wars%20-%20The%20Empire%20Strikes%20Back%20%28USA%29.zip">Star Wars - The Empire Strikes Back (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Star%20Wars%20-%20The%20Empire%20Strikes%20Back%20%28gb%29.zip">Star Wars - The Empire Strikes Back (gb)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Stargate%20%28USA%2C%20Europe%29.zip">Stargate (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Stop%20That%20Roach%21%20%28USA%29.zip">Stop That Roach! (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Street%20Fighter%20II%20%28USA%29%20%28SGB%20Enhanced%29.zip">Street Fighter II (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Street%20Fighter%20II.zip">Street Fighter II</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Street%20Racer%20%28USA%2C%20Europe%29.zip">Street Racer (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Street%20Racer.zip">Street Racer</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Sumo%20Fighter%20%28USA%29.zip">Sumo Fighter (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Super%20Battletank%20-%20War%20in%20the%20Gulf%20%28USA%29.zip">Super Battletank - War in the Gulf (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Super%20Black%20Bass%20%28USA%29.zip">Super Black Bass (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Super%20Black%20Bass.zip">Super Black Bass</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Super%20Breakout%20%28USA%29.zip">Super Breakout (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Super%20Chase%20H.Q.%20%28USA%2C%20Europe%29.zip">Super Chase H.Q. (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Super%20Hunchback%20%28USA%29.zip">Super Hunchback (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Super%20Hunchback.zip">Super Hunchback</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Super%20Mario%20Land%20%28World%29.zip">Super Mario Land (World)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Super%20Mario%20Land%202%20-%206%20Golden%20Coins%20%28Hack%29.zip">Super Mario Land 2 - 6 Golden Coins (Hack)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Super%20Mario%20Land%202%20-%206%20Golden%20Coins%20%28USA%2C%20Europe%29.zip">Super Mario Land 2 - 6 Golden Coins (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Super%20Mario%20Land%20II%20-%206%20Golden%20Coins.zip">Super Mario Land II - 6 Golden Coins</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Super%20Mario%20Land%20III%20-%20Wario%20Land.zip">Super Mario Land III - Wario Land</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Super%20Off%20Road%20%28USA%2C%20Europe%29.zip">Super Off Road (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Super%20R.C.%20Pro-Am%20%28USA%2C%20Europe%29.zip">Super R.C. Pro-Am (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Super%20Scrabble%20%28USA%29.zip">Super Scrabble (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Super%20Scrabble.zip">Super Scrabble</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Super%20Star%20Wars%20-%20Return%20of%20the%20Jedi%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Super Star Wars - Return of the Jedi (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Superman%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Superman (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Swamp%20Thing%20%28USA%2C%20Europe%29.zip">Swamp Thing (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Sword%20of%20Hope%2C%20The%20%28USA%29.zip">Sword of Hope, The (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Sword%20of%20Hope%20II%2C%20The%20%28USA%29.zip">Sword of Hope II, The (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Sword%20of%20Hope%20II.zip">Sword of Hope II</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/T2%20-%20The%20Arcade%20Game%20%28USA%2C%20Europe%29.zip">T2 - The Arcade Game (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Tail%20%27Gator%20%28USA%2C%20Europe%29.zip">Tail 'Gator (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/TaleSpin%20%28USA%29.zip">TaleSpin (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Tamagotchi%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Tamagotchi (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Tamagotchi.zip">Tamagotchi</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Tarzan%20%28USA%2C%20Europe%29.zip">Tarzan (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Tasmania%20Story%20%28USA%29.zip">Tasmania Story (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Taz-Mania%20%28USA%2C%20Europe%29.zip">Taz-Mania (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Taz-Mania%202%20%28USA%29.zip">Taz-Mania 2 (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Taz-Mania%20I.zip">Taz-Mania I</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Tecmo%20Bowl%20%28USA%29.zip">Tecmo Bowl (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Tecmo%20Bowl.zip">Tecmo Bowl</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Teenage%20Mutant%20Ninja%20Turtles%20-%20Fall%20of%20the%20Foot%20Clan%20%28USA%29.zip">Teenage Mutant Ninja Turtles - Fall of the Foot Clan (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Teenage%20Mutant%20Ninja%20Turtles%20II%20-%20Back%20from%20the%20Sewers%20%28USA%29.zip">Teenage Mutant Ninja Turtles II - Back from the Sewers (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Teenage%20Mutant%20Ninja%20Turtles%20II.zip">Teenage Mutant Ninja Turtles II</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Teenage%20Mutant%20Ninja%20Turtles%20III%20-%20Radical%20Rescue%20%28USA%29.zip">Teenage Mutant Ninja Turtles III - Radical Rescue (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Tennis%20%28World%29.zip">Tennis (World)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Terminator%202%20-%20Judgment%20Day%20%28USA%2C%20Europe%29.zip">Terminator 2 - Judgment Day (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Tesserae%20%28USA%29.zip">Tesserae (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Tetris%20%28World%29%20%28Rev%20A%29.zip">Tetris (World) (Rev A)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Tetris%202%20%28USA%29.zip">Tetris 2 (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Tetris%202%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Tetris 2 (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Tetris%20Attack%20%28USA%29%20%28SGB%20Enhanced%29.zip">Tetris Attack (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Tetris%20Attack.zip">Tetris Attack</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Tetris%20Blast%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Tetris Blast (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Tetris%20Plus%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Tetris Plus (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/TinTin%20in%20Tibet.zip">TinTin in Tibet</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Tiny%20Toon%20Adventures%20-%20Babs%27%20Big%20Break%20%28USA%2C%20Europe%29.zip">Tiny Toon Adventures - Babs' Big Break (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Tiny%20Toon%20Adventures%20-%20Babs%20Big%20Break.zip">Tiny Toon Adventures - Babs Big Break</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Tiny%20Toon%20Adventures%20-%20Wacky%20Sports%20%28USA%29.zip">Tiny Toon Adventures - Wacky Sports (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Tiny%20Toon%20Adventures%202%20-%20Montana%27s%20Movie%20Madness%20%28USA%2C%20Europe%29.zip">Tiny Toon Adventures 2 - Montana's Movie Madness (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Tiny%20Toon%20Adventures%20II%20-%20Montana%20Max.zip">Tiny Toon Adventures II - Montana Max</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Titus%20the%20Fox.zip">Titus the Fox</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Titus%20the%20Fox%20to%20Marrakech%20and%20Back%20%28USA%2C%20Europe%29.zip">Titus the Fox to Marrakech and Back (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Tom%20%26%20Jerry%20%28USA%2C%20Europe%29.zip">Tom & Jerry (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Tom%20and%20Jerry%20-%20Frantic%20Antics%21%20%28USA%2C%20Europe%29.zip">Tom and Jerry - Frantic Antics! (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Top%20Gun%20-%20Guts%20%26%20Glory%20%28USA%2C%20Europe%29.zip">Top Gun - Guts & Glory (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Top%20Rank%20Tennis%20%28USA%29.zip">Top Rank Tennis (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Top%20Ranking%20Tennis.zip">Top Ranking Tennis</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Torpedo%20Range%20%28USA%29.zip">Torpedo Range (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Total%20Carnage%20%28USA%2C%20Europe%29.zip">Total Carnage (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Toxic%20Crusaders%20%28USA%29.zip">Toxic Crusaders (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Toy%20Story%20%28USA%29%20%28SGB%20Enhanced%29.zip">Toy Story (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Toy%20Story%20I.zip">Toy Story I</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Track%20%26%20Field%20%28USA%2C%20Europe%29.zip">Track & Field (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Track%20Meet%20%28USA%2C%20Europe%29.zip">Track Meet (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Track%20Meet.zip">Track Meet</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Trax%20%28USA%2C%20Europe%29.zip">Trax (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Trip%20World.zip">Trip World</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/True%20Lies%20%28USA%2C%20Europe%29.zip">True Lies (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/True%20Lies.zip">True Lies</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Tumble%20Pop%20%28USA%2C%20Europe%29.zip">Tumble Pop (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Turn%20and%20Burn%20%28USA%29.zip">Turn and Burn (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Turok%20-%20Battle%20of%20the%20Bionosaurs%20%28USA%2C%20Europe%29%20%28En%2CFr%2CDe%2CEs%29.zip">Turok - Battle of the Bionosaurs (USA, Europe) (En,Fr,De,Es)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Turok%20-%20Battle%20of%20the%20Bionosaurs.zip">Turok - Battle of the Bionosaurs</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Turrican%20%28USA%2C%20Europe%29.zip">Turrican (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Ultima%20-%20Runes%20of%20Virtue%20%28USA%29.zip">Ultima - Runes of Virtue (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Ultima%20-%20Runes%20of%20Virtue%20II%20%28USA%29.zip">Ultima - Runes of Virtue II (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Ultima%20-%20Runes%20of%20Virtue%20II.zip">Ultima - Runes of Virtue II</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Ultra%20Golf%20%28USA%29.zip">Ultra Golf (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Universal%20Soldier%20%28USA%2C%20Europe%29.zip">Universal Soldier (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Universal%20Soldier.zip">Universal Soldier</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Urban%20Strike%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Urban Strike (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Urban%20Strike.zip">Urban Strike</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/V%20Rally%20-%20Championship%20Edition.zip">V Rally - Championship Edition</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Vegas%20Stakes%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Vegas Stakes (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Vegas%20Stakes.zip">Vegas Stakes</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/WCW%20Main%20Event%20%28USA%2C%20Europe%29.zip">WCW Main Event (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/WWF%20-%20RAW.zip">WWF - RAW</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/WWF%20-%20Warzone.zip">WWF - Warzone</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/WWF%20King%20of%20the%20Ring%20%28USA%2C%20Europe%29.zip">WWF King of the Ring (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/WWF%20Raw%20%28USA%2C%20Europe%29.zip">WWF Raw (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/WWF%20Superstars%20%28USA%2C%20Europe%29.zip">WWF Superstars (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/WWF%20Superstars%202%20%28USA%2C%20Europe%29.zip">WWF Superstars 2 (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/WWF%20War%20Zone%20%28USA%2C%20Europe%29.zip">WWF War Zone (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Wario%20Blast%20featuring%20Bomberman%21%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Wario Blast featuring Bomberman! (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Wario%20Land%20-%20Super%20Mario%20Land%203%20%28World%29.zip">Wario Land - Super Mario Land 3 (World)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Wario%20Land%20II%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">Wario Land II (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Warioland%20II.zip">Warioland II</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Waterworld.zip">Waterworld</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Wave%20Race%20%28USA%2C%20Europe%29.zip">Wave Race (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Wayne%27s%20World%20%28USA%29.zip">Wayne's World (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Wayne%27s%20World.zip">Wayne's World</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/We%27re%20Back%21%20-%20A%20Dinosaur%27s%20Story%20%28USA%2C%20Europe%29.zip">We're Back! - A Dinosaur's Story (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Wheel%20of%20Fortune%20%28USA%29.zip">Wheel of Fortune (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Who%20Framed%20Roger%20Rabbit%20%28USA%29.zip">Who Framed Roger Rabbit (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Wild%20Snake%20%28USA%29%20%28SGB%20Enhanced%29.zip">Wild Snake (USA) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Wizards%20%26%20Warriors%20Chapter%20X%20-%20The%20Fortress%20of%20Fear%20%28USA%2C%20Europe%29.zip">Wizards & Warriors Chapter X - The Fortress of Fear (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/WordZap%20%28USA%29.zip">WordZap (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Wordtris%20%28USA%29.zip">Wordtris (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/World%20Bowling%20%28USA%29.zip">World Bowling (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/World%20Circuit%20Series%20%28USA%29.zip">World Circuit Series (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/World%20Cup%20%2798.zip">World Cup '98</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/World%20Cup%2098%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">World Cup 98 (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/World%20Cup%20USA%20%2794%20%28Europe%29%20%28En%2CFr%2CDe%2CEs%2CIt%2CNl%2CPt%2CSv%29.zip">World Cup USA '94 (Europe) (En,Fr,De,Es,It,Nl,Pt,Sv)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/World%20Heroes%202%20Jet%20%28USA%2C%20Europe%29%20%28SGB%20Enhanced%29.zip">World Heroes 2 Jet (USA, Europe) (SGB Enhanced)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/World%20Heroes%20II%20Jet.zip">World Heroes II Jet</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/XVII%20Olympic%20Winter%20Games%2C%20The%20-%20Lillehammer%201994%20%28USA%29.zip">XVII Olympic Winter Games, The - Lillehammer 1994 (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Xenon%202%20-%20Megablast%20%28USA%2C%20Europe%29.zip">Xenon 2 - Megablast (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Yogi%20Bear%20in%20Yogi%20Bear%27s%20Goldrush%20%28USA%29.zip">Yogi Bear in Yogi Bear's Goldrush (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Yoshi%27s%20Cookie%20%28USA%2C%20Europe%29.zip">Yoshi's Cookie (USA, Europe)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Yoshi%20%28USA%29.zip">Yoshi (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Zen%20-%20Intergalactic%20Ninja%20%28USA%29.zip">Zen - Intergalactic Ninja (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Zool%20-%20Ninja%20of%20the%20%27Nth%27%20Dimension%20%28USA%29.zip">Zool - Ninja of the 'Nth' Dimension (USA)</option>
+<option value="https://archive.org/download/nintendo-game-boy_202412/Nintendo%20-%20GameBoy.zip/Zoop%20%28USA%2C%20Europe%29.zip">Zoop (USA, Europe)</option>
+        `;
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(optionsHTML, 'text/html');
+        const options = doc.querySelectorAll('option');
+
+        const games = Array.from(options).map(option => {
+            const title = option.textContent;
+            const url = option.value;
+            const thumbnail = `thumbnails/Nintendo - GameBoy/${title}.png`;
+            return { title, url, thumbnail };
+        });
+
+        let currentGameIndex = 0;
+        let filteredGames = games;
+        let isLoaderLoaded = false;
+        const EJS_player = '#game';
+        const EJS_core = 'gb';
+        const soundEffect = new Audio('sounds/menu-sound.mp3');
+
+        function updateThumbnail(index) {
+            const game = filteredGames[index];
+            const thumbnailElement = document.getElementById('gameThumbnail');
+            document.getElementById('gameTitle').textContent = game.title;
+            thumbnailElement.src = game.thumbnail;
+            thumbnailElement.style.display = 'block';
+            thumbnailElement.style.zIndex = '5';
+
+            thumbnailElement.onerror = function() {
+                this.src = 'thumbnails/default.png';
+            };
+
+            soundEffect.play().catch(error => {
+                console.error('Erro ao reproduzir o som:', error);
+            });
+        }
+
+        function hideUIElements() {
+            document.querySelector('.thumbnail-container').style.display = 'none';
+            document.querySelector('.search-container').style.display = 'none';
+            document.querySelectorAll('.arrow-button').forEach(arrow => arrow.style.display = 'none');
+        }
+
+        function loadGame() {
+            const game = filteredGames[currentGameIndex];
+            EJS_gameUrl = game.url;
+
+            hideUIElements();
+            focusGame();
+
+            if (!isLoaderLoaded) {
+                const script = document.createElement('script');
+                script.src = 'https://www.emulatorjs.com/loader.js';
+                script.onload = () => {
+                    isLoaderLoaded = true;
+                    console.log('Loader carregado.');
+                };
+                script.onerror = () => {
+                    console.error('Falha ao carregar o emulador. Verifique sua conexão.');
+                };
+                document.body.appendChild(script);
+            } else {
+                console.log('Carregando novo jogo: ', game.url);
+            }
+        }
+
+        function focusGame() {
+            const gameElement = document.getElementById('game');
+            gameElement.focus();
+            gameElement.style.boxShadow = '0 0 10px 2px rgba(255, 255, 255, 0.8)';
+        }
+
+        updateThumbnail(currentGameIndex);
+
+        document.addEventListener('keydown', (e) => {
+            if (filteredGames.length > 0) {
+                if (e.key === 'ArrowDown') {
+                    currentGameIndex = (currentGameIndex + 1) % filteredGames.length;
+                    updateThumbnail(currentGameIndex);
+                } else if (e.key === 'ArrowUp') {
+                    currentGameIndex = (currentGameIndex - 1 + filteredGames.length) % filteredGames.length;
+                    updateThumbnail(currentGameIndex);
+                } else if (e.key === 'Enter') {
+                    loadGame();
+                }
+            }
+        });
+
+        document.addEventListener('wheel', (e) => {
+            if (filteredGames.length > 0) {
+                if (e.deltaY > 0) {
+                    currentGameIndex = (currentGameIndex + 1) % filteredGames.length;
+                } else {
+                    currentGameIndex = (currentGameIndex - 1 + filteredGames.length) % filteredGames.length;
+                }
+                updateThumbnail(currentGameIndex);
+            }
+        });
+
+        document.getElementById('search').addEventListener('input', function() {
+            const filter = this.value.toLowerCase();
+            filteredGames = games.filter(game => game.title.toLowerCase().includes(filter));
+            currentGameIndex = 0;
+
+            if (filteredGames.length > 0) {
+                updateThumbnail(currentGameIndex);
+            } else {
+                document.getElementById('gameTitle').textContent = 'Nenhum jogo encontrado';
+                document.getElementById('gameThumbnail').style.display = 'none';
+            }
+        });
+
+        document.getElementById('gameThumbnail').addEventListener('click', loadGame);
+        document.getElementById('gameThumbnail').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                loadGame();
+            }
+        });
+
+        document.getElementById('game').addEventListener('click', loadGame);
+
+        let selectPressed = false;
+        let startPressed = false;
+        let comboPressTimer;
+        let selectHoldTimer;
+
+        function checkComboPress() {
+            if (selectPressed && startPressed) {
+                console.log("Mudando para o modo navegação");
+                hideUIElements();
+                focusGame();
+            }
+        }
+
+        function toggleFullscreen() {
+            const gameElement = document.getElementById('game');
+            if (!document.fullscreenElement) {
+                gameElement.requestFullscreen().catch(err => {
+                    console.error(`Erro ao tentar entrar em fullscreen: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        window.addEventListener("gamepadconnected", function(e) {
+            console.log("Gamepad conectado: ", e.gamepad);
+        });
+
+        window.addEventListener("gamepaddisconnected", function(e) {
+            console.log("Gamepad desconectado: ", e.gamepad);
+        });
+
+        function monitorGamepad() {
+            const gamepads = navigator.getGamepads();
+            if (gamepads[0]) {
+                const gamepad = gamepads[0];
+
+                selectPressed = gamepad.buttons[8].pressed;
+                startPressed = gamepad.buttons[9].pressed;
+
+                if (selectPressed) {
+                    if (!selectHoldTimer) {
+                        selectHoldTimer = setTimeout(() => {
+                            toggleFullscreen();
+                            selectHoldTimer = null;
+                        }, 2000);
+                    }
+                } else {
+                    clearTimeout(selectHoldTimer);
+                    selectHoldTimer = null;
+                }
+
+                if (selectPressed && startPressed) {
+                    if (!comboPressTimer) {
+                        comboPressTimer = setTimeout(checkComboPress, 1000);
+                    }
+                } else {
+                    clearTimeout(comboPressTimer);
+                    comboPressTimer = null;
+                }
+            }
+
+            requestAnimationFrame(monitorGamepad);
+        }
+
+        monitorGamepad();
+
+        document.getElementById('arrow-up').addEventListener('click', () => {
+            currentGameIndex = (currentGameIndex - 1 + filteredGames.length) % filteredGames.length;
+            updateThumbnail(currentGameIndex);
+        });
+
+        document.getElementById('arrow-down').addEventListener('click', () => {
+            currentGameIndex = (currentGameIndex + 1) % filteredGames.length;
+            updateThumbnail(currentGameIndex);
+        });
+    </script>
+</body>
+</html>
