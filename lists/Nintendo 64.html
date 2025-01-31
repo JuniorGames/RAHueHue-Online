@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="icons/Nintendo 64.png" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nintendo 64</title>
+    <style>
+        @font-face {
+            font-family: 'ArcadeClassic';
+            src: url('arcadeclassic.ttf') format('truetype');
+        }
+
+        body {
+            background: url('wallpapers/Nintendo 64.png') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .thumbnail-container {
+            width: 525px;
+            height: 405px;
+            position: absolute;
+            margin: auto;
+            bottom: 0;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .thumbnail {
+            display: none;
+            width: 525px;
+            height: 405px;
+            object-fit: contain;
+            transition: box-shadow 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .thumbnail:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+        }
+
+        .game-title {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .search-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 525px;
+            z-index: 10;
+        }
+
+        .search-input {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid white;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: white;
+        }
+
+        .search-input:hover,
+        .search-input:focus {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+            outline: none;
+        }
+
+        #game {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 5;
+            outline: none;
+        }
+
+        .button-container {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .action-button {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid white;
+            padding: 10px;
+            cursor: pointer;
+            width: 250px;
+            text-align: center;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .action-button:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+        }
+
+        .arrow-button {
+            display: none;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: 2px solid white;
+            padding: 10px;
+            font-size: 30px;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 0.3s ease;
+            z-index: 11;
+        }
+
+        .arrow-button:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+        }
+
+        #arrow-up {
+            top: -80px;
+        }
+
+        #arrow-down {
+            bottom: -80px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                background-position: left center;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                min-height: 100vh;
+                padding: 20px;
+                overflow: auto;
+            }
+
+            .search-container {
+                position: fixed !important;
+                top: 10px !important;
+                left: 50% !important;
+                transform: translateX(-50%);
+                width: 90% !important;
+                max-width: 525px;
+                margin: 0 auto;
+                z-index: 1000;
+                background: rgba(0, 0, 0, 0.7);
+                backdrop-filter: blur(5px);
+            }
+
+            .thumbnail-container {
+                position: fixed !important;
+                top: 0px !important;
+                left: 50% !important;
+                transform: translateX(-50%);
+                width: 95% !important;
+                max-width: 525px;
+                height: 350px !important;
+                aspect-ratio: 525/405;
+                margin: none !important;
+                z-index: 1000;
+            }
+
+            .thumbnail {
+                width: 100% !important;
+                height: 100% !important;
+                max-height: none !important;
+            }
+
+            main {
+                position: relative !important;
+                width: 100% !important;
+                max-width: 525px !important;
+                height: auto !important;
+                aspect-ratio: 525/405;
+                top: auto !important;
+                left: auto !important;
+                margin: 20px auto;
+            }
+
+            .button-container {
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90%;
+                max-width: 525px;
+                gap: 10px;
+                justify-content: space-between;
+            }
+
+            .action-button {
+                width: 48%;
+                font-size: 5vw;
+                padding: 10px;
+                margin: 0;
+            }
+
+            .arrow-button {
+                display: block !important;
+                width: 70px;
+                height: 90px;
+                font-size: 24px;
+            }
+
+            #arrow-up {
+                top: -110px;
+            }
+
+            #arrow-down {
+                bottom: -110px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main style="width:525px; height:405px; max-width:100%; margin: auto; position: absolute; top: 50px; bottom: 0; left: 20px;">
+        <div id="game" tabindex="0"></div>
+    </main>
+
+    <div class="thumbnail-container">
+        <div id="gameTitle" class="game-title"></div>
+        <img id="gameThumbnail" class="thumbnail" src="" alt="Thumbnail do Jogo" tabindex="0">
+        <button class="arrow-button" id="arrow-up" aria-label="Jogo Anterior">▲</button>
+        <button class="arrow-button" id="arrow-down" aria-label="Próximo Jogo">▼</button>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="search" class="search-input" placeholder="Buscar Jogo..." aria-label="Buscar Jogo">
+    </div>
+
+    <div class="button-container">
+        <button class="action-button" onclick="window.history.back()" aria-label="Voltar">Voltar</button>
+        <button class="action-button" onclick="window.location.reload()" aria-label="Recarregar">Recarregar</button>
+    </div>
+
+    <script type="text/javascript">
+        const optionsHTML = `
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/007%20-%20The%20World%20is%20Not%20Enough%20%28U%29%20%5B%21%5D.zip">007 - The World is Not Enough (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/1080%20Snowboarding%20%28JU%29%20%28M2%29%20%5B%21%5D.zip">1080 Snowboarding (JU) (M2) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/AeroFighters%20Assault%20%28U%29%20%5B%21%5D.zip">AeroFighters Assault (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/AeroGauge%20%28U%29%20%5B%21%5D.zip">AeroGauge (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Aidyn%20Chronicles%20-%20The%20First%20Mage%20%28U%29%20%5B%21%5D.zip">Aidyn Chronicles - The First Mage (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/All-Star%20Baseball%20%2799%20%28U%29%20%5B%21%5D.zip">All-Star Baseball '99 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/All-Star%20Baseball%202000%20%28U%29%20%5B%21%5D.zip">All-Star Baseball 2000 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/All-Star%20Baseball%202001%20%28U%29%20%5B%21%5D.zip">All-Star Baseball 2001 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/All%20Star%20Tennis%20%2799%20%28U%29%20%5B%21%5D.zip">All Star Tennis '99 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/All%20Star%20Tennis%20_99%20%28U%29%20%5B%21%5D.zip">All Star Tennis _99 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Armorines%20-%20Project%20S.W.A.R.M.%20%28U%29%20%5B%21%5D.zip">Armorines - Project S.W.A.R.M. (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Army%20Men%20-%20Air%20Combat%20%28U%29%20%5B%21%5D.zip">Army Men - Air Combat (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Army%20Men%20-%20Sarge%27s%20Heroes%20%28U%29%20%5B%21%5D.zip">Army Men - Sarge's Heroes (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Army%20Men%20-%20Sarge%27s%20Heroes%202%20%28U%29%20%5B%21%5D.zip">Army Men - Sarge's Heroes 2 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Asteroids%20Hyper%2064%20%28U%29%20%5B%21%5D.zip">Asteroids Hyper 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Automobili%20Lamborghini%20%28U%29%20%5B%21%5D.zip">Automobili Lamborghini (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Banjo-Kazooie%20%28U%29%20%28V1.0%29%20%5B%21%5D.zip">Banjo-Kazooie (U) (V1.0) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Banjo-Tooie%20%28U%29%20%5B%21%5D.zip">Banjo-Tooie (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Bassmasters%202000%20%28U%29%20%5B%21%5D.zip">Bassmasters 2000 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Batman%20Beyond%20-%20Return%20of%20the%20Joker%20%28U%29%20%5B%21%5D.zip">Batman Beyond - Return of the Joker (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/BattleTanx%20%28U%29%20%5B%21%5D.zip">BattleTanx (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/BattleTanx%20-%20Global%20Assault%20%28U%29%20%5B%21%5D.zip">BattleTanx - Global Assault (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Battlezone%20-%20Rise%20of%20the%20Black%20Dogs%20%28U%29%20%5B%21%5D.zip">Battlezone - Rise of the Black Dogs (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Beetle%20Adventure%20Racing%21%20%28U%29%20%28M3%29%20%5B%21%5D.zip">Beetle Adventure Racing! (U) (M3) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Big%20Mountain%202000%20%28U%29%20%5B%21%5D.zip">Big Mountain 2000 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Bio%20F.R.E.A.K.S.%20%28U%29%20%5B%21%5D.zip">Bio F.R.E.A.K.S. (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Blast%20Corps%20%28U%29%20%28V1.1%29%20%5B%21%5D.zip">Blast Corps (U) (V1.1) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Blues%20Brothers%202000%20%28U%29%20%5B%21%5D.zip">Blues Brothers 2000 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Body%20Harvest%20%28U%29%20%5B%21%5D.zip">Body Harvest (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Bomberman%2064%20%28U%29%20%5B%21%5D.zip">Bomberman 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Bomberman%2064%20-%20The%20Second%20Attack%21%20%28U%29%20%5B%21%5D.zip">Bomberman 64 - The Second Attack! (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Bomberman%20Hero%20%28U%29%20%5B%21%5D.zip">Bomberman Hero (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Bottom%20of%20the%209th%20%28U%29%20%5B%21%5D.zip">Bottom of the 9th (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Brunswick%20Circuit%20Pro%20Bowling%20%28U%29%20%5B%21%5D.zip">Brunswick Circuit Pro Bowling (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Buck%20Bumble%20%28U%29%20%5B%21%5D.zip">Buck Bumble (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Bug%27s%20Life%2C%20A%20%28U%29%20%5B%21%5D.zip">Bug's Life, A (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Bust-A-Move%20%2799%20%28U%29%20%5B%21%5D.zip">Bust-A-Move '99 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Bust-A-Move%202%20-%20Arcade%20Edition%20%28U%29%20%5B%21%5D.zip">Bust-A-Move 2 - Arcade Edition (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/California%20Speed%20%28U%29%20%5B%21%5D.zip">California Speed (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Carmageddon%2064%20%28U%29%20%5B%21%5D.zip">Carmageddon 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Castlevania%20%28U%29%20%28V1.2%29%20%5B%21%5D.zip">Castlevania (U) (V1.2) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Castlevania%20-%20Legacy%20of%20Darkness%20%28U%29%20%5B%21%5D.zip">Castlevania - Legacy of Darkness (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Chameleon%20Twist%20%28U%29%20%5B%21%5D.zip">Chameleon Twist (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Chameleon%20Twist%202%20%28U%29%20%5B%21%5D.zip">Chameleon Twist 2 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Charlie%20Blast%27s%20Territory%20%28U%29%20%5B%21%5D.zip">Charlie Blast's Territory (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Charlie%20Blast_s%20Territory%20%28U%29%20%5B%21%5D.zip">Charlie Blast_s Territory (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Chopper%20Attack%20%28U%29%20%5B%21%5D.zip">Chopper Attack (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Clay%20Fighter%20-%20Sculptor%27s%20Cut%20%28U%29%20%5B%21%5D.zip">Clay Fighter - Sculptor's Cut (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Clay%20Fighter%20-%20Sculptor_s%20Cut%20%28U%29%20%5B%21%5D.zip">Clay Fighter - Sculptor_s Cut (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Clay%20Fighter%2063%201-3%20%28U%29%20%5B%21%5D.zip">Clay Fighter 63 1-3 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Command%20%26%20Conquer%20%28U%29%20%5B%21%5D.zip">Command & Conquer (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Conker%27s%20Bad%20Fur%20Day%20%28U%29%20%5B%21%5D.zip">Conker's Bad Fur Day (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Conker_s%20Bad%20Fur%20Day%20%28U%29%20%5B%21%5D.zip">Conker_s Bad Fur Day (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Cruis%27n%20Exotica%20%28U%29%20%5B%21%5D.zip">Cruis'n Exotica (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Cruis%27n%20USA%20%28U%29%20%28V1.2%29%20%5B%21%5D.zip">Cruis'n USA (U) (V1.2) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Cruis%27n%20World%20%28U%29%20%5B%21%5D.zip">Cruis'n World (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Cruis_n%20World%20%28U%29%20%5B%21%5D.zip">Cruis_n World (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/CyberTiger%20%28U%29%20%5B%21%5D.zip">CyberTiger (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Dark%20Rift%20%28U%29%20%5B%21%5D.zip">Dark Rift (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Deadly%20Arts%20%28U%29%20%5B%21%5D.zip">Deadly Arts (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Destruction%20Derby%2064%20%28U%29%20%5B%21%5D.zip">Destruction Derby 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Diddy%20Kong%20Racing%20%28U%29%20%28M2%29%20%28V1.1%29%20%5B%21%5D.zip">Diddy Kong Racing (U) (M2) (V1.1) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Disney%27s%20Donald%20Duck%20-%20Goin%27%20Quackers%20%28U%29%20%5B%21%5D.zip">Disney's Donald Duck - Goin' Quackers (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Disney%27s%20Tarzan%20%28U%29%20%5B%21%5D.zip">Disney's Tarzan (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Disney_s%20Donald%20Duck%20-%20Goin_%20Quackers%20%28U%29%20%5B%21%5D.zip">Disney_s Donald Duck - Goin_ Quackers (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Disney_s%20Tarzan%20%28U%29%20%5B%21%5D.zip">Disney_s Tarzan (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Donkey%20Kong%2064%20%28U%29%20%5B%21%5D.zip">Donkey Kong 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Doom%2064%20%28U%29%20%28V1.1%29%20%5B%21%5D.zip">Doom 64 (U) (V1.1) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Dr.%20Mario%2064%20%28U%29%20%5B%21%5D.zip">Dr. Mario 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Dual%20Heroes%20%28U%29%20%5B%21%5D.zip">Dual Heroes (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Duck%20Dodgers%20Starring%20Daffy%20Duck%20%28U%29%20%28M3%29%20%5B%21%5D.zip">Duck Dodgers Starring Daffy Duck (U) (M3) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Duke%20Nukem%20-%20ZER0%20H0UR%20%28U%29%20%5B%21%5D.zip">Duke Nukem - ZER0 H0UR (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Duke%20Nukem%2064%20%28U%29%20%5B%21%5D.zip">Duke Nukem 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/ECW%20Hardcore%20Revolution%20%28U%29%20%5B%21%5D.zip">ECW Hardcore Revolution (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Earthworm%20Jim%203D%20%28U%29%20%5B%21%5D.zip">Earthworm Jim 3D (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Elmo%27s%20Letter%20Adventure%20%28U%29%20%5B%21%5D.zip">Elmo's Letter Adventure (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Elmo%27s%20Number%20Journey%20%28U%29%20%5B%21%5D.zip">Elmo's Number Journey (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Elmo_s%20Letter%20Adventure%20%28U%29%20%5B%21%5D.zip">Elmo_s Letter Adventure (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Elmo_s%20Number%20Journey%20%28U%29%20%5B%21%5D.zip">Elmo_s Number Journey (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Excitebike%2064%20%28U%29%20%5B%21%5D.zip">Excitebike 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Extreme-G%20%28U%29%20%5B%21%5D.zip">Extreme-G (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Extreme-G%20XG2%20%28U%29%20%5B%21%5D.zip">Extreme-G XG2 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/F-1%20Pole%20Position%2064%20%28U%29%20%28M3%29%20%5B%21%5D.zip">F-1 Pole Position 64 (U) (M3) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/F-1%20World%20Grand%20Prix%20%28U%29%20%5B%21%5D.zip">F-1 World Grand Prix (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/F-ZERO%20X%20%28U%29%20%5B%21%5D.zip">F-ZERO X (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/FIFA%20-%20Road%20to%20World%20Cup%2098%20%28U%29%20%28M7%29%20%5B%21%5D.zip">FIFA - Road to World Cup 98 (U) (M7) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/FIFA%2099%20%28U%29%20%5B%21%5D.zip">FIFA 99 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/FIFA%20Soccer%2064%20%28U%29%20%28M3%29%20%5B%21%5D.zip">FIFA Soccer 64 (U) (M3) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Fighter%27s%20Destiny%20%28U%29%20%5B%21%5D.zip">Fighter's Destiny (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Fighter%20Destiny%202%20%28U%29%20%5B%21%5D.zip">Fighter Destiny 2 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Fighting%20Force%2064%20%28U%29%20%5B%21%5D.zip">Fighting Force 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Flying%20Dragon%20%28U%29%20%5B%21%5D.zip">Flying Dragon (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Forsaken%2064%20%28U%29%20%5B%21%5D.zip">Forsaken 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Fox%20Sports%20College%20Hoops%20%2799%20%28U%29%20%5B%21%5D.zip">Fox Sports College Hoops '99 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Frogger%202%20%28U%29%20%28Alpha%29%20%5B%21%5D.zip">Frogger 2 (U) (Alpha) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/GT%2064%20-%20Championship%20Edition%20%28U%29%20%5B%21%5D.zip">GT 64 - Championship Edition (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Gauntlet%20Legends%20%28U%29%20%5B%21%5D.zip">Gauntlet Legends (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Gex%203%20-%20Deep%20Cover%20Gecko%20%28U%29%20%5B%21%5D.zip">Gex 3 - Deep Cover Gecko (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Gex%2064%20-%20Enter%20the%20Gecko%20%28U%29%20%5B%21%5D.zip">Gex 64 - Enter the Gecko (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Glover%20%28U%29%20%5B%21%5D.zip">Glover (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Goemon%27s%20Great%20Adventure%20%28U%29%20%5B%21%5D.zip">Goemon's Great Adventure (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Goemon_s%20Great%20Adventure%20%28U%29%20%5B%21%5D.zip">Goemon_s Great Adventure (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/GoldenEye%20007%20%28U%29%20%5B%21%5D.zip">GoldenEye 007 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Golden%20Nugget%2064%20%28U%29%20%5B%21%5D.zip">Golden Nugget 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Harvest%20Moon%2064%20%28U%29%20%5B%21%5D.zip">Harvest Moon 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Hercules%20-%20The%20Legendary%20Journeys%20%28U%29%20%5B%21%5D.zip">Hercules - The Legendary Journeys (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Hexen%20%28U%29%20%5B%21%5D.zip">Hexen (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Hey%20You%2C%20Pikachu%21%20%28U%29%20%5B%21%5D.zip">Hey You, Pikachu! (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Hot%20Wheels%20Turbo%20Racing%20%28U%29%20%5B%21%5D.zip">Hot Wheels Turbo Racing (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Hybrid%20Heaven%20%28U%29%20%5B%21%5D.zip">Hybrid Heaven (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Hydro%20Thunder%20%28U%29%20%5B%21%5D.zip">Hydro Thunder (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Iggy%27s%20Reckin%27%20Balls%20%28U%29%20%5B%21%5D.zip">Iggy's Reckin' Balls (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/In-Fisherman%20Bass%20Hunter%2064%20%28U%29%20%5B%21%5D.zip">In-Fisherman Bass Hunter 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Indiana%20Jones%20and%20the%20Infernal%20Machine%20%28U%29%20%5B%21%5D.zip">Indiana Jones and the Infernal Machine (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Indy%20Racing%202000%20%28U%29%20%5B%21%5D.zip">Indy Racing 2000 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/International%20Superstar%20Soccer%20%2798%20%28U%29%20%5B%21%5D.zip">International Superstar Soccer '98 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/International%20Superstar%20Soccer%2064%20%28U%29%20%5B%21%5D.zip">International Superstar Soccer 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/International%20Superstar%20Soccer%202000%20%28U%29%20%28M2%29%20%5B%21%5D.zip">International Superstar Soccer 2000 (U) (M2) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/International%20Superstar%20Soccer%20_98%20%28U%29%20%5B%21%5D.zip">International Superstar Soccer _98 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/International%20Track%20%26%20Field%202000%20%28U%29%20%5B%21%5D.zip">International Track & Field 2000 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Jeopardy%21%20%28U%29%20%5B%21%5D.zip">Jeopardy! (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Jeremy%20McGrath%20Supercross%202000%20%28U%29%20%5B%21%5D.zip">Jeremy McGrath Supercross 2000 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Jet%20Force%20Gemini%20%28U%29%20%5B%21%5D.zip">Jet Force Gemini (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/John%20Romero%27s%20Daikatana%20%28U%29%20%5B%21%5D.zip">John Romero's Daikatana (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/John%20Romero_s%20Daikatana%20%28U%29%20%5B%21%5D.zip">John Romero_s Daikatana (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Ken%20Griffey%20Jr.%27s%20Slugfest%20%28U%29%20%5B%21%5D.zip">Ken Griffey Jr.'s Slugfest (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Killer%20Instinct%20Gold%20%28U%29%20%28V1.2%29%20%5B%21%5D.zip">Killer Instinct Gold (U) (V1.2) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Kirby%2064%20-%20The%20Crystal%20Shards%20%28U%29%20%5B%21%5D.zip">Kirby 64 - The Crystal Shards (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Knife%20Edge%20-%20Nose%20Gunner%20%28U%29%20%5B%21%5D.zip">Knife Edge - Nose Gunner (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Knockout%20Kings%202000%20%28U%29%20%5B%21%5D.zip">Knockout Kings 2000 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Kobe%20Bryant%27s%20NBA%20Courtside%20%28U%29%20%5B%21%5D.zip">Kobe Bryant's NBA Courtside (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Kobe%20Bryant_s%20NBA%20Courtside%20%28U%29%20%5B%21%5D.zip">Kobe Bryant_s NBA Courtside (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/LEGO%20Racers%20%28U%29%20%28M10%29%20%5B%21%5D.zip">LEGO Racers (U) (M10) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Legend%20of%20Zelda%2C%20The%20-%20Majora%27s%20Mask%20%28U%29%20%5B%21%5D.zip">Legend of Zelda, The - Majora's Mask (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Legend%20of%20Zelda%2C%20The%20-%20Majora_s%20Mask%20%28U%29%20%5B%21%5D.zip">Legend of Zelda, The - Majora_s Mask (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Legend%20of%20Zelda%2C%20The%20-%20Ocarina%20of%20Time%20%28U%29%20%28V1.2%29%20%5B%21%5D.zip">Legend of Zelda, The - Ocarina of Time (U) (V1.2) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Legend%20of%20Zelda%2C%20The%20-%20Ocarina%20of%20Time%20-%20Master%20Quest%20%28U%29%20%28GC%29%20%5B%21%5D.zip">Legend of Zelda, The - Ocarina of Time - Master Quest (U) (GC) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Lode%20Runner%203-D%20%28U%29%20%5B%21%5D.zip">Lode Runner 3-D (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/MRC%20-%20Multi%20Racing%20Championship%20%28U%29%20%5B%21%5D.zip">MRC - Multi Racing Championship (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Mace%20-%20The%20Dark%20Age%20%28U%29%20%5B%21%5D.zip">Mace - The Dark Age (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Madden%20Football%2064%20%28U%29%20%5B%21%5D.zip">Madden Football 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Madden%20NFL%2099%20%28U%29%20%5B%21%5D.zip">Madden NFL 99 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Madden%20NFL%202000%20%28U%29%20%5B%21%5D.zip">Madden NFL 2000 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Madden%20NFL%202001%20%28U%29%20%5B%21%5D.zip">Madden NFL 2001 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Madden%20NFL%202002%20%28U%29%20%5B%21%5D.zip">Madden NFL 2002 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Magical%20Tetris%20Challenge%20%28U%29%20%5B%21%5D.zip">Magical Tetris Challenge (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Major%20League%20Baseball%20Featuring%20Ken%20Griffey%20Jr.%20%28U%29%20%5B%21%5D.zip">Major League Baseball Featuring Ken Griffey Jr. (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Mario%20Golf%20%28U%29%20%5B%21%5D.zip">Mario Golf (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Mario%20Kart%2064%20%28U%29%20%5B%21%5D.zip">Mario Kart 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Mario%20Party%20%28U%29%20%5B%21%5D.zip">Mario Party (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Mario%20Party%202%20%28U%29%20%5B%21%5D.zip">Mario Party 2 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Mario%20Party%203%20%28U%29%20%5B%21%5D.zip">Mario Party 3 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Mario%20Tennis%20%28U%29%20%5B%21%5D.zip">Mario Tennis (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Mega%20Man%2064%20%28U%29%20%5B%21%5D.zip">Mega Man 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Mia%20Hamm%20Soccer%2064%20%28U%29%20%28M2%29%20%5B%21%5D.zip">Mia Hamm Soccer 64 (U) (M2) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Mickey%27s%20Speedway%20USA%20%28U%29%20%5B%21%5D.zip">Mickey's Speedway USA (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Mickey_s%20Speedway%20USA%20%28U%29%20%5B%21%5D.zip">Mickey_s Speedway USA (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Micro%20Machines%2064%20Turbo%20%28U%29%20%5B%21%5D.zip">Micro Machines 64 Turbo (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Midway%27s%20Greatest%20Arcade%20Hits%20Volume%201%20%28U%29%20%5B%21%5D.zip">Midway's Greatest Arcade Hits Volume 1 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Midway_s%20Greatest%20Arcade%20Hits%20Volume%201%20%28U%29%20%5B%21%5D.zip">Midway_s Greatest Arcade Hits Volume 1 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Mike%20Piazza%27s%20Strike%20Zone%20%28U%29%20%5B%21%5D.zip">Mike Piazza's Strike Zone (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Mike%20Piazza_s%20Strike%20Zone%20%28U%29%20%5B%21%5D.zip">Mike Piazza_s Strike Zone (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Milo%27s%20Astro%20Lanes%20%28U%29%20%5B%21%5D.zip">Milo's Astro Lanes (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Milo_s%20Astro%20Lanes%20%28U%29%20%5B%21%5D.zip">Milo_s Astro Lanes (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Mischief%20Makers%20%28U%29%20%5B%21%5D.zip">Mischief Makers (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Mission%20Impossible%20%28U%29%20%5B%21%5D.zip">Mission Impossible (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Monaco%20Grand%20Prix%20%28U%29%20%5B%21%5D.zip">Monaco Grand Prix (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Monopoly%20%28U%29%20%5B%21%5D.zip">Monopoly (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Monster%20Truck%20Madness%2064%20%28U%29%20%5B%21%5D.zip">Monster Truck Madness 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Mortal%20Kombat%204%20%28U%29%20%5B%21%5D.zip">Mortal Kombat 4 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Mortal%20Kombat%20Mythologies%20-%20Sub-Zero%20%28U%29%20%5B%21%5D.zip">Mortal Kombat Mythologies - Sub-Zero (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Mortal%20Kombat%20Trilogy%20%28U%29%20%28V1.2%29%20%5B%21%5D.zip">Mortal Kombat Trilogy (U) (V1.2) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Ms.%20Pac-Man%20-%20Maze%20Madness%20%28U%29%20%5B%21%5D.zip">Ms. Pac-Man - Maze Madness (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Mystical%20Ninja%20Starring%20Goemon%20%28U%29%20%5B%21%5D.zip">Mystical Ninja Starring Goemon (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NASCAR%2099%20%28U%29%20%5B%21%5D.zip">NASCAR 99 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NASCAR%202000%20%28U%29%20%5B%21%5D.zip">NASCAR 2000 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NBA%20Courtside%202%20-%20Featuring%20Kobe%20Bryant%20%28U%29%20%5B%21%5D.zip">NBA Courtside 2 - Featuring Kobe Bryant (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NBA%20Hangtime%20%28U%29%20%5B%21%5D.zip">NBA Hangtime (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NBA%20In%20the%20Zone%20%2798%20%28U%29%20%5B%21%5D.zip">NBA In the Zone '98 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NBA%20In%20the%20Zone%20%2799%20%28U%29%20%5B%21%5D.zip">NBA In the Zone '99 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NBA%20In%20the%20Zone%202000%20%28U%29%20%5B%21%5D.zip">NBA In the Zone 2000 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NBA%20In%20the%20Zone%20_98%20%28U%29%20%5B%21%5D.zip">NBA In the Zone _98 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NBA%20Jam%2099%20%28U%29%20%5B%21%5D.zip">NBA Jam 99 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NBA%20Jam%202000%20%28U%29%20%5B%21%5D.zip">NBA Jam 2000 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NBA%20Live%2099%20%28U%29%20%28M5%29%20%5B%21%5D.zip">NBA Live 99 (U) (M5) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NBA%20Live%202000%20%28U%29%20%28M4%29%20%5B%21%5D.zip">NBA Live 2000 (U) (M4) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NBA%20Showtime%20-%20NBA%20on%20NBC%20%28U%29%20%5B%21%5D.zip">NBA Showtime - NBA on NBC (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NFL%20Blitz%20%28U%29%20%5B%21%5D.zip">NFL Blitz (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NFL%20Blitz%20-%20Special%20Edition%20%28U%29%20%5B%21%5D.zip">NFL Blitz - Special Edition (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NFL%20Blitz%202000%20%28U%29%20%5B%21%5D.zip">NFL Blitz 2000 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NFL%20Blitz%202001%20%28U%29%20%5B%21%5D.zip">NFL Blitz 2001 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NFL%20Quarterback%20Club%2098%20%28U%29%20%5B%21%5D.zip">NFL Quarterback Club 98 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NFL%20Quarterback%20Club%2099%20%28U%29%20%5B%21%5D.zip">NFL Quarterback Club 99 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NFL%20Quarterback%20Club%202000%20%28U%29%20%5B%21%5D.zip">NFL Quarterback Club 2000 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NFL%20Quarterback%20Club%202001%20%28U%29%20%5B%21%5D.zip">NFL Quarterback Club 2001 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NHL%2099%20%28U%29%20%5B%21%5D.zip">NHL 99 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NHL%20Blades%20of%20Steel%20%2799%20%28U%29%20%5B%21%5D.zip">NHL Blades of Steel '99 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NHL%20Breakaway%2098%20%28U%29%20%5B%21%5D.zip">NHL Breakaway 98 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/NHL%20Breakaway%2099%20%28U%29%20%5B%21%5D.zip">NHL Breakaway 99 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Nagano%20Winter%20Olympics%20%2798%20%28U%29%20%5B%21%5D.zip">Nagano Winter Olympics '98 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Nagano%20Winter%20Olympics%20_98%20%28U%29%20%5B%21%5D.zip">Nagano Winter Olympics _98 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Namco%20Museum%2064%20%28U%29%20%5B%21%5D.zip">Namco Museum 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/New%20Tetris%2C%20The%20%28U%29%20%5B%21%5D.zip">New Tetris, The (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Nightmare%20Creatures%20%28U%29%20%5B%21%5D.zip">Nightmare Creatures (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Nuclear%20Strike%2064%20%28U%29%20%5B%21%5D.zip">Nuclear Strike 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/O.D.T.%20%28U%29%20%28M3%29%20%5B%21%5D.zip">O.D.T. (U) (M3) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Off%20Road%20Challenge%20%28U%29%20%5B%21%5D.zip">Off Road Challenge (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Ogre%20Battle%2064%20-%20Person%20of%20Lordly%20Caliber%20%28U%29%20%5B%21%5D.zip">Ogre Battle 64 - Person of Lordly Caliber (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Olympic%20Hockey%20Nagano%20%2798%20%28U%29%20%5B%21%5D.zip">Olympic Hockey Nagano '98 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/PGA%20European%20Tour%20%28U%29%20%5B%21%5D.zip">PGA European Tour (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Paper%20Mario%20%28U%29%20%5B%21%5D.zip">Paper Mario (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Paperboy%20%28U%29%20%5B%21%5D.zip">Paperboy (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Penny%20Racers%20%28U%29%20%5B%21%5D.zip">Penny Racers (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Perfect%20Dark%20%28U%29%20%28V1.1%29%20%5B%21%5D.zip">Perfect Dark (U) (V1.1) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Pilotwings%2064%20%28U%29%20%5B%21%5D.zip">Pilotwings 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Pokemon%20Puzzle%20League%20%28U%29%20%5B%21%5D.zip">Pokemon Puzzle League (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Pokemon%20Snap%20%28U%29%20%5B%21%5D.zip">Pokemon Snap (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Pokemon%20Snap%20Station%20%28U%29%20%5B%21%5D.zip">Pokemon Snap Station (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Pokemon%20Stadium%20%28U%29%20%28V1.1%29%20%5B%21%5D.zip">Pokemon Stadium (U) (V1.1) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Pokemon%20Stadium%202%20%28U%29%20%5B%21%5D.zip">Pokemon Stadium 2 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Polaris%20SnoCross%20%28U%29%20%5B%21%5D.zip">Polaris SnoCross (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Power%20Rangers%20-%20Lightspeed%20Rescue%20%28U%29%20%5B%21%5D.zip">Power Rangers - Lightspeed Rescue (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Powerpuff%20Girls%2C%20The%20-%20Chemical%20X-Traction%20%28U%29%20%5B%21%5D.zip">Powerpuff Girls, The - Chemical X-Traction (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Premier%20Manager%2064%20%28E%29%20%5B%21%5D.zip">Premier Manager 64 (E) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Quake%2064%20%28U%29%20%5B%21%5D.zip">Quake 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Quake%20II%20%28U%29%20%5B%21%5D.zip">Quake II (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Quest%2064%20%28U%29%20%5B%21%5D.zip">Quest 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/RR64%20-%20Ridge%20Racer%2064%20%28U%29%20%5B%21%5D.zip">RR64 - Ridge Racer 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Rally%20Challenge%202000%20%28U%29%20%5B%21%5D.zip">Rally Challenge 2000 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Rampage%20-%20World%20Tour%20%28U%29%20%5B%21%5D.zip">Rampage - World Tour (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Rampage%202%20-%20Universal%20Tour%20%28U%29%20%5B%21%5D.zip">Rampage 2 - Universal Tour (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Rat%20Attack%20%28U%29%20%28M6%29%20%5B%21%5D.zip">Rat Attack (U) (M6) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Rayman%202%20-%20The%20Great%20Escape%20%28U%29%20%28M5%29%20%5B%21%5D.zip">Rayman 2 - The Great Escape (U) (M5) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Razor%20Freestyle%20Scooter%20%28U%29%20%5B%21%5D.zip">Razor Freestyle Scooter (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Re-Volt%20%28U%29%20%5B%21%5D.zip">Re-Volt (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Ready%202%20Rumble%20Boxing%20%28U%29%20%5B%21%5D.zip">Ready 2 Rumble Boxing (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Ready%202%20Rumble%20Boxing%20-%20Round%202%20%28U%29%20%5B%21%5D.zip">Ready 2 Rumble Boxing - Round 2 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Resident%20Evil%202%20%28U%29%20%28V1.1%29%20%5B%21%5D.zip">Resident Evil 2 (U) (V1.1) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Road%20Rash%2064%20%28U%29%20%5B%21%5D.zip">Road Rash 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Roadsters%20Trophy%20%28U%29%20%28M3%29%20%5B%21%5D.zip">Roadsters Trophy (U) (M3) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Robotron%2064%20%28U%29%20%5B%21%5D.zip">Robotron 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Rocket%20-%20Robot%20on%20Wheels%20%28U%29%20%5B%21%5D.zip">Rocket - Robot on Wheels (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Rugrats%20-%20Scavenger%20Hunt%20%28U%29%20%5B%21%5D.zip">Rugrats - Scavenger Hunt (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Rugrats%20in%20Paris%20-%20The%20Movie%20%28U%29%20%5B%21%5D.zip">Rugrats in Paris - The Movie (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Rush%202%20-%20Extreme%20Racing%20USA%20%28U%29%20%5B%21%5D.zip">Rush 2 - Extreme Racing USA (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/S.C.A.R.S.%20%28U%29%20%5B%21%5D.zip">S.C.A.R.S. (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/San%20Francisco%20Rush%20-%20Extreme%20Racing%20%28U%29%20%28M3%29%20%5B%21%5D.zip">San Francisco Rush - Extreme Racing (U) (M3) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/San%20Francisco%20Rush%202049%20%28U%29%20%5B%21%5D.zip">San Francisco Rush 2049 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Scooby-Doo%21%20-%20Classic%20Creep%20Capers%20%28U%29%20%5B%21%5D.zip">Scooby-Doo! - Classic Creep Capers (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Shadow%20Man%20%28U%29%20%5B%21%5D.zip">Shadow Man (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Shadowgate%2064%20-%20Trials%20Of%20The%20Four%20Towers%20%28U%29%20%28M2%29%20%5B%21%5D.zip">Shadowgate 64 - Trials Of The Four Towers (U) (M2) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Snowboard%20Kids%20%28U%29%20%5B%21%5D.zip">Snowboard Kids (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Snowboard%20Kids%202%20%28U%29%20%5B%21%5D.zip">Snowboard Kids 2 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/South%20Park%20%28U%29%20%5B%21%5D.zip">South Park (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/South%20Park%20-%20Chef%27s%20Luv%20Shack%20%28U%29%20%5B%21%5D.zip">South Park - Chef's Luv Shack (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/South%20Park%20Rally%20%28U%29%20%5B%21%5D.zip">South Park Rally (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Space%20Invaders%20%28U%29%20%5B%21%5D.zip">Space Invaders (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Space%20Station%20Silicon%20Valley%20%28U%29%20%5B%21%5D.zip">Space Station Silicon Valley (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Spider-Man%20%28U%29%20%5B%21%5D.zip">Spider-Man (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/StarCraft%2064%20%28U%29%20%5B%21%5D.zip">StarCraft 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Star%20Fox%2064%20%28U%29%20%28V1.1%29%20%5B%21%5D.zip">Star Fox 64 (U) (V1.1) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Star%20Soldier%20-%20Vanishing%20Earth%20%28U%29%20%5B%21%5D.zip">Star Soldier - Vanishing Earth (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Star%20Wars%20-%20Rogue%20Squadron%20%28U%29%20%28M3%29%20%5B%21%5D.zip">Star Wars - Rogue Squadron (U) (M3) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Star%20Wars%20-%20Shadows%20of%20the%20Empire%20%28U%29%20%28V1.2%29%20%5B%21%5D.zip">Star Wars - Shadows of the Empire (U) (V1.2) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Star%20Wars%20Episode%20I%20-%20Battle%20for%20Naboo%20%28U%29%20%5B%21%5D.zip">Star Wars Episode I - Battle for Naboo (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Star%20Wars%20Episode%20I%20-%20Racer%20%28U%29%20%5B%21%5D.zip">Star Wars Episode I - Racer (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Starshot%20-%20Space%20Circus%20Fever%20%28U%29%20%28M3%29%20%5B%21%5D.zip">Starshot - Space Circus Fever (U) (M3) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Stunt%20Racer%2064%20%28U%29%20%5B%21%5D.zip">Stunt Racer 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Super%20Bowling%2064%20%28U%29%20%5B%21%5D.zip">Super Bowling 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Super%20Mario%2064%20%28U%29%20%5B%21%5D.zip">Super Mario 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Super%20Smash%20Bros.%20%28U%29%20%5B%21%5D.zip">Super Smash Bros. (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Supercross%202000%20%28U%29%20%5B%21%5D.zip">Supercross 2000 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Superman%20%28U%29%20%28M3%29%20%5B%21%5D.zip">Superman (U) (M3) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Tetrisphere%20%28U%29%20%5B%21%5D.zip">Tetrisphere (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Tigger%27s%20Honey%20Hunt%20%28U%29%20%5B%21%5D.zip">Tigger's Honey Hunt (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Tom%20Clancy%27s%20Rainbow%20Six%20%28U%29%20%5B%21%5D.zip">Tom Clancy's Rainbow Six (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Tom%20and%20Jerry%20in%20Fists%20of%20Furry%20%28U%29%20%5B%21%5D.zip">Tom and Jerry in Fists of Furry (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Tonic%20Trouble%20%28U%29%20%28V1.1%29%20%5B%21%5D.zip">Tonic Trouble (U) (V1.1) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Tony%20Hawk%27s%20Pro%20Skater%20%28U%29%20%28V1.1%29%20%5B%21%5D.zip">Tony Hawk's Pro Skater (U) (V1.1) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Tony%20Hawk%27s%20Pro%20Skater%202%20%28U%29%20%5B%21%5D.zip">Tony Hawk's Pro Skater 2 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Tony%20Hawk%27s%20Pro%20Skater%203%20%28U%29.zip">Tony Hawk's Pro Skater 3 (U)</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Tony%20Hawk_s%20Pro%20Skater%20%28U%29%20%28V1.1%29%20%5B%21%5D.zip">Tony Hawk_s Pro Skater (U) (V1.1) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Tony%20Hawk_s%20Pro%20Skater%202%20%28U%29%20%5B%21%5D.zip">Tony Hawk_s Pro Skater 2 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Tony%20Hawk_s%20Pro%20Skater%203%20%28U%29.zip">Tony Hawk_s Pro Skater 3 (U)</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Top%20Gear%20Hyper%20Bike%20%28U%29%20%5B%21%5D.zip">Top Gear Hyper Bike (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Top%20Gear%20Overdrive%20%28U%29%20%5B%21%5D.zip">Top Gear Overdrive (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Top%20Gear%20Rally%20%28U%29%20%5B%21%5D.zip">Top Gear Rally (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Top%20Gear%20Rally%202%20%28U%29%20%5B%21%5D.zip">Top Gear Rally 2 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Toy%20Story%202%20%28U%29%20%5B%21%5D.zip">Toy Story 2 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Transformers%20-%20Beast%20Wars%20Transmetal%20%28U%29%20%5B%21%5D.zip">Transformers - Beast Wars Transmetal (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Triple%20Play%202000%20%28U%29%20%5B%21%5D.zip">Triple Play 2000 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Turok%20-%20Dinosaur%20Hunter%20%28U%29%20%28V1.2%29%20%5B%21%5D.zip">Turok - Dinosaur Hunter (U) (V1.2) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Turok%20-%20Rage%20Wars%20%28U%29%20%5B%21%5D.zip">Turok - Rage Wars (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Turok%202%20-%20Seeds%20of%20Evil%20%28U%29%20%5B%21%5D.zip">Turok 2 - Seeds of Evil (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Turok%203%20-%20Shadow%20of%20Oblivion%20%28U%29%20%5B%21%5D.zip">Turok 3 - Shadow of Oblivion (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Twisted%20Edge%20Extreme%20Snowboarding%20%28U%29%20%5B%21%5D.zip">Twisted Edge Extreme Snowboarding (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/V-Rally%20Edition%2099%20%28U%29%20%5B%21%5D.zip">V-Rally Edition 99 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Vigilante%208%20%28U%29%20%5B%21%5D.zip">Vigilante 8 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Vigilante%208%20-%202nd%20Offense%20%28U%29%20%5B%21%5D.zip">Vigilante 8 - 2nd Offense (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Virtual%20Chess%2064%20%28U%29%20%28M3%29%20%5B%21%5D.zip">Virtual Chess 64 (U) (M3) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Virtual%20Pool%2064%20%28U%29%20%5B%21%5D.zip">Virtual Pool 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/WCW-nWo%20Revenge%20%28U%29%20%5B%21%5D.zip">WCW-nWo Revenge (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/WCW%20Backstage%20Assault%20%28U%29%20%5B%21%5D.zip">WCW Backstage Assault (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/WCW%20Mayhem%20%28U%29%20%5B%21%5D.zip">WCW Mayhem (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/WCW%20Nitro%20%28U%29%20%5B%21%5D.zip">WCW Nitro (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/WCW%20vs.%20nWo%20-%20World%20Tour%20%28U%29%20%28V1.1%29%20%5B%21%5D.zip">WCW vs. nWo - World Tour (U) (V1.1) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/WWF%20-%20War%20Zone%20%28U%29%20%5B%21%5D.zip">WWF - War Zone (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/WWF%20Attitude%20%28U%29%20%5B%21%5D.zip">WWF Attitude (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/WWF%20No%20Mercy%20%28U%29%20%28V1.0%29%20%5B%21%5D.zip">WWF No Mercy (U) (V1.0) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/WWF%20WrestleMania%202000%20%28U%29%20%5B%21%5D.zip">WWF WrestleMania 2000 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Waialae%20Country%20Club%20-%20True%20Golf%20Classics%20%28U%29%20%28V1.0%29%20%5B%21%5D.zip">Waialae Country Club - True Golf Classics (U) (V1.0) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/War%20Gods%20%28U%29%20%5B%21%5D.zip">War Gods (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Wave%20Race%2064%20%28U%29%20%28V1.1%29%20%5B%21%5D.zip">Wave Race 64 (U) (V1.1) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Wayne%20Gretzky%27s%203D%20Hockey%20%2798%20%28U%29%20%5B%21%5D.zip">Wayne Gretzky's 3D Hockey '98 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Wayne%20Gretzky%27s%203D%20Hockey%20%28U%29%20%28V1.1%29%20%5B%21%5D.zip">Wayne Gretzky's 3D Hockey (U) (V1.1) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Wayne%20Gretzky_s%203D%20Hockey%20%28U%29%20%28V1.1%29%20%5B%21%5D.zip">Wayne Gretzky_s 3D Hockey (U) (V1.1) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Wetrix%20%28U%29%20%28M6%29%20%5B%21%5D.zip">Wetrix (U) (M6) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Wheel%20of%20Fortune%20%28U%29%20%5B%21%5D.zip">Wheel of Fortune (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/WinBack%20-%20Covert%20Operations%20%28U%29%20%5B%21%5D.zip">WinBack - Covert Operations (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Wipeout%2064%20%28U%29%20%5B%21%5D.zip">Wipeout 64 (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/World%20Cup%2098%20%28U%29%20%28M8%29%20%5B%21%5D.zip">World Cup 98 (U) (M8) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/World%20Driver%20Championship%20%28U%29%20%5B%21%5D.zip">World Driver Championship (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Worms%20-%20Armageddon%20%28U%29%20%28M3%29%20%5B%21%5D.zip">Worms - Armageddon (U) (M3) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Xena%20Warrior%20Princess%20-%20The%20Talisman%20of%20Fate%20%28U%29%20%5B%21%5D.zip">Xena Warrior Princess - The Talisman of Fate (U) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Yoshi%27s%20Story%20%28U%29%20%28M2%29%20%5B%21%5D.zip">Yoshi's Story (U) (M2) [!]</option>
+<option value="https://archive.org/download/nintendo-nintendo-64_202412/Nintendo%20-%20Nintendo%2064.zip/Yoshi_s%20Story%20%28U%29%20%28M2%29%20%5B%21%5D.zip">Yoshis Story (U) (M2) [!]</option>
+        `;
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(optionsHTML, 'text/html');
+        const options = doc.querySelectorAll('option');
+
+        const games = Array.from(options).map(option => {
+            const title = option.textContent;
+            const url = option.value;
+            const thumbnail = `thumbnails/Nintendo - Nintendo 64/${title}.png`;
+            return { title, url, thumbnail };
+        });
+
+        let currentGameIndex = 0;
+        let filteredGames = games;
+        let isLoaderLoaded = false;
+        const EJS_player = '#game';
+        const EJS_core = 'n64';
+        const soundEffect = new Audio('sounds/menu-sound.mp3');
+
+        function updateThumbnail(index) {
+            const game = filteredGames[index];
+            const thumbnailElement = document.getElementById('gameThumbnail');
+            document.getElementById('gameTitle').textContent = game.title;
+            thumbnailElement.src = game.thumbnail;
+            thumbnailElement.style.display = 'block';
+            thumbnailElement.style.zIndex = '5';
+
+            thumbnailElement.onerror = function() {
+                this.src = 'thumbnails/default.png';
+            };
+
+            soundEffect.play().catch(error => {
+                console.error('Erro ao reproduzir o som:', error);
+            });
+        }
+
+        function hideUIElements() {
+            document.querySelector('.thumbnail-container').style.display = 'none';
+            document.querySelector('.search-container').style.display = 'none';
+            document.querySelectorAll('.arrow-button').forEach(arrow => arrow.style.display = 'none');
+        }
+
+        function loadGame() {
+            const game = filteredGames[currentGameIndex];
+            EJS_gameUrl = game.url;
+
+            hideUIElements();
+            focusGame();
+
+            if (!isLoaderLoaded) {
+                const script = document.createElement('script');
+                script.src = 'https://www.emulatorjs.com/loader.js';
+                script.onload = () => {
+                    isLoaderLoaded = true;
+                    console.log('Loader carregado.');
+                };
+                script.onerror = () => {
+                    console.error('Falha ao carregar o emulador. Verifique sua conexão.');
+                };
+                document.body.appendChild(script);
+            } else {
+                console.log('Carregando novo jogo: ', game.url);
+            }
+        }
+
+        function focusGame() {
+            const gameElement = document.getElementById('game');
+            gameElement.focus();
+            gameElement.style.boxShadow = '0 0 10px 2px rgba(255, 255, 255, 0.8)';
+        }
+
+        updateThumbnail(currentGameIndex);
+
+        document.addEventListener('keydown', (e) => {
+            if (filteredGames.length > 0) {
+                if (e.key === 'ArrowDown') {
+                    currentGameIndex = (currentGameIndex + 1) % filteredGames.length;
+                    updateThumbnail(currentGameIndex);
+                } else if (e.key === 'ArrowUp') {
+                    currentGameIndex = (currentGameIndex - 1 + filteredGames.length) % filteredGames.length;
+                    updateThumbnail(currentGameIndex);
+                } else if (e.key === 'Enter') {
+                    loadGame();
+                }
+            }
+        });
+
+        document.addEventListener('wheel', (e) => {
+            if (filteredGames.length > 0) {
+                if (e.deltaY > 0) {
+                    currentGameIndex = (currentGameIndex + 1) % filteredGames.length;
+                } else {
+                    currentGameIndex = (currentGameIndex - 1 + filteredGames.length) % filteredGames.length;
+                }
+                updateThumbnail(currentGameIndex);
+            }
+        });
+
+        document.getElementById('search').addEventListener('input', function() {
+            const filter = this.value.toLowerCase();
+            filteredGames = games.filter(game => game.title.toLowerCase().includes(filter));
+            currentGameIndex = 0;
+
+            if (filteredGames.length > 0) {
+                updateThumbnail(currentGameIndex);
+            } else {
+                document.getElementById('gameTitle').textContent = 'Nenhum jogo encontrado';
+                document.getElementById('gameThumbnail').style.display = 'none';
+            }
+        });
+
+        document.getElementById('gameThumbnail').addEventListener('click', loadGame);
+        document.getElementById('gameThumbnail').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                loadGame();
+            }
+        });
+
+        document.getElementById('game').addEventListener('click', loadGame);
+
+        let selectPressed = false;
+        let startPressed = false;
+        let comboPressTimer;
+        let selectHoldTimer;
+
+        function checkComboPress() {
+            if (selectPressed && startPressed) {
+                console.log("Mudando para o modo navegação");
+                hideUIElements();
+                focusGame();
+            }
+        }
+
+        function toggleFullscreen() {
+            const gameElement = document.getElementById('game');
+            if (!document.fullscreenElement) {
+                gameElement.requestFullscreen().catch(err => {
+                    console.error(`Erro ao tentar entrar em fullscreen: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        window.addEventListener("gamepadconnected", function(e) {
+            console.log("Gamepad conectado: ", e.gamepad);
+        });
+
+        window.addEventListener("gamepaddisconnected", function(e) {
+            console.log("Gamepad desconectado: ", e.gamepad);
+        });
+
+        function monitorGamepad() {
+            const gamepads = navigator.getGamepads();
+            if (gamepads[0]) {
+                const gamepad = gamepads[0];
+
+                selectPressed = gamepad.buttons[8].pressed;
+                startPressed = gamepad.buttons[9].pressed;
+
+                if (selectPressed) {
+                    if (!selectHoldTimer) {
+                        selectHoldTimer = setTimeout(() => {
+                            toggleFullscreen();
+                            selectHoldTimer = null;
+                        }, 2000);
+                    }
+                } else {
+                    clearTimeout(selectHoldTimer);
+                    selectHoldTimer = null;
+                }
+
+                if (selectPressed && startPressed) {
+                    if (!comboPressTimer) {
+                        comboPressTimer = setTimeout(checkComboPress, 1000);
+                    }
+                } else {
+                    clearTimeout(comboPressTimer);
+                    comboPressTimer = null;
+                }
+            }
+
+            requestAnimationFrame(monitorGamepad);
+        }
+
+        monitorGamepad();
+
+        document.getElementById('arrow-up').addEventListener('click', () => {
+            currentGameIndex = (currentGameIndex - 1 + filteredGames.length) % filteredGames.length;
+            updateThumbnail(currentGameIndex);
+        });
+
+        document.getElementById('arrow-down').addEventListener('click', () => {
+            currentGameIndex = (currentGameIndex + 1) % filteredGames.length;
+            updateThumbnail(currentGameIndex);
+        });
+    </script>
+</body>
+</html>

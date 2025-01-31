@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="icons/Atari 2600.png" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atari 2600</title>
+    <style>
+        @font-face {
+            font-family: 'ArcadeClassic';
+            src: url('arcadeclassic.ttf') format('truetype');
+        }
+
+        body {
+            background: url('wallpapers/Atari 2600.png') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .thumbnail-container {
+            width: 525px;
+            height: 405px;
+            position: absolute;
+            margin: auto;
+            bottom: 0;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .thumbnail {
+            display: none;
+            width: 525px;
+            height: 405px;
+            object-fit: contain;
+            transition: box-shadow 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .thumbnail:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+        }
+
+        .game-title {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .search-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 525px;
+            z-index: 10;
+        }
+
+        .search-input {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid white;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: white;
+        }
+
+        .search-input:hover,
+        .search-input:focus {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+            outline: none;
+        }
+
+        #game {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 5;
+            outline: none;
+        }
+
+        .button-container {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .action-button {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid white;
+            padding: 10px;
+            cursor: pointer;
+            width: 250px;
+            text-align: center;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .action-button:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+        }
+
+        .arrow-button {
+            display: none;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: 2px solid white;
+            padding: 10px;
+            font-size: 30px;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 0.3s ease;
+            z-index: 11;
+        }
+
+        .arrow-button:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+        }
+
+        #arrow-up {
+            top: -80px;
+        }
+
+        #arrow-down {
+            bottom: -80px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                background-position: left center;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                min-height: 100vh;
+                padding: 20px;
+                overflow: auto;
+            }
+
+            .search-container {
+                position: fixed !important;
+                top: 10px !important;
+                left: 50% !important;
+                transform: translateX(-50%);
+                width: 90% !important;
+                max-width: 525px;
+                margin: 0 auto;
+                z-index: 1000;
+                background: rgba(0, 0, 0, 0.7);
+                backdrop-filter: blur(5px);
+            }
+
+            .thumbnail-container {
+                position: fixed !important;
+                top: 0px !important;
+                left: 50% !important;
+                transform: translateX(-50%);
+                width: 95% !important;
+                max-width: 525px;
+                height: 350px !important;
+                aspect-ratio: 525/405;
+                margin: none !important;
+                z-index: 1000;
+            }
+
+            .thumbnail {
+                width: 100% !important;
+                height: 100% !important;
+                max-height: none !important;
+            }
+
+            main {
+                position: relative !important;
+                width: 100% !important;
+                max-width: 525px !important;
+                height: auto !important;
+                aspect-ratio: 525/405;
+                top: auto !important;
+                left: auto !important;
+                margin: 20px auto;
+            }
+
+            .button-container {
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90%;
+                max-width: 525px;
+                gap: 10px;
+                justify-content: space-between;
+            }
+
+            .action-button {
+                width: 48%;
+                font-size: 5vw;
+                padding: 10px;
+                margin: 0;
+            }
+
+            .arrow-button {
+                display: block !important;
+                width: 70px;
+                height: 90px;
+                font-size: 24px;
+            }
+
+            #arrow-up {
+                top: -110px;
+            }
+
+            #arrow-down {
+                bottom: -110px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main style="width:525px; height:405px; max-width:100%; margin: auto; position: absolute; top: 50px; bottom: 0; left: 20px;">
+        <div id="game" tabindex="0"></div>
+    </main>
+
+    <div class="thumbnail-container">
+        <div id="gameTitle" class="game-title"></div>
+        <img id="gameThumbnail" class="thumbnail" src="" alt="Thumbnail do Jogo" tabindex="0">
+        <button class="arrow-button" id="arrow-up" aria-label="Jogo Anterior">▲</button>
+        <button class="arrow-button" id="arrow-down" aria-label="Próximo Jogo">▼</button>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="search" class="search-input" placeholder="Buscar Jogo..." aria-label="Buscar Jogo">
+    </div>
+
+    <div class="button-container">
+        <button class="action-button" onclick="window.history.back()" aria-label="Voltar">Voltar</button>
+        <button class="action-button" onclick="window.location.reload()" aria-label="Recarregar">Recarregar</button>
+    </div>
+
+    <script type="text/javascript">
+        const optionsHTML = `
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/3-D%20Tic-Tac-Toe%20%28USA%29.zip">3-D Tic-Tac-Toe (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Activision%20Decathlon%2C%20The%20%28USA%29.zip">Activision Decathlon, The (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Adventure%20%28USA%29.zip">Adventure (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Adventures%20of%20TRON%20%28USA%29.zip">Adventures of TRON (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Air-Sea%20Battle%20~%20Target%20Fun%20%28Japan%2C%20USA%29.zip">Air-Sea Battle ~ Target Fun (Japan, USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Air%20Raid%20%28USA%29.zip">Air Raid (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Air%20Raiders%20%28USA%29.zip">Air Raiders (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Airlock%20%28USA%29.zip">Airlock (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Alien%20%28USA%29.zip">Alien (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Alpha%20Beam%20with%20Ernie%20%28Japan%2C%20USA%29.zip">Alpha Beam with Ernie (Japan, USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Amidar%20%28USA%29.zip">Amidar (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Armor%20Ambush%20%28USA%29.zip">Armor Ambush (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Artillery%20Duel%20%28USA%29.zip">Artillery Duel (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Assault%20%28USA%29.zip">Assault (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Asteroids%20%28Japan%2C%20USA%29.zip">Asteroids (Japan, USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Astroblast%20%28USA%29%20%28v1.1%29.zip">Astroblast (USA) (v1.1)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Astroblast%20%28USA%29.zip">Astroblast (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Atari%20Video%20Cube%20%28USA%29.zip">Atari Video Cube (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Atlantis%20%28USA%29.zip">Atlantis (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Atlantis%20II%20%28USA%29.zip">Atlantis II (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/BASIC%20Programming%20%28USA%29.zip">BASIC Programming (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/BMX%20Air%20Master%20%28USA%29.zip">BMX Air Master (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Bachelor%20Party%20%28USA%29.zip">Bachelor Party (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Bachelorette%20Party%20%28USA%29.zip">Bachelorette Party (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Backgammon%20%28USA%29.zip">Backgammon (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Bank%20Heist%20%28USA%29.zip">Bank Heist (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Barnstorming%20%28USA%29.zip">Barnstorming (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Basic%20Math%20%28USA%29.zip">Basic Math (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Basketball%20%28USA%29.zip">Basketball (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Battlezone%20%28Japan%2C%20USA%29.zip">Battlezone (Japan, USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Beamrider%20%28USA%29.zip">Beamrider (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Beany%20Bopper%20%28USA%29.zip">Beany Bopper (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Beat%27Em%20%26%20Eat%27Em%20%28USA%29.zip">Beat'Em & Eat'Em (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Berenstain%20Bears%20%28USA%29.zip">Berenstain Bears (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Bermuda%20Triangle%20%28USA%29.zip">Bermuda Triangle (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Berzerk%20%28Japan%2C%20USA%29.zip">Berzerk (Japan, USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Big%20Bird%27s%20Egg%20Catch%20%28Japan%2C%20USA%29.zip">Big Bird's Egg Catch (Japan, USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Black%20Jack%20%28USA%29.zip">Black Jack (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Blueprint%20%28USA%29.zip">Blueprint (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Bobby%20is%20Going%20Home%20%28USA%29.zip">Bobby is Going Home (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Boing%21%20%28USA%29.zip">Boing! (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Bowling%20%28USA%29.zip">Bowling (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Boxing%20%28USA%29.zip">Boxing (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Brain%20Games%20%28USA%29.zip">Brain Games (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Breakout%20~%20Breakaway%20IV%20%28Japan%2C%20USA%29.zip">Breakout ~ Breakaway IV (Japan, USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Bridge%20%28USA%29%20%28v1.1%29.zip">Bridge (USA) (v1.1)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Bridge%20%28USA%29.zip">Bridge (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Buck%20Rogers%20-%20Planet%20of%20Zoom%20%28USA%29.zip">Buck Rogers - Planet of Zoom (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Bugs%20%28USA%29.zip">Bugs (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Bump%20%27n%27%20Jump%20%28USA%29.zip">Bump 'n' Jump (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Bumper%20Bash%20%28USA%29.zip">Bumper Bash (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/BurgerTime%20%28USA%29.zip">BurgerTime (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Burning%20Desire%20%28USA%29.zip">Burning Desire (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Cakewalk%20%28USA%29.zip">Cakewalk (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/California%20Games%20%28USA%29.zip">California Games (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Canyon%20Bomber%20%28USA%29.zip">Canyon Bomber (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Carnival%20%28USA%29.zip">Carnival (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Casino%20~%20Poker%20Plus%20%28USA%29.zip">Casino ~ Poker Plus (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Cat%20Trax%20%28USA%29.zip">Cat Trax (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Cathouse%20Blues%20%28USA%29.zip">Cathouse Blues (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Centipede%20%28Japan%2C%20USA%29.zip">Centipede (Japan, USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Challenge%20%28Canada%29.zip">Challenge (Canada)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Challenge%20of....%20NEXAR%2C%20The%20%28USA%29.zip">Challenge of.... NEXAR, The (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Championship%20Soccer%20~%20Soccer%20%28USA%29.zip">Championship Soccer ~ Soccer (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Chase%20the%20Chuck%20Wagon%20%28USA%29.zip">Chase the Chuck Wagon (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Checkers%20%28USA%29.zip">Checkers (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/China%20Syndrome%20%28USA%29.zip">China Syndrome (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Chopper%20Command%20%28USA%29.zip">Chopper Command (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Chuck%20Norris%20Superkicks%20%28USA%29.zip">Chuck Norris Superkicks (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Circus%20Atari%20%28Japan%2C%20USA%29.zip">Circus Atari (Japan, USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Coco%20Nuts%20%28USA%29.zip">Coco Nuts (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Codebreaker%20%28USA%29.zip">Codebreaker (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Color%20Bar%20Generator%20%28USA%29.zip">Color Bar Generator (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Combat%20~%20Tank-Plus%20%28USA%29.zip">Combat ~ Tank-Plus (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Commando%20%28USA%29%20%28Alt%201%29.zip">Commando (USA) (Alt 1)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Commando%20%28USA%29.zip">Commando (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Commando%20Raid%20%28USA%29.zip">Commando Raid (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Communist%20Mutants%20from%20Space%20%28USA%29.zip">Communist Mutants from Space (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Condor%20Attack%20%28USA%29.zip">Condor Attack (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Congo%20Bongo%20%28USA%29.zip">Congo Bongo (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Cookie%20Monster%20Munch%20%28USA%29.zip">Cookie Monster Munch (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Cosmic%20Ark%20%28USA%29.zip">Cosmic Ark (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Cosmic%20Commuter%20%28USA%29.zip">Cosmic Commuter (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Cosmic%20Creeps%20%28USA%29.zip">Cosmic Creeps (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Cosmic%20Swarm%20%28USA%29.zip">Cosmic Swarm (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Crackpots%20%28USA%29.zip">Crackpots (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Crash%20Dive%20%28USA%29.zip">Crash Dive (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Crazy%20Climber%20%28USA%29.zip">Crazy Climber (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Cross%20Force%20%28USA%29.zip">Cross Force (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Crossbow%20%28USA%29.zip">Crossbow (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Crypts%20of%20Chaos%20%28USA%29.zip">Crypts of Chaos (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Crystal%20Castles%20%28USA%29.zip">Crystal Castles (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Custer%27s%20Revenge%20%28USA%29.zip">Custer's Revenge (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Dancing%20Plate%20%28USA%29.zip">Dancing Plate (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Dark%20Cavern%20%28USA%29.zip">Dark Cavern (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Dark%20Chambers%20%28USA%29.zip">Dark Chambers (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Deadly%20Duck%20%28USA%29.zip">Deadly Duck (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Death%20Trap%20%28USA%29.zip">Death Trap (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Defender%20%28USA%29.zip">Defender (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Demolition%20Herby%20%28USA%29.zip">Demolition Herby (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Demon%20Attack%20%28USA%29%20%28Rev%201%29.zip">Demon Attack (USA) (Rev 1)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Demons%20to%20Diamonds%20%28USA%29.zip">Demons to Diamonds (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Desert%20Falcon%20%28USA%29.zip">Desert Falcon (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Dice%20Puzzle%20%28USA%29.zip">Dice Puzzle (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Dig%20Dug%20%28USA%29.zip">Dig Dug (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Dishaster%20%28USA%29.zip">Dishaster (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Dodge%20%27Em%20~%20Dodger%20Cars%20%28USA%29.zip">Dodge 'Em ~ Dodger Cars (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Dolphin%20%28USA%29.zip">Dolphin (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Donkey%20Kong%20%28USA%29.zip">Donkey Kong (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Donkey%20Kong%20Junior%20%28USA%29.zip">Donkey Kong Junior (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Double%20Dragon%20%28USA%29.zip">Double Dragon (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Double%20Dunk%20%28USA%29.zip">Double Dunk (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Dragonfire%20%28USA%29.zip">Dragonfire (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Dragonstomper%20%28USA%29.zip">Dragonstomper (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Dragster%20%28USA%29.zip">Dragster (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Dukes%20of%20Hazzard%20%28USA%29.zip">Dukes of Hazzard (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/E.T.%20-%20The%20Extra-Terrestrial%20%28USA%29.zip">E.T. - The Extra-Terrestrial (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Earth%20Dies%20Screaming%2C%20The%20%28USA%29.zip">Earth Dies Screaming, The (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Eggomania%20%28USA%29.zip">Eggomania (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Eli%27s%20Ladder%20%28USA%29.zip">Eli's Ladder (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Encounter%20at%20L-5%20%28USA%29.zip">Encounter at L-5 (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Enduro%20%28USA%29.zip">Enduro (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Entombed%20%28USA%29.zip">Entombed (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Escape%20from%20the%20Mindmaster%20%28USA%29.zip">Escape from the Mindmaster (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Espial%20%28USA%29.zip">Espial (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Extra%20Terrestrials%20%28USA%29.zip">Extra Terrestrials (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Fantastic%20Voyage%20%28USA%29.zip">Fantastic Voyage (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Farmyard%20Fun%20%28USA%29.zip">Farmyard Fun (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Fast%20Eddie%20%28USA%29.zip">Fast Eddie (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Fast%20Food%20%28USA%29.zip">Fast Food (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Fatal%20Run%20%28USA%29.zip">Fatal Run (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Fathom%20%28USA%29.zip">Fathom (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Final%20Approach%20%28USA%29.zip">Final Approach (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Fire%20Fighter%20%28USA%29.zip">Fire Fighter (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Fire%20Fly%20%28USA%29.zip">Fire Fly (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Fire%20Spinner%20%28USA%29.zip">Fire Spinner (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Fireball%20%28USA%29.zip">Fireball (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Fishing%20Derby%20%28USA%29.zip">Fishing Derby (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Flag%20Capture%20~%20Capture%20%28USA%29.zip">Flag Capture ~ Capture (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Flash%20Gordon%20%28USA%29.zip">Flash Gordon (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Football%20%28USA%29.zip">Football (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Frankenstein%27s%20Monster%20%28USA%29.zip">Frankenstein's Monster (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Freeway%20%28USA%29.zip">Freeway (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Frisco%20%28USA%29.zip">Frisco (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Frogger%20%28USA%29.zip">Frogger (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Frogger%20II%20-%20Threeedeep%21%20%28USA%29.zip">Frogger II - Threeedeep! (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Frogs%20and%20Flies%20%28USA%29.zip">Frogs and Flies (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Front%20Line%20%28USA%29.zip">Front Line (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Frostbite%20%28USA%29.zip">Frostbite (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/G.I.%20Joe%20-%20Cobra%20Strike%20%28USA%29.zip">G.I. Joe - Cobra Strike (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Galaxian%20%28USA%29.zip">Galaxian (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Gamma-Attack%20%28USA%29.zip">Gamma-Attack (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Gangster%20Alley%20%28USA%29.zip">Gangster Alley (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Gas%20Hog%20%28USA%29.zip">Gas Hog (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Gauntlet%20%28USA%29.zip">Gauntlet (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Ghost%20Manor%20%28USA%29.zip">Ghost Manor (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Ghostbusters%20%28USA%29.zip">Ghostbusters (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Gigolo%20%28USA%29.zip">Gigolo (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Glacier%20Patrol%20%28USA%29.zip">Glacier Patrol (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Glib%20-%20Video%20Word%20Game%20%28USA%29.zip">Glib - Video Word Game (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Golf%20%28USA%29.zip">Golf (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Gopher%20%28USA%29.zip">Gopher (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Gorf%20%28USA%29.zip">Gorf (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Grand%20Prix%20%28USA%29.zip">Grand Prix (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Gravitar%20%28USA%29.zip">Gravitar (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Great%20Escape%20%28USA%29.zip">Great Escape (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Gremlins%20%28USA%29.zip">Gremlins (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Guardian%20%28USA%29.zip">Guardian (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Gyruss%20%28USA%29.zip">Gyruss (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/H.E.R.O.%20%28USA%29.zip">H.E.R.O. (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Halloween%20%28USA%29.zip">Halloween (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Hangman%20~%20Spelling%20%28USA%29.zip">Hangman ~ Spelling (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Haunted%20House%20%28USA%29.zip">Haunted House (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Hole%20Hunter%20%28USA%29.zip">Hole Hunter (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Home%20Run%20~%20Baseball%20%28USA%29.zip">Home Run ~ Baseball (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Human%20Cannonball%20~%20Cannon%20Man%20%28USA%29.zip">Human Cannonball ~ Cannon Man (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Hunt%20%26%20Score%20~%20Memory%20Match%20%28USA%29.zip">Hunt & Score ~ Memory Match (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/I.Q.%20180%20%28USA%29.zip">I.Q. 180 (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/IQ%20180%20%28USA%29.zip">IQ 180 (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/I%20Want%20My%20Mommy%20%28USA%29.zip">I Want My Mommy (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Ice%20Hockey%20%28USA%29.zip">Ice Hockey (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Ikari%20Warriors%20%28USA%29.zip">Ikari Warriors (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Indy%20500%20~%20Race%20%28USA%29.zip">Indy 500 ~ Race (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Infiltrate%20%28USA%29.zip">Infiltrate (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/International%20Soccer%20%28USA%29.zip">International Soccer (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/James%20Bond%20007%20%28USA%29.zip">James Bond 007 (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Jawbreaker%20%28USA%29.zip">Jawbreaker (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Journey%20Escape%20%28USA%29.zip">Journey Escape (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Joust%20%28USA%29.zip">Joust (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Jr.%20Pac-Man%20%28USA%29.zip">Jr. Pac-Man (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Jungle%20Fever%20~%20Knight%20on%20the%20Town%20%28USA%29.zip">Jungle Fever ~ Knight on the Town (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Jungle%20Hunt%20%28USA%29.zip">Jungle Hunt (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Kaboom%21%20%28USA%29.zip">Kaboom! (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Kangaroo%20%28USA%29.zip">Kangaroo (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Karate%20%28USA%29.zip">Karate (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Keystone%20Kapers%20%28USA%29.zip">Keystone Kapers (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Killer%20Satellites%20%28USA%29.zip">Killer Satellites (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/King%20Kong%20%28USA%29.zip">King Kong (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Klax%20%28USA%29.zip">Klax (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Kool-Aid%20Man%20%28USA%29.zip">Kool-Aid Man (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Krull%20%28USA%29.zip">Krull (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Kung-Fu%20Master%20%28USA%29.zip">Kung-Fu Master (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Lady%20In%20Wading%20%28USA%29.zip">Lady In Wading (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Laser%20Blast%20%28USA%29.zip">Laser Blast (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Laser%20Gates%20%28USA%29.zip">Laser Gates (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Lilly%20Adventure%20%28USA%29.zip">Lilly Adventure (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Lochjaw%20%28USA%29.zip">Lochjaw (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Lock%20%27n%27%20Chase%20%28USA%29.zip">Lock 'n' Chase (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/London%20Blitz%20%28USA%29.zip">London Blitz (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Lost%20Luggage%20%28USA%29.zip">Lost Luggage (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/M.A.D.%20%28USA%29.zip">M.A.D. (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/M.A.S.H%20%28USA%29.zip">M.A.S.H (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/MagiCard%20%28USA%29.zip">MagiCard (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Malagai%20%28USA%29.zip">Malagai (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Mangia%27%20%28USA%29.zip">Mangia' (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Marauder%20%28USA%29.zip">Marauder (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Marine%20Wars%20%28USA%29.zip">Marine Wars (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Mario%20Bros.%20%28USA%29.zip">Mario Bros. (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Master%20Builder%20%28USA%29.zip">Master Builder (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Masters%20of%20the%20Universe%20-%20The%20Power%20of%20He-Man%20%28USA%29.zip">Masters of the Universe - The Power of He-Man (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Math%20Gran%20Prix%20%28USA%29.zip">Math Gran Prix (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Maze%20Craze%20-%20A%20Game%20of%20Cops%20%27n%20Robbers%20~%20Maze%20Mania%20-%20A%20Game%20of%20Cops%20%27n%20Robbers%20%28USA%29.zip">Maze Craze - A Game of Cops 'n Robbers ~ Maze Mania - A Game of Cops 'n Robbers (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/MegaBoy%20%28USA%29.zip">MegaBoy (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Mega%20Force%20%28USA%29.zip">Mega Force (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/MegaMania%20-%20A%20Space%20Nightmare%20%28USA%29.zip">MegaMania - A Space Nightmare (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Midnight%20Magic%20%28USA%29.zip">Midnight Magic (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Millipede%20%28USA%29.zip">Millipede (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Mind%20Maze%20%28USA%29.zip">Mind Maze (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Miner%202049er%20-%20Starring%20Bounty%20Bob%20%28USA%29.zip">Miner 2049er - Starring Bounty Bob (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Miner%202049er%20Volume%20II%20%28USA%29.zip">Miner 2049er Volume II (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Mines%20of%20Minos%20%28USA%29.zip">Mines of Minos (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Miniature%20Golf%20~%20Arcade%20Golf%20%28USA%29.zip">Miniature Golf ~ Arcade Golf (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Missile%20Command%20%28USA%29.zip">Missile Command (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Mission%203%2C000%20A.D.%20%28USA%29.zip">Mission 3,000 A.D. (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Mogul%20Maniac%20%28USA%29.zip">Mogul Maniac (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Montezuma%27s%20Revenge%20-%20Featuring%20Panama%20Joe%20%28USA%29.zip">Montezuma's Revenge - Featuring Panama Joe (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Moon%20Patrol%20%28USA%29.zip">Moon Patrol (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Moonsweeper%20%28USA%29.zip">Moonsweeper (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Morse%20Code%20Tutor%20%28USA%29.zip">Morse Code Tutor (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/MotoRodeo%20%28USA%29.zip">MotoRodeo (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Motocross%20%28USA%29.zip">Motocross (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Motocross%20Racer%20%28USA%29.zip">Motocross Racer (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Mountain%20King%20%28USA%29.zip">Mountain King (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Mouse%20Trap%20%28USA%29.zip">Mouse Trap (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Mr.%20Do%21%27s%20Castle%20%28USA%29.zip">Mr. Do!'s Castle (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Mr.%20Do%21%20%28USA%29.zip">Mr. Do! (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Mr.%20Postman%20%28USA%29.zip">Mr. Postman (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Ms.%20Pac-Man%20%28USA%29.zip">Ms. Pac-Man (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Music%20Machine%2C%20The%20%28USA%29.zip">Music Machine, The (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Name%20This%20Game%20%28USA%29.zip">Name This Game (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Night%20Driver%20%28USA%29.zip">Night Driver (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/No%20Escape%21%20%28USA%29.zip">No Escape! (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Nuts%20%28USA%29.zip">Nuts (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Obelix%20%28USA%29.zip">Obelix (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Official%20Frogger%2C%20The%20%28USA%29.zip">Official Frogger, The (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Off%20the%20Wall%20%28USA%29.zip">Off the Wall (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Oink%21%20%28USA%29.zip">Oink! (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Omega%20Race%20%28USA%29.zip">Omega Race (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Oscar%27s%20Trash%20Race%20%28USA%29.zip">Oscar's Trash Race (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Othello%20%28USA%29.zip">Othello (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Outlaw%20~%20Gunslinger%20%28USA%29.zip">Outlaw ~ Gunslinger (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Out%20of%20Control%20%28USA%29.zip">Out of Control (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Pac-Man%20%28USA%29.zip">Pac-Man (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Party%20Mix%20-%20Bop%20a%20Buggy%2C%20Tug%20of%20War%2C%20Wizard%27s%20Keep%2C%20Down%20on%20the%20Line%2C%20Handcar%20%28USA%29.zip">Party Mix - Bop a Buggy, Tug of War, Wizard's Keep, Down on the Line, Handcar (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Pengo%20%28USA%29.zip">Pengo (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Pete%20Rose%20Baseball%20%28USA%29.zip">Pete Rose Baseball (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Phantom%20UFO%20%28USA%29.zip">Phantom UFO (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Pharaoh%27s%20Curse%20%28USA%29.zip">Pharaoh's Curse (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Phaser%20Patrol%20%28USA%29.zip">Phaser Patrol (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Phoenix%20%28USA%29.zip">Phoenix (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Picnic%20%28USA%29.zip">Picnic (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Piece%20o%27%20Cake%20%28USA%29.zip">Piece o' Cake (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Pigs%20in%20Space%20-%20Starring%20Miss%20Piggy%20%28USA%29.zip">Pigs in Space - Starring Miss Piggy (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Pitfall%21%20-%20Pitfall%20Harry%27s%20Jungle%20Adventure%20%28USA%29.zip">Pitfall! - Pitfall Harry's Jungle Adventure (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Pitfall%20II%20-%20Lost%20Caverns%20%28USA%29.zip">Pitfall II - Lost Caverns (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Planet%20Patrol%20%28USA%29.zip">Planet Patrol (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Plaque%20Attack%20%28USA%29.zip">Plaque Attack (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Polaris%20%28USA%29.zip">Polaris (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Pole%20Position%20%28USA%29.zip">Pole Position (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Pooyan%20%28USA%29.zip">Pooyan (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Popeye%20%28USA%29.zip">Popeye (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Porky%27s%20%28USA%29.zip">Porky's (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Pressure%20Cooker%20%28USA%29.zip">Pressure Cooker (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Private%20Eye%20%28USA%29.zip">Private Eye (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Q-bert%27s%20Qubes%20%28USA%29.zip">Q-bert's Qubes (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Q-bert%20%28USA%29.zip">Q-bert (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Quadrun%20%28USA%29.zip">Quadrun (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Quest%20for%20Quintana%20Roo%20%28USA%29.zip">Quest for Quintana Roo (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Quick%20Step%21%20%28USA%29.zip">Quick Step! (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Rabbit%20Transit%20%28USA%29.zip">Rabbit Transit (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Racing%20Car%20%28USA%29.zip">Racing Car (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Racquetball%20%28USA%29.zip">Racquetball (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Radar%20%28USA%29.zip">Radar (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Radar%20Lock%20%28USA%29.zip">Radar Lock (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Raft%20Rider%20%28USA%29.zip">Raft Rider (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Raiders%20of%20the%20Lost%20Ark%20%28USA%29.zip">Raiders of the Lost Ark (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Ram%20It%20%28USA%29.zip">Ram It (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Rampage%21%20%28USA%29.zip">Rampage! (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Raumpatrouille%20%28USA%29.zip">Raumpatrouille (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Reactor%20%28USA%29.zip">Reactor (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/RealSports%20Baseball%20%28USA%29.zip">RealSports Baseball (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/RealSports%20Boxing%20%28USA%29.zip">RealSports Boxing (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/RealSports%20Football%20%28USA%29.zip">RealSports Football (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/RealSports%20Soccer%20%28USA%29.zip">RealSports Soccer (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/RealSports%20Tennis%20%28USA%29.zip">RealSports Tennis (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/RealSports%20Volleyball%20%28USA%29.zip">RealSports Volleyball (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Red%20Sea%20Crossing%20%28USA%29.zip">Red Sea Crossing (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Rescue%20Terra%20I%20%28USA%29.zip">Rescue Terra I (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Revenge%20of%20the%20Beefsteak%20Tomatoes%20%28USA%29.zip">Revenge of the Beefsteak Tomatoes (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Riddle%20of%20the%20Sphinx%20%28USA%29.zip">Riddle of the Sphinx (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/River%20Patrol%20%28USA%29.zip">River Patrol (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/River%20Raid%20%28USA%29.zip">River Raid (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/River%20Raid%20II%20%28USA%29.zip">River Raid II (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Road%20Runner%20%28USA%29.zip">Road Runner (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Robin%20Hood%20%28USA%29.zip">Robin Hood (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Robot%20Tank%20%28USA%29.zip">Robot Tank (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Roc%20%27n%20Rope%20%28USA%29.zip">Roc 'n Rope (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Room%20of%20Doom%20%28USA%29.zip">Room of Doom (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Rubik%27s%20Cube%20%28USA%29.zip">Rubik's Cube (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Save%20our%20Ship%20%28USA%29.zip">Save our Ship (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Sea%20Battle%20%28USA%29.zip">Sea Battle (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Sea%20Hawk%20%28USA%29.zip">Sea Hawk (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Sea%20Hunt%20~%20Scuba%20Diver%20%28USA%29.zip">Sea Hunt ~ Scuba Diver (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Sea%20Monster%20%28USA%29.zip">Sea Monster (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Seaquest%20%28USA%29.zip">Seaquest (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Secret%20Quest%20%28USA%29.zip">Secret Quest (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Sentinel%20%28USA%29.zip">Sentinel (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Shootin%27%20Gallery%20%28USA%29.zip">Shootin' Gallery (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Shuttle%20Orbiter%20%28USA%29.zip">Shuttle Orbiter (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Sir%20Lancelot%20%28USA%29.zip">Sir Lancelot (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Skate%20Boardin%27%20%28USA%29.zip">Skate Boardin' (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Skeet%20Shoot%20%28USA%29.zip">Skeet Shoot (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Ski%20Run%20%28USA%29.zip">Ski Run (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Skiing%20%28USA%29.zip">Skiing (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Sky%20Diver%20~%20Dare%20Diver%20%28USA%29.zip">Sky Diver ~ Dare Diver (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Sky%20Jinks%20%28USA%29.zip">Sky Jinks (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Sky%20Skipper%20%28USA%29.zip">Sky Skipper (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Slot%20Machine%20~%20Slots%20%28USA%29.zip">Slot Machine ~ Slots (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Slot%20Racers%20~%20Maze%20%28USA%29.zip">Slot Racers ~ Maze (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Smurf%20-%20Rescue%20in%20Gargamel%27s%20Castle%20%28USA%29.zip">Smurf - Rescue in Gargamel's Castle (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Smurfs%20Save%20the%20Day%20%28USA%29.zip">Smurfs Save the Day (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Sneak%20%27n%20Peek%20%28USA%29.zip">Sneak 'n Peek (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Snoopy%20and%20the%20Red%20Baron%20%28USA%29.zip">Snoopy and the Red Baron (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Solar%20Fox%20%28USA%29.zip">Solar Fox (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Solar%20Storm%20%28USA%29.zip">Solar Storm (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Solaris%20%28USA%29.zip">Solaris (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Sorcerer%27s%20Apprentice%20%28USA%29.zip">Sorcerer's Apprentice (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Sorcerer%20%28USA%29.zip">Sorcerer (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Space%20Attack%20%28USA%29.zip">Space Attack (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Space%20Cavern%20%28USA%29.zip">Space Cavern (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Space%20Invaders%20%28USA%29.zip">Space Invaders (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Space%20Jockey%20%28USA%29.zip">Space Jockey (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/SpaceMaster%20X-7%20%28USA%29.zip">SpaceMaster X-7 (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Space%20Shuttle%20-%20A%20Journey%20into%20Space%20%28USA%29.zip">Space Shuttle - A Journey into Space (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Space%20Tunnel%20%28USA%29.zip">Space Tunnel (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Space%20War%20~%20Space%20Combat%20%28USA%29.zip">Space War ~ Space Combat (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Spacechase%20%28USA%29.zip">Spacechase (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Spider-Man%20%28USA%29.zip">Spider-Man (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Spider%20Fighter%20%28USA%29.zip">Spider Fighter (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Spider%20Maze%20%28USA%29.zip">Spider Maze (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Spike%27s%20Peak%20%28USA%29.zip">Spike's Peak (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Spitfire%20Attack%20%28USA%29.zip">Spitfire Attack (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Springer%20%28USA%29.zip">Springer (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Sprint%20Master%20%28USA%29.zip">Sprint Master (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Spy%20Hunter%20%28USA%29.zip">Spy Hunter (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Squeeze%20Box%20%28USA%29.zip">Squeeze Box (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Squirrel%20~%20O%20Esquilo%20%28USA%29.zip">Squirrel ~ O Esquilo (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Sssnake%20%28USA%29.zip">Sssnake (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Stampede%20%28USA%29.zip">Stampede (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Star%20Fox%20%28USA%29.zip">Star Fox (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/StarMaster%20%28USA%29.zip">StarMaster (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Star%20Raiders%20%28USA%29.zip">Star Raiders (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Star%20Ship%20~%20Outer%20Space%20%28USA%29.zip">Star Ship ~ Outer Space (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Star%20Strike%20%28USA%29.zip">Star Strike (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Star%20Trek%20-%20Strategic%20Operations%20Simulator%20%28USA%29.zip">Star Trek - Strategic Operations Simulator (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Star%20Voyager%20%28USA%29.zip">Star Voyager (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Star%20Wars%20-%20Jedi%20Arena%20%28USA%29.zip">Star Wars - Jedi Arena (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Star%20Wars%20-%20Return%20of%20the%20Jedi%20-%20Death%20Star%20Battle%20%28USA%29.zip">Star Wars - Return of the Jedi - Death Star Battle (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Star%20Wars%20-%20The%20Arcade%20Game%20%28USA%29.zip">Star Wars - The Arcade Game (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Star%20Wars%20-%20The%20Empire%20Strikes%20Back%20%28USA%29.zip">Star Wars - The Empire Strikes Back (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Stargate%20%28USA%29.zip">Stargate (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Stargunner%20%28USA%29.zip">Stargunner (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Steeplechase%20%28USA%29.zip">Steeplechase (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Stellar%20Track%20%28USA%29.zip">Stellar Track (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Stone%20Age%20%28USA%29.zip">Stone Age (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Strategy%20X%20%28USA%29.zip">Strategy X (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Strawberry%20Shortcake%20-%20Musical%20Match-Ups%20%28USA%29.zip">Strawberry Shortcake - Musical Match-Ups (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Street%20Racer%20~%20Speedway%20II%20%28USA%29.zip">Street Racer ~ Speedway II (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Stronghold%20%28USA%29.zip">Stronghold (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Stunt%20Man%20%28USA%29.zip">Stunt Man (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Sub-Scan%20%28USA%29.zip">Sub-Scan (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Submarine%20Commander%20%28USA%29.zip">Submarine Commander (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Subterranea%20%28USA%29.zip">Subterranea (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Suicide%20Mission%20%28USA%29.zip">Suicide Mission (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Summer%20Games%20%28USA%29.zip">Summer Games (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Super%20Baseball%20%28USA%29.zip">Super Baseball (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Super%20Breakout%20%28USA%29.zip">Super Breakout (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Super%20Challenge%20Baseball%20%28USA%29.zip">Super Challenge Baseball (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Super%20Challenge%20Football%20%28USA%29.zip">Super Challenge Football (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Super%20Cobra%20%28USA%29.zip">Super Cobra (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Super%20Football%20%28USA%29.zip">Super Football (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Superman%20%28USA%29.zip">Superman (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Surround%20~%20Chase%20%28USA%29.zip">Surround ~ Chase (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Survival%20Island%20%28USA%29.zip">Survival Island (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Survival%20Run%20%28USA%29.zip">Survival Run (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Sweat%21%20The%20Decathalon%20Game%20%28USA%29.zip">Sweat! The Decathalon Game (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/SwordQuest%20-%20EarthWorld%20%28USA%29.zip">SwordQuest - EarthWorld (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/SwordQuest%20-%20FireWorld%20%28USA%29.zip">SwordQuest - FireWorld (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/SwordQuest%20-%20WaterWorld%20%28USA%29.zip">SwordQuest - WaterWorld (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Swordfight%20%28USA%29.zip">Swordfight (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Sword%20of%20Saros%20%28USA%29.zip">Sword of Saros (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/TRON%20-%20Deadly%20Discs%20%28USA%29.zip">TRON - Deadly Discs (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Tac-Scan%20%28USA%29.zip">Tac-Scan (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Tanks%20But%20no%20Tanks%20%28USA%29.zip">Tanks But no Tanks (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Tapeworm%20%28USA%29.zip">Tapeworm (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Tapper%20%28USA%29.zip">Tapper (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Tax%20Avoiders%20%28USA%29.zip">Tax Avoiders (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Taz%20%28USA%29.zip">Taz (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Tennis%20%28USA%29.zip">Tennis (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Threshold%20%28USA%29.zip">Threshold (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Thunderground%20%28USA%29.zip">Thunderground (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Time%20Pilot%20%28USA%29.zip">Time Pilot (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Time%20Warp%20%28USA%29.zip">Time Warp (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Title%20Match%20Pro%20Wrestling%20%28USA%29.zip">Title Match Pro Wrestling (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Tomarc%20the%20Barbarian%20%28USA%29.zip">Tomarc the Barbarian (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Tomcat%20-%20The%20F-14%20Fighter%20Simulator%20%28USA%29.zip">Tomcat - The F-14 Fighter Simulator (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Tooth%20Protectors%20%28USA%29.zip">Tooth Protectors (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Towering%20Inferno%20%28USA%29.zip">Towering Inferno (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Track%20and%20Field%20%28USA%29.zip">Track and Field (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Trick%20Shot%20%28USA%29.zip">Trick Shot (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Tunnel%20Runner%20%28USA%29.zip">Tunnel Runner (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Turmoil%20%28USA%29.zip">Turmoil (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Tutankham%20%28USA%29.zip">Tutankham (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Universal%20Chaos%20%28USA%29.zip">Universal Chaos (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Up%20%27n%20Down%20%28USA%29.zip">Up 'n Down (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Vanguard%20%28USA%29.zip">Vanguard (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Vault%20Assault%20%28USA%29%20%28Unl%29.zip">Vault Assault (USA) (Unl)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Venetian%20Blinds%20Demo%20%28USA%29.zip">Venetian Blinds Demo (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Venture%20%28USA%29.zip">Venture (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Video%20Checkers%20~%20Checkers%20%28USA%29.zip">Video Checkers ~ Checkers (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Video%20Chess%20%28USA%29.zip">Video Chess (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Video%20Jogger%20%28USA%29.zip">Video Jogger (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Video%20Life%20%28USA%29.zip">Video Life (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Video%20Olympics%20~%20Pong%20Sports%20%28USA%29.zip">Video Olympics ~ Pong Sports (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Video%20Pinball%20~%20Arcade%20Pinball%20%28USA%29.zip">Video Pinball ~ Arcade Pinball (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Video%20Reflex%20%28USA%29.zip">Video Reflex (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Wabbit%20%28USA%29.zip">Wabbit (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Wall-Defender%20%28USA%29.zip">Wall-Defender (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Wall%20Ball%20%28USA%29.zip">Wall Ball (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Warlords%20%28USA%29.zip">Warlords (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Warplock%20%28USA%29.zip">Warplock (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Winter%20Games%20%28USA%29.zip">Winter Games (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Wizard%20of%20Wor%20%28USA%29.zip">Wizard of Wor (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Word%20Zapper%20%28USA%29.zip">Word Zapper (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/World%20End%20%28USA%29.zip">World End (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Worm%20War%20I%20%28USA%29.zip">Worm War I (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/X-Man%20%28USA%29.zip">X-Man (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Xenophobe%20%28USA%29.zip">Xenophobe (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Yars%27%20Revenge%20%28USA%29.zip">Yars' Revenge (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Z-Tack%20%28USA%29.zip">Z-Tack (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Zaxxon%20%28USA%29.zip">Zaxxon (USA)</option>
+<option value="https://archive.org/download/atari-atari-2600/Atari%20-%202600.zip/Zoo%20Fun%20%28USA%29.zip">Zoo Fun (USA)</option>
+        `;
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(optionsHTML, 'text/html');
+        const options = doc.querySelectorAll('option');
+
+        const games = Array.from(options).map(option => {
+            const title = option.textContent;
+            const url = option.value;
+            const thumbnail = `thumbnails/Atari - Atari 2600/${title}.png`;
+            return { title, url, thumbnail };
+        });
+
+        let currentGameIndex = 0;
+        let filteredGames = games;
+        let isLoaderLoaded = false;
+        const EJS_player = '#game';
+        const EJS_core = 'atari2600';
+        const soundEffect = new Audio('sounds/menu-sound.mp3');
+
+        function updateThumbnail(index) {
+            const game = filteredGames[index];
+            const thumbnailElement = document.getElementById('gameThumbnail');
+            document.getElementById('gameTitle').textContent = game.title;
+            thumbnailElement.src = game.thumbnail;
+            thumbnailElement.style.display = 'block';
+            thumbnailElement.style.zIndex = '5';
+
+            thumbnailElement.onerror = function() {
+                this.src = 'thumbnails/default.png';
+            };
+
+            soundEffect.play().catch(error => {
+                console.error('Erro ao reproduzir o som:', error);
+            });
+        }
+
+        function hideUIElements() {
+            document.querySelector('.thumbnail-container').style.display = 'none';
+            document.querySelector('.search-container').style.display = 'none';
+            document.querySelectorAll('.arrow-button').forEach(arrow => arrow.style.display = 'none');
+        }
+
+        function loadGame() {
+            const game = filteredGames[currentGameIndex];
+            EJS_gameUrl = game.url;
+
+            hideUIElements();
+            focusGame();
+
+            if (!isLoaderLoaded) {
+                const script = document.createElement('script');
+                script.src = 'https://www.emulatorjs.com/loader.js';
+                script.onload = () => {
+                    isLoaderLoaded = true;
+                    console.log('Loader carregado.');
+                };
+                script.onerror = () => {
+                    console.error('Falha ao carregar o emulador. Verifique sua conexão.');
+                };
+                document.body.appendChild(script);
+            } else {
+                console.log('Carregando novo jogo: ', game.url);
+            }
+        }
+
+        function focusGame() {
+            const gameElement = document.getElementById('game');
+            gameElement.focus();
+            gameElement.style.boxShadow = '0 0 10px 2px rgba(255, 255, 255, 0.8)';
+        }
+
+        updateThumbnail(currentGameIndex);
+
+        document.addEventListener('keydown', (e) => {
+            if (filteredGames.length > 0) {
+                if (e.key === 'ArrowDown') {
+                    currentGameIndex = (currentGameIndex + 1) % filteredGames.length;
+                    updateThumbnail(currentGameIndex);
+                } else if (e.key === 'ArrowUp') {
+                    currentGameIndex = (currentGameIndex - 1 + filteredGames.length) % filteredGames.length;
+                    updateThumbnail(currentGameIndex);
+                } else if (e.key === 'Enter') {
+                    loadGame();
+                }
+            }
+        });
+
+        document.addEventListener('wheel', (e) => {
+            if (filteredGames.length > 0) {
+                if (e.deltaY > 0) {
+                    currentGameIndex = (currentGameIndex + 1) % filteredGames.length;
+                } else {
+                    currentGameIndex = (currentGameIndex - 1 + filteredGames.length) % filteredGames.length;
+                }
+                updateThumbnail(currentGameIndex);
+            }
+        });
+
+        document.getElementById('search').addEventListener('input', function() {
+            const filter = this.value.toLowerCase();
+            filteredGames = games.filter(game => game.title.toLowerCase().includes(filter));
+            currentGameIndex = 0;
+
+            if (filteredGames.length > 0) {
+                updateThumbnail(currentGameIndex);
+            } else {
+                document.getElementById('gameTitle').textContent = 'Nenhum jogo encontrado';
+                document.getElementById('gameThumbnail').style.display = 'none';
+            }
+        });
+
+        document.getElementById('gameThumbnail').addEventListener('click', loadGame);
+        document.getElementById('gameThumbnail').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                loadGame();
+            }
+        });
+
+        document.getElementById('game').addEventListener('click', loadGame);
+
+        let selectPressed = false;
+        let startPressed = false;
+        let comboPressTimer;
+        let selectHoldTimer;
+
+        function checkComboPress() {
+            if (selectPressed && startPressed) {
+                console.log("Mudando para o modo navegação");
+                hideUIElements();
+                focusGame();
+            }
+        }
+
+        function toggleFullscreen() {
+            const gameElement = document.getElementById('game');
+            if (!document.fullscreenElement) {
+                gameElement.requestFullscreen().catch(err => {
+                    console.error(`Erro ao tentar entrar em fullscreen: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        window.addEventListener("gamepadconnected", function(e) {
+            console.log("Gamepad conectado: ", e.gamepad);
+        });
+
+        window.addEventListener("gamepaddisconnected", function(e) {
+            console.log("Gamepad desconectado: ", e.gamepad);
+        });
+
+        function monitorGamepad() {
+            const gamepads = navigator.getGamepads();
+            if (gamepads[0]) {
+                const gamepad = gamepads[0];
+
+                selectPressed = gamepad.buttons[8].pressed;
+                startPressed = gamepad.buttons[9].pressed;
+
+                if (selectPressed) {
+                    if (!selectHoldTimer) {
+                        selectHoldTimer = setTimeout(() => {
+                            toggleFullscreen();
+                            selectHoldTimer = null;
+                        }, 2000);
+                    }
+                } else {
+                    clearTimeout(selectHoldTimer);
+                    selectHoldTimer = null;
+                }
+
+                if (selectPressed && startPressed) {
+                    if (!comboPressTimer) {
+                        comboPressTimer = setTimeout(checkComboPress, 1000);
+                    }
+                } else {
+                    clearTimeout(comboPressTimer);
+                    comboPressTimer = null;
+                }
+            }
+
+            requestAnimationFrame(monitorGamepad);
+        }
+
+        monitorGamepad();
+
+        document.getElementById('arrow-up').addEventListener('click', () => {
+            currentGameIndex = (currentGameIndex - 1 + filteredGames.length) % filteredGames.length;
+            updateThumbnail(currentGameIndex);
+        });
+
+        document.getElementById('arrow-down').addEventListener('click', () => {
+            currentGameIndex = (currentGameIndex + 1) % filteredGames.length;
+            updateThumbnail(currentGameIndex);
+        });
+    </script>
+</body>
+</html>
