@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="icons/Arcades.png" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcades</title>
+    <style>
+        @font-face {
+            font-family: 'ArcadeClassic';
+            src: url('arcadeclassic.ttf') format('truetype');
+        }
+
+        body {
+            background: url('wallpapers/Arcades.png') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .thumbnail-container {
+            width: 525px;
+            height: 405px;
+            position: absolute;
+            margin: auto;
+            bottom: 0;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .thumbnail {
+            display: none;
+            width: 525px;
+            height: 405px;
+            object-fit: contain;
+            transition: box-shadow 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .thumbnail:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+        }
+
+        .game-title {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .search-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 525px;
+            z-index: 10;
+        }
+
+        .search-input {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid white;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: white;
+        }
+
+        .search-input:hover,
+        .search-input:focus {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+            outline: none;
+        }
+
+        #game {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 5;
+            outline: none;
+        }
+
+        .button-container {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .action-button {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid white;
+            padding: 10px;
+            cursor: pointer;
+            width: 250px;
+            text-align: center;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .action-button:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+        }
+
+        .arrow-button {
+            display: none;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: 2px solid white;
+            padding: 10px;
+            font-size: 30px;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 0.3s ease;
+            z-index: 11;
+        }
+
+        .arrow-button:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+        }
+
+        #arrow-up {
+            top: -80px;
+        }
+
+        #arrow-down {
+            bottom: -80px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                background-position: left center;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                min-height: 100vh;
+                padding: 20px;
+                overflow: auto;
+            }
+
+            .search-container {
+                position: fixed !important;
+                top: 10px !important;
+                left: 50% !important;
+                transform: translateX(-50%);
+                width: 90% !important;
+                max-width: 525px;
+                margin: 0 auto;
+                z-index: 1000;
+                background: rgba(0, 0, 0, 0.7);
+                backdrop-filter: blur(5px);
+            }
+
+            .thumbnail-container {
+                position: fixed !important;
+                top: 0px !important;
+                left: 50% !important;
+                transform: translateX(-50%);
+                width: 95% !important;
+                max-width: 525px;
+                height: 350px !important;
+                aspect-ratio: 525/405;
+                margin: none !important;
+                z-index: 1000;
+            }
+
+            .thumbnail {
+                width: 100% !important;
+                height: 100% !important;
+                max-height: none !important;
+            }
+
+            main {
+                position: relative !important;
+                width: 100% !important;
+                max-width: 525px !important;
+                height: auto !important;
+                aspect-ratio: 525/405;
+                top: auto !important;
+                left: auto !important;
+                margin: 20px auto;
+            }
+
+            .button-container {
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90%;
+                max-width: 525px;
+                gap: 10px;
+                justify-content: space-between;
+            }
+
+            .action-button {
+                width: 48%;
+                font-size: 5vw;
+                padding: 10px;
+                margin: 0;
+            }
+
+            .arrow-button {
+                display: block !important;
+                width: 70px;
+                height: 90px;
+                font-size: 24px;
+            }
+
+            #arrow-up {
+                top: -110px;
+            }
+
+            #arrow-down {
+                bottom: -110px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main style="width:525px; height:405px; max-width:100%; margin: auto; position: absolute; top: 50px; bottom: 0; left: 20px;">
+        <div id="game" tabindex="0"></div>
+    </main>
+
+    <div class="thumbnail-container">
+        <div id="gameTitle" class="game-title"></div>
+        <img id="gameThumbnail" class="thumbnail" src="" alt="Thumbnail do Jogo" tabindex="0">
+        <button class="arrow-button" id="arrow-up" aria-label="Jogo Anterior">▲</button>
+        <button class="arrow-button" id="arrow-down" aria-label="Próximo Jogo">▼</button>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="search" class="search-input" placeholder="Buscar Jogo..." aria-label="Buscar Jogo">
+    </div>
+
+    <div class="button-container">
+        <button class="action-button" onclick="window.history.back()" aria-label="Voltar">Voltar</button>
+        <button class="action-button" onclick="window.location.reload()" aria-label="Recarregar">Recarregar</button>
+    </div>
+
+    <script type="text/javascript">
+        const optionsHTML = `
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/3countb.zip">3countb</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/2020bb.zip">2020bb</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/alpham2.zip">alpham2</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/androdun.zip">androdun</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/aodk.zip">aodk</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/aof.zip">aof</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/aof2.zip">aof2</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/aof3.zip">aof3</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/bakatono.zip">bakatono</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/bangbead.zip">bangbead</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/bjourney.zip">bjourney</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/blazstar.zip">blazstar</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/breakers.zip">breakers</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/breakrev.zip">breakrev</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/bstars.zip">bstars</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/bstars2.zip">bstars2</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/burningf.zip">burningf</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/crsword.zip">crsword</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/ctomaday.zip">ctomaday</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/cyberlip.zip">cyberlip</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/doubledr.zip">doubledr</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/eightman.zip">eightman</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/fatfursp.zip">fatfursp</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/fatfury1.zip">fatfury1</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/fatfury2.zip">fatfury2</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/fatfury3.zip">fatfury3</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/fbfrenzy.zip">fbfrenzy</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/fightfev.zip">fightfev</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/flipshot.zip">flipshot</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/galaxyfg.zip">galaxyfg</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/ganryu.zip">ganryu</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/garou.zip">garou</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/goalx3.zip">goalx3</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/gowcaizr.zip">gowcaizr</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/gpilots.zip">gpilots</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/gururin.zip">gururin</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/irrmaze.zip">irrmaze</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/janshin.zip">janshin</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/joyjoy.zip">joyjoy</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/kabukikl.zip">kabukikl</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/karnovr.zip">karnovr</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/kizuna.zip">kizuna</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/kof94.zip">kof94</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/kof95.zip">kof95</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/kof96.zip">kof96</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/kof97.zip">kof97</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/kof98.zip">kof98</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/kof99.zip">kof99</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/kof2000.zip">kof2000</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/kof2001.zip">kof2001</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/kof2002.zip">kof2002</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/kof2003.zip">kof2003</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/kotm.zip">kotm</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/kotm2.zip">kotm2</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/lastblad.zip">lastblad</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/lastbld2.zip">lastbld2</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/lbowling.zip">lbowling</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/legendos.zip">legendos</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/lresort.zip">lresort</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/magdrop2.zip">magdrop2</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/magdrop3.zip">magdrop3</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/maglord.zip">maglord</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/mahretsu.zip">mahretsu</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/marukodq.zip">marukodq</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/matrim.zip">matrim</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/miexchng.zip">miexchng</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/minasan.zip">minasan</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/mosyougi.zip">mosyougi</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/mslug.zip">mslug</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/mslug2.zip">mslug2</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/mslug3.zip">mslug3</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/mslug4.zip">mslug4</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/mslug5.zip">mslug5</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/mslugx.zip">mslugx</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/mutnat.zip">mutnat</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/nam1975.zip">nam1975</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/ncombat.zip">ncombat</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/ncommand.zip">ncommand</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/neobombe.zip">neobombe</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/neocup98.zip">neocup98</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/neodrift.zip">neodrift</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/neomrdo.zip">neomrdo</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/ninjamas.zip">ninjamas</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/nitd.zip">nitd</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/overtop.zip">overtop</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/panicbom.zip">panicbom</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/pbobbl2n.zip">pbobbl2n</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/pbobblen.zip">pbobblen</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/pgoal.zip">pgoal</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/pnyaa.zip">pnyaa</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/popbounc.zip">popbounc</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/preisle2.zip">preisle2</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/pspikes2.zip">pspikes2</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/pulstar.zip">pulstar</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/puzzldpr.zip">puzzldpr</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/puzzledp.zip">puzzledp</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/quizdai2.zip">quizdai2</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/quizdais.zip">quizdais</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/quizkof.zip">quizkof</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/ragnagrd.zip">ragnagrd</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/rbff1.zip">rbff1</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/rbff1a.zip">rbff1a</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/rbff2.zip">rbff2</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/rbffspec.zip">rbffspec</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/ridhero.zip">ridhero</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/roboarmy.zip">roboarmy</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/rotd.zip">rotd</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/s1945p.zip">s1945p</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/samsh5sp.zip">samsh5sp</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/samsho.zip">samsho</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/samsho2.zip">samsho2</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/samsho3.zip">samsho3</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/samsho4.zip">samsho4</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/samsho5.zip">samsho5</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/savagere.zip">savagere</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/sdodgeb.zip">sdodgeb</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/sengoku.zip">sengoku</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/sengoku2.zip">sengoku2</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/sengoku3.zip">sengoku3</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/shocktr2.zip">shocktr2</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/shocktro.zip">shocktro</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/socbrawl.zip">socbrawl</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/sonicwi2.zip">sonicwi2</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/sonicwi3.zip">sonicwi3</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/spinmast.zip">spinmast</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/ssideki.zip">ssideki</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/ssideki2.zip">ssideki2</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/ssideki3.zip">ssideki3</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/ssideki4.zip">ssideki4</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/stakwin.zip">stakwin</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/stakwin2.zip">stakwin2</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/strhoop.zip">strhoop</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/superspy.zip">superspy</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/svc.zip">svc</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/tophuntr.zip">tophuntr</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/tpgolf.zip">tpgolf</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/trally.zip">trally</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/turfmast.zip">turfmast</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/twinspri.zip">twinspri</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/tws96.zip">tws96</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/viewpoin.zip">viewpoin</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/wakuwak7.zip">wakuwak7</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/wh1.zip">wh1</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/wh2.zip">wh2</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/wh2j.zip">wh2j</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/whp.zip">whp</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/wjammers.zip">wjammers</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/zedblade.zip">zedblade</option>
+<option value="https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20Arcades.zip/zupapa.zip">zupapa</option>
+        `;
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(optionsHTML, 'text/html');
+        const options = doc.querySelectorAll('option');
+
+        const games = Array.from(options).map(option => {
+            const title = option.textContent;
+            const url = option.value;
+            const thumbnail = `thumbnails/Arcades - FBNeo-MAME/${title}.png`;
+            return { title, url, thumbnail };
+        });
+
+        let currentGameIndex = 0;
+        let filteredGames = games;
+        let isLoaderLoaded = false;
+        const EJS_player = '#game';
+        EJS_biosUrl = ''; https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20BIOS.zip/neogeo.zip
+        EJS_gameParentUrl = ''; // Url to Parent Rom file
+        const EJS_core = 'arcade';
+        const soundEffect = new Audio('sounds/menu-sound.mp3');
+
+        function updateThumbnail(index) {
+            const game = filteredGames[index];
+            const thumbnailElement = document.getElementById('gameThumbnail');
+            document.getElementById('gameTitle').textContent = game.title;
+            thumbnailElement.src = game.thumbnail;
+            thumbnailElement.style.display = 'block';
+            thumbnailElement.style.zIndex = '5';
+
+            thumbnailElement.onerror = function() {
+                this.src = 'thumbnails/default.png';
+            };
+
+            soundEffect.play().catch(error => {
+                console.error('Erro ao reproduzir o som:', error);
+            });
+        }
+
+        function hideUIElements() {
+            document.querySelector('.thumbnail-container').style.display = 'none';
+            document.querySelector('.search-container').style.display = 'none';
+            document.querySelectorAll('.arrow-button').forEach(arrow => arrow.style.display = 'none');
+        }
+
+        function loadGame() {
+            const game = filteredGames[currentGameIndex];
+            EJS_gameUrl = game.url;
+
+            hideUIElements();
+            focusGame();
+
+            if (!isLoaderLoaded) {
+                const script = document.createElement('script');
+                script.src = 'https://www.emulatorjs.com/loader.js';
+                script.onload = () => {
+                    isLoaderLoaded = true;
+                    console.log('Loader carregado.');
+                };
+                script.onerror = () => {
+                    console.error('Falha ao carregar o emulador. Verifique sua conexão.');
+                };
+                document.body.appendChild(script);
+            } else {
+                console.log('Carregando novo jogo: ', game.url);
+            }
+        }
+
+        function focusGame() {
+            const gameElement = document.getElementById('game');
+            gameElement.focus();
+            gameElement.style.boxShadow = '0 0 10px 2px rgba(255, 255, 255, 0.8)';
+        }
+
+        updateThumbnail(currentGameIndex);
+
+        document.addEventListener('keydown', (e) => {
+            if (filteredGames.length > 0) {
+                if (e.key === 'ArrowDown') {
+                    currentGameIndex = (currentGameIndex + 1) % filteredGames.length;
+                    updateThumbnail(currentGameIndex);
+                } else if (e.key === 'ArrowUp') {
+                    currentGameIndex = (currentGameIndex - 1 + filteredGames.length) % filteredGames.length;
+                    updateThumbnail(currentGameIndex);
+                } else if (e.key === 'Enter') {
+                    loadGame();
+                }
+            }
+        });
+
+        document.addEventListener('wheel', (e) => {
+            if (filteredGames.length > 0) {
+                if (e.deltaY > 0) {
+                    currentGameIndex = (currentGameIndex + 1) % filteredGames.length;
+                } else {
+                    currentGameIndex = (currentGameIndex - 1 + filteredGames.length) % filteredGames.length;
+                }
+                updateThumbnail(currentGameIndex);
+            }
+        });
+
+        document.getElementById('search').addEventListener('input', function() {
+            const filter = this.value.toLowerCase();
+            filteredGames = games.filter(game => game.title.toLowerCase().includes(filter));
+            currentGameIndex = 0;
+
+            if (filteredGames.length > 0) {
+                updateThumbnail(currentGameIndex);
+            } else {
+                document.getElementById('gameTitle').textContent = 'Nenhum jogo encontrado';
+                document.getElementById('gameThumbnail').style.display = 'none';
+            }
+        });
+
+        document.getElementById('gameThumbnail').addEventListener('click', loadGame);
+        document.getElementById('gameThumbnail').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                loadGame();
+            }
+        });
+
+        document.getElementById('game').addEventListener('click', loadGame);
+
+        let selectPressed = false;
+        let startPressed = false;
+        let comboPressTimer;
+        let selectHoldTimer;
+
+        function checkComboPress() {
+            if (selectPressed && startPressed) {
+                console.log("Mudando para o modo navegação");
+                hideUIElements();
+                focusGame();
+            }
+        }
+
+        function toggleFullscreen() {
+            const gameElement = document.getElementById('game');
+            if (!document.fullscreenElement) {
+                gameElement.requestFullscreen().catch(err => {
+                    console.error(`Erro ao tentar entrar em fullscreen: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        window.addEventListener("gamepadconnected", function(e) {
+            console.log("Gamepad conectado: ", e.gamepad);
+        });
+
+        window.addEventListener("gamepaddisconnected", function(e) {
+            console.log("Gamepad desconectado: ", e.gamepad);
+        });
+
+        function monitorGamepad() {
+            const gamepads = navigator.getGamepads();
+            if (gamepads[0]) {
+                const gamepad = gamepads[0];
+
+                selectPressed = gamepad.buttons[8].pressed;
+                startPressed = gamepad.buttons[9].pressed;
+
+                if (selectPressed) {
+                    if (!selectHoldTimer) {
+                        selectHoldTimer = setTimeout(() => {
+                            toggleFullscreen();
+                            selectHoldTimer = null;
+                        }, 2000);
+                    }
+                } else {
+                    clearTimeout(selectHoldTimer);
+                    selectHoldTimer = null;
+                }
+
+                if (selectPressed && startPressed) {
+                    if (!comboPressTimer) {
+                        comboPressTimer = setTimeout(checkComboPress, 1000);
+                    }
+                } else {
+                    clearTimeout(comboPressTimer);
+                    comboPressTimer = null;
+                }
+            }
+
+            requestAnimationFrame(monitorGamepad);
+        }
+
+        monitorGamepad();
+
+        document.getElementById('arrow-up').addEventListener('click', () => {
+            currentGameIndex = (currentGameIndex - 1 + filteredGames.length) % filteredGames.length;
+            updateThumbnail(currentGameIndex);
+        });
+
+        document.getElementById('arrow-down').addEventListener('click', () => {
+            currentGameIndex = (currentGameIndex + 1) % filteredGames.length;
+            updateThumbnail(currentGameIndex);
+        });
+    </script>
+</body>
+</html>
