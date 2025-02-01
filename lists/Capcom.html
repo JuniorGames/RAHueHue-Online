@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="icons/Capcom.png" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcade - Capcom</title>
+    <style>
+        @font-face {
+            font-family: 'ArcadeClassic';
+            src: url('arcadeclassic.ttf') format('truetype');
+        }
+
+        body {
+            background: url('wallpapers/SNK - NeoGeo.png') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .thumbnail-container {
+            width: 525px;
+            height: 405px;
+            position: absolute;
+            margin: auto;
+            bottom: 0;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .thumbnail {
+            display: none;
+            width: 525px;
+            height: 405px;
+            object-fit: contain;
+            transition: box-shadow 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .thumbnail:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+        }
+
+        .game-title {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .search-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 525px;
+            z-index: 10;
+        }
+
+        .search-input {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid white;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: white;
+        }
+
+        .search-input:hover,
+        .search-input:focus {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+            outline: none;
+        }
+
+        #game {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 5;
+            outline: none;
+        }
+
+        .button-container {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .action-button {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid white;
+            padding: 10px;
+            cursor: pointer;
+            width: 250px;
+            text-align: center;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .action-button:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+        }
+
+        .arrow-button {
+            display: none;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: 2px solid white;
+            padding: 10px;
+            font-size: 30px;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 0.3s ease;
+            z-index: 11;
+        }
+
+        .arrow-button:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+        }
+
+        #arrow-up {
+            top: -80px;
+        }
+
+        #arrow-down {
+            bottom: -80px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                background-position: left center;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                min-height: 100vh;
+                padding: 20px;
+                overflow: auto;
+            }
+
+            .search-container {
+                position: fixed !important;
+                top: 10px !important;
+                left: 50% !important;
+                transform: translateX(-50%);
+                width: 90% !important;
+                max-width: 525px;
+                margin: 0 auto;
+                z-index: 1000;
+                background: rgba(0, 0, 0, 0.7);
+                backdrop-filter: blur(5px);
+            }
+
+            .thumbnail-container {
+                position: fixed !important;
+                top: 0px !important;
+                left: 50% !important;
+                transform: translateX(-50%);
+                width: 95% !important;
+                max-width: 525px;
+                height: 350px !important;
+                aspect-ratio: 525/405;
+                margin: none !important;
+                z-index: 1000;
+            }
+
+            .thumbnail {
+                width: 100% !important;
+                height: 100% !important;
+                max-height: none !important;
+            }
+
+            main {
+                position: relative !important;
+                width: 100% !important;
+                max-width: 525px !important;
+                height: auto !important;
+                aspect-ratio: 525/405;
+                top: auto !important;
+                left: auto !important;
+                margin: 20px auto;
+            }
+
+            .button-container {
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90%;
+                max-width: 525px;
+                gap: 10px;
+                justify-content: space-between;
+            }
+
+            .action-button {
+                width: 48%;
+                font-size: 5vw;
+                padding: 10px;
+                margin: 0;
+            }
+
+            .arrow-button {
+                display: block !important;
+                width: 70px;
+                height: 90px;
+                font-size: 24px;
+            }
+
+            #arrow-up {
+                top: -110px;
+            }
+
+            #arrow-down {
+                bottom: -110px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main style="width:525px; height:405px; max-width:100%; margin: auto; position: absolute; top: 50px; bottom: 0; left: 20px;">
+        <div id="game" tabindex="0"></div>
+    </main>
+
+    <div class="thumbnail-container">
+        <div id="gameTitle" class="game-title"></div>
+        <img id="gameThumbnail" class="thumbnail" src="" alt="Thumbnail do Jogo" tabindex="0">
+        <button class="arrow-button" id="arrow-up" aria-label="Jogo Anterior">▲</button>
+        <button class="arrow-button" id="arrow-down" aria-label="Próximo Jogo">▼</button>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="search" class="search-input" placeholder="Buscar Jogo..." aria-label="Buscar Jogo">
+    </div>
+
+    <div class="button-container">
+        <button class="action-button" onclick="window.history.back()" aria-label="Voltar">Voltar</button>
+        <button class="action-button" onclick="window.location.reload()" aria-label="Recarregar">Recarregar</button>
+    </div>
+
+    <script type="text/javascript">
+        const optionsHTML = `
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/3wonders.zip">3wonders</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/1941.zip">1941</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/captcomm.zip">captcomm</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/cawing.zip">cawing</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/cworld2j.zip">cworld2j</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/dino.zip">dino</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/dynwar.zip">dynwar</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/ffight.zip">ffight</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/forgottn.zip">forgottn</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/ghouls.zip">ghouls</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/knights.zip">knights</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/kod.zip">kod</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/mbombrd.zip">mbombrd</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/megaman.zip">megaman</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/mercs.zip">mercs</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/msword.zip">msword</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/mtwins.zip">mtwins</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/nemo.zip">nemo</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/pang3.ZIP">pang3</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/pnickj.zip">pnickj</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/punisher.zip">punisher</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/qad.zip">qad</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/qtono2j.zip">qtono2j</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/sf2.zip">sf2</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/sf2ce.zip">sf2ce</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/sf2hf.zip">sf2hf</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/sfzch.zip">sfzch</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/slammast.zip">slammast</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/strider.zip">strider</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/unsquad.zip">unsquad</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/varth.zip">varth</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/willow.zip">willow</option>
+<option value="https://archive.org/download/cps-1-arcades/CPS1%20-%20Arcades.zip/wof.zip">wof</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/19xx.zip">19xx</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/1944.zip">1944</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/armwar.zip">armwar</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/avsp.zip">avsp</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/batcir.zip">batcir</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/choko.zip">choko</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/csclub.zip">csclub</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/cybots.zip">cybots</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/ddsom.zip">ddsom</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/ddtod.zip">ddtod</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/dimahoo.zip">dimahoo</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/dstlk.zip">dstlk</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/ecofghtr.zip">ecofghtr</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/gigawing.zip">gigawing</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/hsf2.zip">hsf2</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/jyangoku.zip">jyangoku</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/megaman2.zip">megaman2</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/mmancp2u.zip">mmancp2u</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/mmatrix.zip">mmatrix</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/mpang.zip">mpang</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/msh.zip">msh</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/mshvsf.zip">mshvsf</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/mvsc.zip">mvsc</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/nwarr.zip">nwarr</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/progear.zip">progear</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/pzloop2.zip">pzloop2</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/qndream.zip">qndream</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/ringdest.zip">ringdest</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/sfa.zip">sfa</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/sfa2.zip">sfa2</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/sfa3.zip">sfa3</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/sfz2al.zip">sfz2al</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/sgemf.zip">sgemf</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/spf2t.zip">spf2t</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/ssf2.zip">ssf2</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/vhunt2.zip">vhunt2</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/vsav.zip">vsav</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/vsav2.zip">vsav2</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/xmcota.zip">xmcota</option>
+<option value="https://archive.org/download/cps-2-arcades/CPS2%20-%20Arcades.zip/xmvsf.zip">xmvsf</option>
+<option value="https://archive.org/download/cps-3-arcades/CPS3%20-%20Arcades.zip/jojo.zip">jojo</option>
+<option value="https://archive.org/download/cps-3-arcades/CPS3%20-%20Arcades.zip/jojoba.zip">jojoba</option>
+<option value="https://archive.org/download/cps-3-arcades/CPS3%20-%20Arcades.zip/redearth.zip">redearth</option>
+<option value="https://archive.org/download/cps-3-arcades/CPS3%20-%20Arcades.zip/sfiii.zip">sfiii</option>
+<option value="https://archive.org/download/cps-3-arcades/CPS3%20-%20Arcades.zip/sfiii2.zip">sfiii2</option>
+<option value="https://archive.org/download/cps-3-arcades/CPS3%20-%20Arcades.zip/sfiii3.zip">sfiii3</option>
+        `;
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(optionsHTML, 'text/html');
+        const options = doc.querySelectorAll('option');
+
+        const games = Array.from(options).map(option => {
+            const title = option.textContent;
+            const url = option.value;
+            const thumbnail = `thumbnails/SNK - NeoGeo/${title}.png`;
+            return { title, url, thumbnail };
+        });
+
+        let currentGameIndex = 0;
+        let filteredGames = games;
+        let isLoaderLoaded = false;
+        const EJS_player = '#game';
+        EJS_biosUrl = ''; https://archive.org/download/snk-neo-geo-arcades/SNK%20-%20NeoGeo%20BIOS.zip/neogeo.zip
+        EJS_gameParentUrl = ''; // Url to Parent Rom file
+        const EJS_core = 'arcade';
+        const soundEffect = new Audio('sounds/menu-sound.mp3');
+
+        function updateThumbnail(index) {
+            const game = filteredGames[index];
+            const thumbnailElement = document.getElementById('gameThumbnail');
+            document.getElementById('gameTitle').textContent = game.title;
+            thumbnailElement.src = game.thumbnail;
+            thumbnailElement.style.display = 'block';
+            thumbnailElement.style.zIndex = '5';
+
+            thumbnailElement.onerror = function() {
+                this.src = 'thumbnails/default.png';
+            };
+
+            soundEffect.play().catch(error => {
+                console.error('Erro ao reproduzir o som:', error);
+            });
+        }
+
+        function hideUIElements() {
+            document.querySelector('.thumbnail-container').style.display = 'none';
+            document.querySelector('.search-container').style.display = 'none';
+            document.querySelectorAll('.arrow-button').forEach(arrow => arrow.style.display = 'none');
+        }
+
+        function loadGame() {
+            const game = filteredGames[currentGameIndex];
+            EJS_gameUrl = game.url;
+
+            hideUIElements();
+            focusGame();
+
+            if (!isLoaderLoaded) {
+                const script = document.createElement('script');
+                script.src = 'https://www.emulatorjs.com/loader.js';
+                script.onload = () => {
+                    isLoaderLoaded = true;
+                    console.log('Loader carregado.');
+                };
+                script.onerror = () => {
+                    console.error('Falha ao carregar o emulador. Verifique sua conexão.');
+                };
+                document.body.appendChild(script);
+            } else {
+                console.log('Carregando novo jogo: ', game.url);
+            }
+        }
+
+        function focusGame() {
+            const gameElement = document.getElementById('game');
+            gameElement.focus();
+            gameElement.style.boxShadow = '0 0 10px 2px rgba(255, 255, 255, 0.8)';
+        }
+
+        updateThumbnail(currentGameIndex);
+
+        document.addEventListener('keydown', (e) => {
+            if (filteredGames.length > 0) {
+                if (e.key === 'ArrowDown') {
+                    currentGameIndex = (currentGameIndex + 1) % filteredGames.length;
+                    updateThumbnail(currentGameIndex);
+                } else if (e.key === 'ArrowUp') {
+                    currentGameIndex = (currentGameIndex - 1 + filteredGames.length) % filteredGames.length;
+                    updateThumbnail(currentGameIndex);
+                } else if (e.key === 'Enter') {
+                    loadGame();
+                }
+            }
+        });
+
+        document.addEventListener('wheel', (e) => {
+            if (filteredGames.length > 0) {
+                if (e.deltaY > 0) {
+                    currentGameIndex = (currentGameIndex + 1) % filteredGames.length;
+                } else {
+                    currentGameIndex = (currentGameIndex - 1 + filteredGames.length) % filteredGames.length;
+                }
+                updateThumbnail(currentGameIndex);
+            }
+        });
+
+        document.getElementById('search').addEventListener('input', function() {
+            const filter = this.value.toLowerCase();
+            filteredGames = games.filter(game => game.title.toLowerCase().includes(filter));
+            currentGameIndex = 0;
+
+            if (filteredGames.length > 0) {
+                updateThumbnail(currentGameIndex);
+            } else {
+                document.getElementById('gameTitle').textContent = 'Nenhum jogo encontrado';
+                document.getElementById('gameThumbnail').style.display = 'none';
+            }
+        });
+
+        document.getElementById('gameThumbnail').addEventListener('click', loadGame);
+        document.getElementById('gameThumbnail').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                loadGame();
+            }
+        });
+
+        document.getElementById('game').addEventListener('click', loadGame);
+
+        let selectPressed = false;
+        let startPressed = false;
+        let comboPressTimer;
+        let selectHoldTimer;
+
+        function checkComboPress() {
+            if (selectPressed && startPressed) {
+                console.log("Mudando para o modo navegação");
+                hideUIElements();
+                focusGame();
+            }
+        }
+
+        function toggleFullscreen() {
+            const gameElement = document.getElementById('game');
+            if (!document.fullscreenElement) {
+                gameElement.requestFullscreen().catch(err => {
+                    console.error(`Erro ao tentar entrar em fullscreen: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        window.addEventListener("gamepadconnected", function(e) {
+            console.log("Gamepad conectado: ", e.gamepad);
+        });
+
+        window.addEventListener("gamepaddisconnected", function(e) {
+            console.log("Gamepad desconectado: ", e.gamepad);
+        });
+
+        function monitorGamepad() {
+            const gamepads = navigator.getGamepads();
+            if (gamepads[0]) {
+                const gamepad = gamepads[0];
+
+                selectPressed = gamepad.buttons[8].pressed;
+                startPressed = gamepad.buttons[9].pressed;
+
+                if (selectPressed) {
+                    if (!selectHoldTimer) {
+                        selectHoldTimer = setTimeout(() => {
+                            toggleFullscreen();
+                            selectHoldTimer = null;
+                        }, 2000);
+                    }
+                } else {
+                    clearTimeout(selectHoldTimer);
+                    selectHoldTimer = null;
+                }
+
+                if (selectPressed && startPressed) {
+                    if (!comboPressTimer) {
+                        comboPressTimer = setTimeout(checkComboPress, 1000);
+                    }
+                } else {
+                    clearTimeout(comboPressTimer);
+                    comboPressTimer = null;
+                }
+            }
+
+            requestAnimationFrame(monitorGamepad);
+        }
+
+        monitorGamepad();
+
+        document.getElementById('arrow-up').addEventListener('click', () => {
+            currentGameIndex = (currentGameIndex - 1 + filteredGames.length) % filteredGames.length;
+            updateThumbnail(currentGameIndex);
+        });
+
+        document.getElementById('arrow-down').addEventListener('click', () => {
+            currentGameIndex = (currentGameIndex + 1) % filteredGames.length;
+            updateThumbnail(currentGameIndex);
+        });
+    </script>
+</body>
+</html>
