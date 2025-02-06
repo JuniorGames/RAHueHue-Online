@@ -41,7 +41,7 @@
             font-weight: bold;
             font-size: 20px;
             margin: 5px;
-            padding: 1em; /* Adicionando padding para melhor alinhamento dos botões */
+            padding: 1em;
         }
 
         #box:hover, #box[drag] {
@@ -52,7 +52,7 @@
         /* Estilos para botões e seleção */
         select, button, input[type="text"] {
             padding: 0.6em 0.4em;
-            margin: 0.5em;
+            margin: 0.4em;
             width: 15em;
             max-width: 100%;
             font-family: monospace;
@@ -68,7 +68,7 @@
 
         select:hover, button:hover, input[type="text"]:hover {
             background-color: #45a049;
-	    box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.6); /* Adicionando brilho */
+            box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.6);
         }
 
         select {
@@ -134,7 +134,7 @@
             border: 2px solid white;
             border-radius: 0.4em;
             transition: background-color 0.2s, color 0.2s;
-            margin: 0.5em;
+            margin: 0.4em;
             max-width: 100%;
             text-align: center;
         }
@@ -159,7 +159,7 @@
             width: 100%;
             text-align: center;
             z-index: 1000;
-            font-size: 125%; /* Reduzir o tamanho da fonte para 125% */
+            font-size: 125%;
         }
 
         /* Media query para ocultar ícones em dispositivos móveis */
@@ -179,7 +179,7 @@
             border: 2px solid white;
             border-radius: 0.4em;
             background-color: #333;
-            display: none; /* Inicialmente oculto */
+            display: none;
         }
 
         #gameThumbnail img {
@@ -199,15 +199,15 @@
 
         .button-container button, .button-container select, .button-container input[type="text"] {
             width: 15em;
-            margin: 0.5em 0; /* Alinhamento vertical */
+            margin: 0.4em 0;
         }
 
         /* Estilo para a mensagem de erro */
         #error-message {
             color: red;
             font-weight: bold;
-            display: none; /* Inicialmente oculto */
-	    text-align: center; /* Centralizando a mensagem */
+            display: none;
+            text-align: center;
         }
 
         /* Novo estilo para o conteúdo do jogo */
@@ -275,7 +275,8 @@
             <input type="text" id="romUrl" placeholder="🌎Link URL da ROM🌎">
             <button class="custom-button" onclick="loadRom()">🔥🎮Iniciar Jogo🎮🔥</button>
             <button class="custom-button" id="raHueHueOnlineBtn" onclick="openRAHueHueOnline()">💣RAHueHue Oline💣</button>
-            <div id="error-message">Por favor, cole o link direto da ROM ou selecione um arquivo local.</div>
+            <button class="custom-button" id="webHueHueBtn" onclick="openWebHueHue()">🌐WebHueHue🌐</button>
+            <div id="error-message">Cole o Link da ROM ou abra uma ROM Local.</div>
         </div>
     </main>
 
@@ -303,6 +304,7 @@
 
         const loadLocalBtn = document.getElementById('loadLocalBtn');
         const raHueHueOnlineBtn = document.getElementById('raHueHueOnlineBtn');
+        const webHueHueBtn = document.getElementById('webHueHueBtn');
         const consoleIcon = document.getElementById('consoleIcon');
         const gameThumbnail = document.getElementById('gameThumbnail');
         const gameThumbnailImage = document.getElementById('gameThumbnailImage');
@@ -321,7 +323,7 @@
             consoleIcon.src = iconUrl;
         });
 
-        // Função para carregar ROMs a partir da URL ou arquivo local
+        // Função para carregar ROMs
         function loadRom() {
             const romUrl = romUrlInput.value;
             const core = selectCore.value;
@@ -336,7 +338,7 @@
             }
         }
 
-        // Função para carregar jogo a partir da URL
+        // Carregar jogo da URL
         function loadGameFromUrl(romUrl, core) {
             errorMessage.style.display = 'none';
 
@@ -364,12 +366,10 @@
             hideIconsAndHeader();
             expandBox();
             hideFooter();
-
-            // Exibir miniatura do jogo
             displayGameThumbnail(romUrl);
         }
 
-        // Função para carregar jogo a partir de um arquivo local
+        // Carregar jogo local
         function loadGameFromFile(file, core) {
             const reader = new FileReader();
             reader.onload = function(event) {
@@ -379,7 +379,7 @@
             reader.readAsDataURL(file);
         }
 
-        // Função para exibir a miniatura do jogo
+        // Exibir miniatura
         function displayGameThumbnail(romUrl) {
             const image = new Image();
             image.src = romUrl;
@@ -392,17 +392,22 @@
             };
         }
 
-        // Função para abrir o seletor de arquivos
+        // Abrir seletor de arquivos
         function openFile() {
             fileInput.click();
         }
 
-        // Função para abrir o link "RAHueHue Online"
+        // Abrir RAHueHue Online
         function openRAHueHueOnline() {
             window.location.href = 'lists/RAHueHue Online.html';
         }
 
-        // Atualizar texto do botão "Carregar ROM Localmente"
+        // Nova função WebHueHue
+        function openWebHueHue() {
+            window.open('https://play.webrcade.com', '_blank');
+        }
+
+        // Atualizar nome do arquivo local
         fileInput.addEventListener('change', () => {
             if (fileInput.files.length > 0) {
                 loadLocalBtn.textContent = fileInput.files[0].name;
@@ -411,7 +416,7 @@
             }
         });
 
-        // Funções para ocultar ícones e cabeçalho e expandir a caixa
+        // Funções de layout
         function hideIconsAndHeader() {
             const icons = document.querySelectorAll('.icon-left, .icon-right');
             const header = document.getElementById('top');
