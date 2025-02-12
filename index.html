@@ -44,6 +44,21 @@
             padding: 1em;
         }
 
+        #box.fullscreen {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: 100% !important;
+            max-height: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border-radius: 0 !important;
+            border: none !important;
+            z-index: 9999 !important;
+        }
+
         #box:hover, #box[drag] {
             border-color: #38f;
             color: #ddd;
@@ -162,10 +177,15 @@
             font-size: 125%;
         }
 
-        /* Media query para ocultar ícones em dispositivos móveis */
+        /* Media query para mobile */
         @media (max-width: 768px) {
             .icon-left, .icon-right {
                 display: none;
+            }
+            
+            #box {
+                max-width: 95%;
+                max-height: 95%;
             }
         }
 
@@ -210,7 +230,7 @@
             text-align: center;
         }
 
-        /* Novo estilo para o conteúdo do jogo */
+        /* Estilo do display do jogo */
         #display {
             width: 100%;
             height: 100%;
@@ -295,6 +315,10 @@
             enableDebug = true;
         }
 
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+
         const selectCore = document.getElementById('selectCore');
         const romUrlInput = document.getElementById('romUrl');
         const fileInput = document.createElement('input');
@@ -323,7 +347,7 @@
             consoleIcon.src = iconUrl;
         });
 
-        // Função para carregar ROMs
+        // Função principal para carregar ROM
         function loadRom() {
             const romUrl = romUrlInput.value;
             const core = selectCore.value;
@@ -349,6 +373,12 @@
             const box = document.getElementById("box");
             box.innerHTML = "";
             box.appendChild(div);
+
+            // Ativar fullscreen do container em mobile
+            if (isMobileDevice()) {
+                box.classList.add('fullscreen');
+                document.body.style.overflow = 'hidden';
+            }
 
             window.EJS_player = "#display";
             window.EJS_gameName = "ROM Carregada";
@@ -392,22 +422,20 @@
             };
         }
 
-        // Abrir seletor de arquivos
+        // Funções auxiliares
         function openFile() {
             fileInput.click();
         }
 
-        // Abrir RAHueHue Online
         function openRAHueHueOnline() {
             window.location.href = 'lists/RAHueHue Online.html';
         }
 
-        // Nova função WebHueHue
         function openWebHueHue() {
             window.open('https://play.webrcade.com', '_blank');
         }
 
-        // Atualizar nome do arquivo local
+        // Event listeners
         fileInput.addEventListener('change', () => {
             if (fileInput.files.length > 0) {
                 loadLocalBtn.textContent = fileInput.files[0].name;
@@ -416,7 +444,7 @@
             }
         });
 
-        // Funções de layout
+        // Controle de layout
         function hideIconsAndHeader() {
             const icons = document.querySelectorAll('.icon-left, .icon-right');
             const header = document.getElementById('top');
@@ -426,10 +454,12 @@
 
         function expandBox() {
             const box = document.getElementById('box');
-            box.style.height = '97em';
-            box.style.width = '97em';
-            box.style.maxWidth = '97%';
-            box.style.maxHeight = '97%';
+            if (!isMobileDevice()) {
+                box.style.height = '97em';
+                box.style.width = '97em';
+                box.style.maxWidth = '97%';
+                box.style.maxHeight = '97%';
+            }
         }
 
         function hideFooter() {
