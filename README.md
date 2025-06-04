@@ -6,7 +6,7 @@
  
 <br>
 
-Emulador baseado em **HTML, CSS e JAVASCRIPT** para navegadores de internet em vários sistemas.
+Baseado em **HTML, CSS e JAVASCRIPT** para navegadores de internet em vários sistemas.
 
 <br>
 
