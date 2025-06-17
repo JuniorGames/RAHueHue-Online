@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="icons/Playstation.png" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playstation</title>
+    <style>
+        @font-face {
+            font-family: 'ArcadeClassic';
+            src: url('arcadeclassic.ttf') format('truetype');
+        }
+
+        body {
+            background: url('wallpapers/Default Consoles.png') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .thumbnail-container {
+            width: 525px;
+            height: 405px;
+            position: absolute;
+            margin: auto;
+            bottom: 0;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .thumbnail {
+            display: none;
+            width: 525px;
+            height: 405px;
+            object-fit: contain;
+            transition: box-shadow 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .thumbnail:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+        }
+
+        .game-title {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .search-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 525px;
+            z-index: 10;
+        }
+
+        .search-input {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid white;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: white;
+        }
+
+        .search-input:hover,
+        .search-input:focus {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+            outline: none;
+        }
+
+        #game {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 5;
+            outline: none;
+        }
+
+        .button-container {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .action-button {
+            font-family: 'ArcadeClassic', sans-serif;
+            font-size: 30px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid white;
+            padding: 10px;
+            cursor: pointer;
+            width: 250px;
+            text-align: center;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .action-button:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+        }
+
+        .arrow-button {
+            display: none;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: 2px solid white;
+            padding: 10px;
+            font-size: 30px;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 0.3s ease;
+            z-index: 11;
+        }
+
+        .arrow-button:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+        }
+
+        #arrow-up {
+            top: -80px;
+        }
+
+        #arrow-down {
+            bottom: -80px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                background-position: left center;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                min-height: 100vh;
+                padding: 20px;
+                overflow: auto;
+            }
+
+            .search-container {
+                position: fixed !important;
+                top: 10px !important;
+                left: 50% !important;
+                transform: translateX(-50%);
+                width: 90% !important;
+                max-width: 525px;
+                margin: 0 auto;
+                z-index: 1000;
+                background: rgba(0, 0, 0, 0.7);
+                backdrop-filter: blur(5px);
+            }
+
+            .thumbnail-container {
+                position: fixed !important;
+                top: 0px !important;
+                left: 50% !important;
+                transform: translateX(-50%);
+                width: 95% !important;
+                max-width: 525px;
+                height: 350px !important;
+                aspect-ratio: 525/405;
+                margin: none !important;
+                z-index: 1000;
+            }
+
+            .thumbnail {
+                width: 100% !important;
+                height: 100% !important;
+                max-height: none !important;
+            }
+
+            main {
+                position: relative !important;
+                width: 100% !important;
+                max-width: 525px !important;
+                height: auto !important;
+                aspect-ratio: 525/405;
+                top: auto !important;
+                left: auto !important;
+                margin: 20px auto;
+            }
+
+            .button-container {
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90%;
+                max-width: 525px;
+                gap: 10px;
+                justify-content: space-between;
+            }
+
+            .action-button {
+                width: 48%;
+                font-size: 5vw;
+                padding: 10px;
+                margin: 0;
+            }
+
+            .arrow-button {
+                display: block !important;
+                width: 70px;
+                height: 90px;
+                font-size: 24px;
+            }
+
+            #arrow-up {
+                top: -110px;
+            }
+
+            #arrow-down {
+                bottom: -110px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main style="width:525px; height:405px; max-width:100%; margin: auto; position: absolute; top: 50px; bottom: 0; left: 20px;">
+        <div id="game" tabindex="0"></div>
+    </main>
+
+    <div class="thumbnail-container">
+        <div id="gameTitle" class="game-title"></div>
+        <img id="gameThumbnail" class="thumbnail" src="" alt="Thumbnail do Jogo" tabindex="0">
+        <button class="arrow-button" id="arrow-up" aria-label="Jogo Anterior">▲</button>
+        <button class="arrow-button" id="arrow-down" aria-label="Próximo Jogo">▼</button>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="search" class="search-input" placeholder="Buscar Jogo..." aria-label="Buscar Jogo">
+    </div>
+
+    <div class="button-container">
+        <button class="action-button" onclick="window.history.back()" aria-label="Voltar">Voltar</button>
+        <button class="action-button" onclick="window.location.reload()" aria-label="Recarregar">Recarregar</button>
+    </div>
+
+    <script type="text/javascript">
+        const optionsHTML = `
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/3Xtreme%20%28USA%29.chd">3Xtreme</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/American%20Pool%20%28USA%29.chd">American Pool</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Bomberman%20-%20Party%20Edition%20%28USA%29.chd">Bomberman - Party Edition</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Bomberman%20World%20%28USA%29.chd">Bomberman World</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/CTR%20-%20Crash%20Team%20Racing%20%28USA%29.chd">CTR - Crash Team Racing</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Capcom%20vs.%20SNK%20Pro%20%28USA%29.chd">Capcom vs. SNK Pro</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Castlevania%20-%20Symphony%20of%20the%20Night%20%28USA%29.chd">Castlevania - Symphony of the Night</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Crash%20Bandicoot%20%28USA%29.chd">Crash Bandicoot</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Crash%20Bandicoot%20-%20Warped%20%28USA%29.chd">Crash Bandicoot - Warped</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Digimon%20World%20%28USA%29.chd">Digimon World</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Dino%20Crisis%20%28USA%29.chd">Dino Crisis</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Dino%20Crisis%202%20%28USA%29.chd">Dino Crisis 2</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Disney%27s%20Tarzan%20%28USA%29.chd">Disney's Tarzan</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Dragon%20Ball%20GT%20-%20Final%20Bout%20%28USA%29.chd">Dragon Ball GT - Final Bout</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Dragon%20Ball%20Z%20-%20Idainaru%20Dragon%20Ball%20Densetsu%20%28PT-BR%29.chd">Dragon Ball Z - Idainaru Dragon Ball Densetsu</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Driver%20-%20You%20Are%20the%20Wheelman%20%28USA%29.chd">Driver - You Are the Wheelman</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Driver%202%20%28USA%29%20%28Disc%201%29%20%28Rev%201%29.chd">Driver 2 Disco 1</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Driver%202%20%28USA%29%20%28Disc%202%29%20%28Rev%201%29.chd">Driver 2 Disco 2</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/FIFA%20-%20Road%20to%20World%20Cup%2098%20%28USA%29%20%28En%2CFr%2CDe%2CEs%2CNl%2CSv%29.chd">FIFA - Road to World Cup 98</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/FIFA%20Soccer%202005%20%28USA%29%20%28En%2CEs%29.chd">FIFA Soccer 2005</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Fighting%20Force%20%28USA%29%20%28Rev%201%29.chd">Fighting Force</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Formula%201%20%28USA%29.chd">Formula 1</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Formula%20One%202000%20%28USA%29.chd">Formula One 2000</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Goal%20Storm%20%28USA%29.chd">Goal Storm</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Gran%20Turismo%202%20%28USA%29%20%28Arcade%20Mode%29.chd">Gran Turismo 2 Arcade</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Gran%20Turismo%202%20%28USA%29%20%28Simulation%20Mode%29%20%28Rev%202%29.chd">Gran Turismo 2 Simulation</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Grand%20Theft%20Auto%202%20%28USA%29.chd">Grand Theft Auto 2</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Jackie%20Chan%20Stuntmaster%20%28USA%29.chd">Jackie Chan Stuntmaster</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Klonoa%20-%20Door%20to%20Phantomile%20%28USA%29.chd">Klonoa - Door to Phantomile</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Legacy%20of%20Kain%20-%20Soul%20Reaver%20%28USA%29.chd">Legacy of Kain - Soul Reaver</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Medal%20of%20Honor%20%28USA%29.chd">Medal of Honor</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Medal%20of%20Honor%20-%20Underground%20%28USA%29.chd">Medal of Honor - Underground</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Mega%20Man%208%20%28PT-BR%29.pbp">Mega Man 8</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Mega%20Man%20X3%20%28USA%29.chd">Mega Man X3</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Mega%20Man%20X5%20%28USA%29.chd">Mega Man X5</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Metal%20Gear%20Solid%20%28USA%29%20%28Disc%201%29.chd">Metal Gear Solid Disc 1</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Metal%20Gear%20Solid%20%28USA%29%20%28Disc%202%29.chd">Metal Gear Solid Disc 2</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Metal%20Slug%20X%20%28USA%29.chd">Metal Slug X</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Mortal%20Kombat%204%20%28USA%29.chd">Mortal Kombat 4</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Mortal%20Kombat%20Mythologies%20-%20Sub-Zero%20%28USA%29.chd">Mortal Kombat Mythologies - Sub-Zero</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Mortal%20Kombat%20Trilogy%20%28USA%29%20%28Rev%201%29.chd">Mortal Kombat Trilogy</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Need%20for%20Speed%20III%20-%20Hot%20Pursuit%20%28USA%29.chd">Need for Speed III - Hot Pursuit</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Nickelodeon%20SpongeBob%20SquarePants%20-%20SuperSponge%20%28USA%29.chd">Nickelodeon SpongeBob SquarePants - SuperSponge</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Nightmare%20Creatures%20%28USA%29.chd">Nightmare Creatures</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Nuclear%20Strike%20%28USA%29.chd">Nuclear Strike</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Pandemonium%21%20%28USA%29.chd">Pandemonium</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Parasite%20Eve%20%28USA%29%20%28Disc%201%29.chd">Parasite Eve Disco 1</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Parasite%20Eve%20%28USA%29%20%28Disc%202%29.chd">Parasite Eve Disco 2</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Parasite%20Eve%20II%20%28USA%29%20%28Disc%202%29.chd">Parasite Eve II</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Pro%20Evolution%20Soccer%202.chd">Pro Evolution Soccer 2</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/RC%20Helicopter%20%28USA%29.chd">RC Helicopter</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Raiden%20Project%2C%20The%20%28USA%29.chd">The Raiden Project </option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Resident%20Evil%20-%20Director%27s%20Cut%20-%20Dual%20Shock%20Ver.%20%28USA%29.chd">Resident Evil - Director's Cut</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Resident%20Evil%20-%20Survivor%20%28USA%29.chd">Resident Evil - Survivor</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Resident%20Evil%202%20-%20Dual%20Shock%20Ver.%20%28USA%29%20%28Disc%201%29.chd">Resident Evil 2 - Disco 1</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Resident%20Evil%202%20-%20Dual%20Shock%20Ver.%20%28USA%29%20%28Disc%202%29.chd">Resident Evil 2 - Disco 2</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Resident%20Evil%203%20-%20Nemesis%20%28USA%29.chd">Resident Evil 3 - Nemesis</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Road%20Rash%20-%20Jailbreak%20%28USA%29.chd">Road Rash - Jailbreak</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Ronaldo%20V-Football%20%28PT-BR%29.chd">Ronaldo V-Football</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Rosco%20McQueen%20Firefighter%20Extreme%20%28USA%29.chd">Rosco McQueen Firefighter Extreme</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Silent%20Hill%20%28USA%29.chd">Silent Hill</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Skullmonkeys%20%28USA%29.chd">Skullmonkeys</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Spider-Man%20%28USA%29.chd">Spider-Man</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Street%20Fighter%20-%20The%20Movie.chd">Street Fighter - The Movie</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Street%20Fighter%20Alpha%203%20%28USA%29.chd">Street Fighter Alpha 3</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Street%20Fighter%20Collection%20%28USA%29%20%28Disc%201%29%20%28Rev%201%29.chd">Street Fighter Collection Disc 1</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Street%20Fighter%20Collection%20%28USA%29%20%28Disc%202%29%20%28Rev%201%29.chd">Street Fighter Collection Disc 2</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Street%20Fighter%20Collection%202%20%28USA%29.chd">Street Fighter Collection 2</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Street%20Fighter%20EX2%20Plus%20%28USA%29.chd">Street Fighter EX2 Plus</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Strider%20%28USA%29.chd">Strider</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Stuart%20Little%202%20%28USA%29.chd">Stuart Little 2</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Super%20Puzzle%20Fighter%20II%20Turbo%20%28USA%29.chd">Super Puzzle Fighter II Turbo</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Syphon%20Filter%20%28USA%29.chd">Syphon Filter</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Syphon%20Filter%203%20%28USA%29.chd">Syphon Filter 3</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Tarzan%20%28DUB-BR%29.chd">Tarzan</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Tekken%20%28USA%29.chd">Tekken</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Tekken%202%20%28USA%29.chd">Tekken 2</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Tekken%203%20%28USA%29.chd">Tekken 3</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Tomb%20Raider%20%28USA%29%20%28Rev%206%29.chd">Tomb Raider</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Tony%20Hawk%27s%20Pro%20Skater%202%20%28USA%29.chd">Tony Hawk's Pro Skater 2</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Twisted%20Metal%20%28USA%29.chd">Twisted Metal</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Twisted%20Metal%202%20%28USA%29.chd">Twisted Metal 2</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Vigilante%208%20%28USA%29.chd">Vigilante 8</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/WWF%20WrestleMania%20-%20The%20Arcade%20Game%20%28USA%29.chd">WWF WrestleMania - The Arcade Game</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Winning%20Eleven%20FIFA%20WORLD%20CUP%20Corean-Japan%202002.chd">Winning Eleven FIFA WORLD CUP Corean-Japan 2002</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Winning%20Eleven%20FIFA%20WORLD%20CUP%20QATAR%202022.chd">Winning Eleven FIFA WORLD CUP QATAR 2022</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Woody%20Woodpecker%20Racing%20%28USA%29.chd">Woody Woodpecker Racing</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Worms%20Armageddon%20%28USA%29.chd">Worms Armageddon</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/X-Men%20-%20Mutant%20Academy%20%28USA%29.chd">X-Men - Mutant Academy</option>
+<option value="https://archive.org/download/playstation-1-pack-1/Playstation%201%20%28Pack%201%29.zip/Yu-Gi-Oh%21%20Forbidden%20Memories%20%28USA%29.chd">Yu-Gi-Oh 21 Forbidden Memories</option>
+        `;
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(optionsHTML, 'text/html');
+        const options = doc.querySelectorAll('option');
+
+        const games = Array.from(options).map(option => {
+            const title = option.textContent;
+            const url = option.value;
+            const thumbnail = `thumbnails/Sony - Playstation/${title}.png`;
+            return { title, url, thumbnail };
+        });
+
+        let currentGameIndex = 0;
+        let filteredGames = games;
+        let isLoaderLoaded = false;
+        const EJS_player = '#game';
+        const EJS_biosUrl = 'https://archive.org/download/playstation-1-pack-1/Bios%20PS1%20Hue.zip/scph5501.bin';
+        const EJS_core = 'psx';
+        const soundEffect = new Audio('sounds/menu-sound.mp3');
+
+
+        function updateThumbnail(index) {
+            const game = filteredGames[index];
+            const thumbnailElement = document.getElementById('gameThumbnail');
+            document.getElementById('gameTitle').textContent = game.title;
+            thumbnailElement.src = game.thumbnail;
+            thumbnailElement.style.display = 'block';
+            thumbnailElement.style.zIndex = '5';
+
+            thumbnailElement.onerror = function() {
+                this.src = 'thumbnails/default.png';
+            };
+
+            soundEffect.play().catch(error => {
+                console.error('Erro ao reproduzir o som:', error);
+            });
+        }
+
+        function hideUIElements() {
+            document.querySelector('.thumbnail-container').style.display = 'none';
+            document.querySelector('.search-container').style.display = 'none';
+            document.querySelectorAll('.arrow-button').forEach(arrow => arrow.style.display = 'none');
+        }
+
+        function loadGame() {
+            const game = filteredGames[currentGameIndex];
+            EJS_gameUrl = game.url;
+
+            hideUIElements();
+            focusGame();
+
+            if (!isLoaderLoaded) {
+                const script = document.createElement('script');
+                script.src = 'https://www.emulatorjs.com/loader.js';
+                script.onload = () => {
+                    isLoaderLoaded = true;
+                    console.log('Loader carregado.');
+                };
+                script.onerror = () => {
+                    console.error('Falha ao carregar o emulador. Verifique sua conexão.');
+                };
+                document.body.appendChild(script);
+            } else {
+                console.log('Carregando novo jogo: ', game.url);
+            }
+        }
+
+        function focusGame() {
+            const gameElement = document.getElementById('game');
+            gameElement.focus();
+            gameElement.style.boxShadow = '0 0 10px 2px rgba(255, 255, 255, 0.8)';
+        }
+
+        updateThumbnail(currentGameIndex);
+
+        document.addEventListener('keydown', (e) => {
+            if (filteredGames.length > 0) {
+                if (e.key === 'ArrowDown') {
+                    currentGameIndex = (currentGameIndex + 1) % filteredGames.length;
+                    updateThumbnail(currentGameIndex);
+                } else if (e.key === 'ArrowUp') {
+                    currentGameIndex = (currentGameIndex - 1 + filteredGames.length) % filteredGames.length;
+                    updateThumbnail(currentGameIndex);
+                } else if (e.key === 'Enter') {
+                    loadGame();
+                }
+            }
+        });
+
+        document.addEventListener('wheel', (e) => {
+            if (filteredGames.length > 0) {
+                if (e.deltaY > 0) {
+                    currentGameIndex = (currentGameIndex + 1) % filteredGames.length;
+                } else {
+                    currentGameIndex = (currentGameIndex - 1 + filteredGames.length) % filteredGames.length;
+                }
+                updateThumbnail(currentGameIndex);
+            }
+        });
+
+        document.getElementById('search').addEventListener('input', function() {
+            const filter = this.value.toLowerCase();
+            filteredGames = games.filter(game => game.title.toLowerCase().includes(filter));
+            currentGameIndex = 0;
+
+            if (filteredGames.length > 0) {
+                updateThumbnail(currentGameIndex);
+            } else {
+                document.getElementById('gameTitle').textContent = 'Nenhum jogo encontrado';
+                document.getElementById('gameThumbnail').style.display = 'none';
+            }
+        });
+
+        document.getElementById('gameThumbnail').addEventListener('click', loadGame);
+        document.getElementById('gameThumbnail').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                loadGame();
+            }
+        });
+
+        document.getElementById('game').addEventListener('click', loadGame);
+
+        let selectPressed = false;
+        let startPressed = false;
+        let comboPressTimer;
+        let selectHoldTimer;
+
+        function checkComboPress() {
+            if (selectPressed && startPressed) {
+                console.log("Mudando para o modo navegação");
+                hideUIElements();
+                focusGame();
+            }
+        }
+
+        function toggleFullscreen() {
+            const gameElement = document.getElementById('game');
+            if (!document.fullscreenElement) {
+                gameElement.requestFullscreen().catch(err => {
+                    console.error(`Erro ao tentar entrar em fullscreen: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        window.addEventListener("gamepadconnected", function(e) {
+            console.log("Gamepad conectado: ", e.gamepad);
+        });
+
+        window.addEventListener("gamepaddisconnected", function(e) {
+            console.log("Gamepad desconectado: ", e.gamepad);
+        });
+
+        function monitorGamepad() {
+            const gamepads = navigator.getGamepads();
+            if (gamepads[0]) {
+                const gamepad = gamepads[0];
+
+                selectPressed = gamepad.buttons[8].pressed;
+                startPressed = gamepad.buttons[9].pressed;
+
+                if (selectPressed) {
+                    if (!selectHoldTimer) {
+                        selectHoldTimer = setTimeout(() => {
+                            toggleFullscreen();
+                            selectHoldTimer = null;
+                        }, 2000);
+                    }
+                } else {
+                    clearTimeout(selectHoldTimer);
+                    selectHoldTimer = null;
+                }
+
+                if (selectPressed && startPressed) {
+                    if (!comboPressTimer) {
+                        comboPressTimer = setTimeout(checkComboPress, 1000);
+                    }
+                } else {
+                    clearTimeout(comboPressTimer);
+                    comboPressTimer = null;
+                }
+            }
+
+            requestAnimationFrame(monitorGamepad);
+        }
+
+        monitorGamepad();
+
+        document.getElementById('arrow-up').addEventListener('click', () => {
+            currentGameIndex = (currentGameIndex - 1 + filteredGames.length) % filteredGames.length;
+            updateThumbnail(currentGameIndex);
+        });
+
+        document.getElementById('arrow-down').addEventListener('click', () => {
+            currentGameIndex = (currentGameIndex + 1) % filteredGames.length;
+            updateThumbnail(currentGameIndex);
+        });
+    </script>
+</body>
+</html>
