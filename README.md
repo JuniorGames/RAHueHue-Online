@@ -10,7 +10,7 @@ Baseado em **HTML, CSS e JAVASCRIPT** para navegadores de internet em vários si
 
 <br>
 
-Este projeto foi editado por Helton Jr. do canal Junior Games no Youtube.
+Este projeto foi editado por Helton Jr. do canal Junior Games no Youtube:
 
 https://www.youtube.com/@juniorgameslives
 
