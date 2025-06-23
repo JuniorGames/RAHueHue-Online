@@ -68,11 +68,11 @@
         select, button, input[type="text"] {
             padding: 0.6em 0.4em;
             margin: 0.4em;
-            width: 15em;
+            width: 14em;
             max-width: 100%;
             font-family: monospace;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 15px;
             background-color: #4CAF50;
             color: white;
             border: 2px solid white;
@@ -139,7 +139,7 @@
 
         /* Estilos para entrada de URL da ROM */
         #romUrl {
-            width: 14em;
+            width: 13.1em;
             padding: 0.6em 0.4em;
             font-family: monospace;
             font-weight: bold;
@@ -219,7 +219,7 @@
 
         .button-container button, .button-container select, .button-container input[type="text"] {
             width: 15em;
-            margin: 0.4em 0;
+            margin: 0.3em 0;
         }
 
         /* Estilo para a mensagem de erro */
@@ -238,7 +238,22 @@
             top: 0;
             left: 0;
         }
-    </style>
+    
+.dual-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 11.2em;
+    max-width: 100%;
+    margin: 0.0em 0;
+}
+
+.dual-buttons button {
+    width: 9.0em;
+    padding: 0.1em 0.1em;
+    font-size: 12px;
+}
+
+</style>
 </head>
 <body>
     <!-- Ícones e logo -->
@@ -296,6 +311,11 @@
             <button class="custom-button" onclick="loadRom()">🔥Iniciar Jogo🔥</button>
             <button class="custom-button" id="raHueHueOnlineBtn" onclick="openRAHueHueOnline()">🌎RAHueHue Online🌎</button>
             <button class="custom-button" id="webHueHueBtn" onclick="openWebHueHue()">🎮WEBHueHue🎮</button>
+<div class="dual-buttons">
+    <button class="custom-button" onclick="window.open('https://www.youtube.com/shorts/1GYQdSiKdXs')">Tutorial</button>
+    <button class="custom-button" onclick="window.open('https://www.youtube.com/@juniorgameslives')">Junior Games</button>
+</div>
+
             <div id="error-message">Cole o Link da ROM ou abra uma ROM Local.</div>
         </div>
     </main>
