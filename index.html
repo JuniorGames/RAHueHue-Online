@@ -304,7 +304,6 @@
 <option data-icon="icons/ngp.png" value="ngp">NeoGeo Pocket</option>
 <option data-icon="icons/ngpc.png" value="ngp">NeoGeo Pocket Color</option>
 <option data-icon="icons/psx.png" value="psx"> PlayStation</option>
-<option data-icon="icons/psp.png" value="psp"> PlayStation Portable</option>
 </select>
 <button class="custom-button" id="loadLocalBtn" onclick="openFile()">📁Carregar ROM📁</button>
 <input id="romUrl" placeholder="⛔Link URL da ROM⛔" type="text"/>
@@ -403,7 +402,6 @@
             window.EJS_gameUrl = romUrl;
             window.EJS_core = core;
             window.EJS_pathtodata = "https://cdn.emulatorjs.org/stable/data/";
-            window.EJS_threads = (core === 'psp');
             window.EJS_startOnLoaded = true;
             window.EJS_DEBUG_XX = enableDebug;
             window.EJS_disableDatabases = true;
