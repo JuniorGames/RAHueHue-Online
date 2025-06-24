@@ -1,11 +1,12 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <link rel="icon" href="docs/favicon.ico" type="image/x-icon">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RetroGames HueHue</title>
-    <style>
+<meta charset="utf-8"/>
+<link href="docs/favicon.ico" rel="icon" type="image/x-icon"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RetroGames HueHue</title>
+<style>
         /* Estilos gerais */
         body, html {
             height: 100%;
@@ -256,78 +257,73 @@
 </style>
 </head>
 <body>
-    <!-- Ícones e logo -->
-    <img src="docs/huehue.png" alt="Icon Left" class="icon-left">
-    <img src="docs/hue.png" alt="Icon Right" class="icon-right">
-    
-    <!-- Cabeçalho -->
-    <header id="top">
-        <h1 class="title"></h1>
-        <img src="docs/Logo-light.png" alt="Logo" class="logo">
-    </header>
-    
-    <!-- Caixa principal -->
-    <main id="box">
-        <div id="consoleIconContainer">
-            <img id="consoleIcon" src="icons/rahue.png" alt="Ícone do Console">
-        </div>
-        <div class="button-container">
-            <select id="selectCore">
-                <option value="" selected disabled hidden>👀Escolher Console👀</option>
-                <!-- Opções de consoles -->
-                <option value="atari2600" data-icon="icons/atari2600.png">Atari 2600</option>
-                <option value="atari7800" data-icon="icons/atari7800.png">Atari 7800</option>
-                <option value="lynx" data-icon="icons/lynx.png">Atari Lynx</option>
-                <option value="jaguar" data-icon="icons/jaguar.png">Atari Jaguar</option>
-                <option value="ws" data-icon="icons/ws.png">WonderSwan</option>
-                <option value="ws" data-icon="icons/wsc.png">WonderSwan Color</option>
-                <option value="coleco" data-icon="icons/coleco.png">ColecoVision</option>
-                <option value="vice_x64sc" data-icon="icons/vice_x64sc.png">Commodore 64</option>
-                <option value="vice_x128" data-icon="icons/vice_x128.png">Commodore 128</option>
-                <option value="vice_xvic" data-icon="icons/vice_xvic.png">Commodore VIC20</option>
-                <option value="vice_xplus4" data-icon="icons/vice_xplus4.png">Commodore Plus/4</option>
-                <option value="vice_xpet" data-icon="icons/vice_xpet.png">Commodore PET</option>
-                <option value="n64" data-icon="icons/n64.png">Nintendo 64</option>
-                <option value="nds" data-icon="icons/nds.png">Nintendo DS</option>
-                <option value="gb" data-icon="icons/gb.png">Game Boy</option>
-                <option value="gba" data-icon="icons/gba.png">Game Boy Advance</option>
-                <option value="gbc" data-icon="icons/gbc.png">Game Boy Color</option>
-                <option value="nes" data-icon="icons/nes.png">Nintendo</option>
-                <option value="snes" data-icon="icons/snes.png">Super Nintendo</option>
-                <option value="vb" data-icon="icons/vb.png">Virtual Boy</option>
-                <option value="pce" data-icon="icons/pce.png">TurboGrafx-16</option>
-                <option value="pce" data-icon="icons/pcen.png">PC Engine</option>
-                <option value="pce" data-icon="icons/pces.png">SuperGrafx</option>
-                <option value="segaGG" data-icon="icons/segaGG.png">Game Gear</option>
-                <option value="segaMD" data-icon="icons/segaMD.png">Mega Drive</option>
-                <option value="segaMS" data-icon="icons/segaMS.png">Master System</option>
-                <option value="segaMD" data-icon="icons/segaSG100.png">SG-1000</option>
-                <option value="ngp" data-icon="icons/ngp.png">NeoGeo Pocket</option>
-                <option value="ngp" data-icon="icons/ngpc.png">NeoGeo Pocket Color</option>
-                <option value="psx" data-icon="icons/psx.png"> PlayStation</option>
-                <option value="psp" data-icon="icons/psp.png"> PlayStation Portable</option>
-            </select>
-            <button class="custom-button" id="loadLocalBtn" onclick="openFile()">📁Carregar ROM📁</button>
-            <input type="text" id="romUrl" placeholder="⛔Link URL da ROM⛔">
-            <button class="custom-button" onclick="loadRom()">🔥Iniciar Jogo🔥</button>
-            <button class="custom-button" id="raHueHueOnlineBtn" onclick="openRAHueHueOnline()">🌎RAHueHue Online🌎</button>
-            <button class="custom-button" id="webHueHueBtn" onclick="openWebHueHue()">🎮WEBHueHue🎮</button>
-<div class="dual-buttons">
-    <button class="custom-button" onclick="window.open('https://www.youtube.com/shorts/1GYQdSiKdXs')">📱 Android</button>
-    <button class="custom-button" onclick="window.open('https://youtu.be/XLeFLg6SOuA?list=PLGlR7kZN64OgNBoSEZhOeUKn84XUY8qbd&t=3032')">📺 Xbox</button>
+<!-- Ícones e logo -->
+<img alt="Icon Left" class="icon-left" src="docs/huehue.png"/>
+<img alt="Icon Right" class="icon-right" src="docs/hue.png"/>
+<!-- Cabeçalho -->
+<header id="top">
+<h1 class="title"></h1>
+<img alt="Logo" class="logo" src="docs/Logo-light.png"/>
+</header>
+<!-- Caixa principal -->
+<main id="box">
+<div id="consoleIconContainer">
+<img alt="Ícone do Console" id="consoleIcon" src="icons/rahue.png"/>
 </div>
-
-            <div id="error-message">Cole o Link da ROM ou abra uma ROM Local.</div>
-        </div>
-    </main>
-
-    <!-- Miniatura do jogo -->
-    <div id="gameThumbnail">
-        <img id="gameThumbnailImage" src="" alt="Miniatura do Jogo">
-    </div>
-
-    <!-- Scripts -->
-    <script>
+<div class="button-container">
+<select id="selectCore">
+<option disabled="" hidden="" selected="" value="">👀Escolher Console👀</option>
+<!-- Opções de consoles -->
+<option data-icon="icons/atari2600.png" value="atari2600">Atari 2600</option>
+<option data-icon="icons/atari7800.png" value="atari7800">Atari 7800</option>
+<option data-icon="icons/lynx.png" value="lynx">Atari Lynx</option>
+<option data-icon="icons/jaguar.png" value="jaguar">Atari Jaguar</option>
+<option data-icon="icons/ws.png" value="ws">WonderSwan</option>
+<option data-icon="icons/wsc.png" value="ws">WonderSwan Color</option>
+<option data-icon="icons/coleco.png" value="coleco">ColecoVision</option>
+<option data-icon="icons/vice_x64sc.png" value="vice_x64sc">Commodore 64</option>
+<option data-icon="icons/vice_x128.png" value="vice_x128">Commodore 128</option>
+<option data-icon="icons/vice_xvic.png" value="vice_xvic">Commodore VIC20</option>
+<option data-icon="icons/vice_xplus4.png" value="vice_xplus4">Commodore Plus/4</option>
+<option data-icon="icons/vice_xpet.png" value="vice_xpet">Commodore PET</option>
+<option data-icon="icons/n64.png" value="n64">Nintendo 64</option>
+<option data-icon="icons/nds.png" value="nds">Nintendo DS</option>
+<option data-icon="icons/gb.png" value="gb">Game Boy</option>
+<option data-icon="icons/gba.png" value="gba">Game Boy Advance</option>
+<option data-icon="icons/gbc.png" value="gbc">Game Boy Color</option>
+<option data-icon="icons/nes.png" value="nes">Nintendo</option>
+<option data-icon="icons/snes.png" value="snes">Super Nintendo</option>
+<option data-icon="icons/vb.png" value="vb">Virtual Boy</option>
+<option data-icon="icons/pce.png" value="pce">TurboGrafx-16</option>
+<option data-icon="icons/pcen.png" value="pce">PC Engine</option>
+<option data-icon="icons/pces.png" value="pce">SuperGrafx</option>
+<option data-icon="icons/segaGG.png" value="segaGG">Game Gear</option>
+<option data-icon="icons/segaMD.png" value="segaMD">Mega Drive</option>
+<option data-icon="icons/segaMS.png" value="segaMS">Master System</option>
+<option data-icon="icons/segaSG100.png" value="segaMD">SG-1000</option>
+<option data-icon="icons/ngp.png" value="ngp">NeoGeo Pocket</option>
+<option data-icon="icons/ngpc.png" value="ngp">NeoGeo Pocket Color</option>
+<option data-icon="icons/psx.png" value="psx"> PlayStation</option>
+<option data-icon="icons/psp.png" value="psp"> PlayStation Portable</option>
+</select>
+<button class="custom-button" id="loadLocalBtn" onclick="openFile()">📁Carregar ROM📁</button>
+<input id="romUrl" placeholder="⛔Link URL da ROM⛔" type="text"/>
+<button class="custom-button" onclick="loadRom()">🔥Iniciar Jogo🔥</button>
+<button class="custom-button" id="raHueHueOnlineBtn" onclick="openRAHueHueOnline()">🌎RAHueHue Online🌎</button>
+<button class="custom-button" id="webHueHueBtn" onclick="openWebHueHue()">🎮WEBHueHue🎮</button>
+<div class="dual-buttons">
+<button class="custom-button" onclick="window.open('https://www.youtube.com/shorts/1GYQdSiKdXs')">📱 Android</button>
+<button class="custom-button" onclick="window.open('https://youtu.be/XLeFLg6SOuA?list=PLGlR7kZN64OgNBoSEZhOeUKn84XUY8qbd&amp;t=3032')">📺 Xbox</button>
+</div>
+<div id="error-message">Cole o Link da ROM ou abra uma ROM Local.</div>
+</div>
+</main>
+<!-- Miniatura do jogo -->
+<div id="gameThumbnail">
+<img alt="Miniatura do Jogo" id="gameThumbnailImage" src=""/>
+</div>
+<!-- Scripts -->
+<script>
         let enableDebug = false;
 
         const queryString = window.location.search;
@@ -406,7 +402,7 @@
             window.EJS_biosUrl = "";
             window.EJS_gameUrl = romUrl;
             window.EJS_core = core;
-            window.EJS_pathtodata = "data/loader.js";
+            window.EJS_pathtodata = "https://cdn.emulatorjs.org/stable/data/";
             window.EJS_threads = (core === 'psp');
             window.EJS_startOnLoaded = true;
             window.EJS_DEBUG_XX = enableDebug;
