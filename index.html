@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8"/>
-<link href="docs/favicon.ico" rel="icon" type="image/x-icon"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>RetroGames HueHue</title>
-<style>
+    <meta charset="utf-8"/>
+    <link href="docs/favicon.ico" rel="icon" type="image/x-icon"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>RetroGames HueHue</title>
+    <style>
         /* Estilos gerais */
         body, html {
             height: 100%;
@@ -16,6 +15,7 @@
             margin: 0;
             overflow: hidden;
             position: relative;
+            font-family: 'Courier New', monospace;
         }
 
         body, #box, #top {
@@ -25,9 +25,19 @@
             flex-direction: column;
         }
 
+        /* Melhorias de legibilidade - contorno preto em todos os textos */
+        body, button, select, input, div, span {
+            text-shadow: 
+                0.5px 0.5px 0 #000, 
+                -0.5px -0.5px 0 #000, 
+                0.5px -0.5px 0 #000, 
+                -0.5px 0.5px 0 #000,
+                0 0 2px #000; /* Contorno preto para melhor contraste */
+        }
+
         /* Estilos da caixa principal */
         #box {
-            color: #aaa;
+            color: #fff; /* Branco puro para melhor contraste */
             height: 26em;
             width: 15em;
             max-width: 80%;
@@ -38,11 +48,12 @@
             position: relative;
             transition: border-color 0.2s, color 0.2s, height 0.5s, width 0.5s;
             overflow: hidden;
-            font-family: monospace;
             font-weight: bold;
             font-size: 20px;
             margin: 5px;
             padding: 1em;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            z-index: 10; /* Garante que fique acima dos ícones */
         }
 
         #box.fullscreen {
@@ -65,13 +76,12 @@
             color: #ddd;
         }
 
-        /* Estilos para botões e seleção */
+        /* Estilos para botões e seleção - melhor contraste */
         select, button, input[type="text"] {
             padding: 1.0em 0.8em;
             margin: 0.4em;
-            width: 14em;
+            width: 14em; /* Largura igual para todos */
             max-width: 100%;
-            font-family: monospace;
             font-weight: bold;
             font-size: 15px;
             background-color: #4CAF50;
@@ -79,18 +89,53 @@
             border: 2px solid white;
             border-radius: 0.4em;
             cursor: pointer;
-            transition: background-color 0.2s, color 0.2s;
+            transition: all 0.3s;
+            text-align: center;
+            /* Melhor contraste para texto em fundo verde */
+            text-shadow: 
+                0.7px 0.7px 0 #000, 
+                -0.7px -0.7px 0 #000, 
+                0.7px -0.7px 0 #000, 
+                -0.7px 0.7px 0 #000,
+                0 0 3px #000;
+            font-weight: 800; /* Texto mais encorpado */
+            box-sizing: border-box; /* Garante que padding não altere a largura */
+        }
+
+        /* Destaque especial para lista de consoles em PC/Xbox */
+        @media not all and (max-width: 768px) {
+            select option {
+                text-shadow: 
+                    0.7px 0.7px 0 #000, 
+                    -0.7px -0.7px 0 #000, 
+                    0.7px -0.7px 0 #000, 
+                    -0.7px 0.7px 0 #000,
+                    0 0 3px #000;
+                font-weight: 800;
+                background-color: #333;
+                color: white;
+            }
         }
 
         select:hover, button:hover, input[type="text"]:hover {
             background-color: #45a049;
             box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.6);
+            transform: scale(1.02);
+        }
+
+        select:focus, button:focus, input[type="text"]:focus {
+            outline: none;
+            box-shadow: 0 0 10px 5px rgba(76, 175, 80, 0.8);
         }
 
         select {
             color: white;
-            text-align: center;
             border: 1px solid white;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.7em top 50%;
+            background-size: 1.5em auto;
         }
 
         /* Estilos para ícones e logo */
@@ -98,6 +143,21 @@
             width: 130px;
             height: 130px;
             filter: drop-shadow(0 0 10px white);
+            transition: transform 0.3s;
+            /* Nova animação de flutuação */
+            animation: floatLogo 4s ease-in-out infinite;
+            position: relative;
+            z-index: 5;
+        }
+
+        @keyframes floatLogo {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-30px); } /* Movimento de 30px para cima */
+            100% { transform: translateY(0); }
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
         }
 
         .icon-left, .icon-right {
@@ -108,14 +168,23 @@
             max-width: 35%;
             height: auto;
             filter: drop-shadow(0 0 10px white) brightness(1.2);
+            animation: float 6s ease-in-out infinite;
         }
 
         .icon-left {
             left: 10px;
+            animation-delay: 0s;
         }
 
         .icon-right {
             right: 10px;
+            animation-delay: 1s;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(-50%) translateY(0px); }
+            50% { transform: translateY(-50%) translateY(-20px); }
+            100% { transform: translateY(-50%) translateY(0px); }
         }
 
         /* Estilos para ícones de consoles */
@@ -124,6 +193,11 @@
             height: 90px;
             display: inline-block;
             margin-right: 10px;
+            transition: transform 0.3s;
+        }
+
+        #consoleIcon:hover {
+            transform: scale(1.05);
         }
 
         /* Estilos para botões personalizados */
@@ -140,19 +214,45 @@
 
         /* Estilos para entrada de URL da ROM */
         #romUrl {
-            width: 13.1em;
-            padding: 0.6em 0.4em;
-            font-family: monospace;
-            font-weight: bold;
-            font-size: 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: 2px solid white;
-            border-radius: 0.4em;
-            transition: background-color 0.2s, color 0.2s;
-            margin: 0.4em;
-            max-width: 100%;
-            text-align: center;
+            /* Removido width específico - agora usa o padrão de 14em */
+            padding: 1.0em 0.8em; /* Padding igual aos outros elementos */
+            /* Melhor contraste para texto em fundo verde */
+            text-shadow: 
+                0.7px 0.7px 0 #000, 
+                -0.7px -0.7px 0 #000, 
+                0.7px -0.7px 0 #000, 
+                -0.7px 0.7px 0 #000,
+                0 0 3px #000;
+            font-weight: 800; /* Texto mais encorpado */
+        }
+
+        /* Correção para cor do texto no autocomplete */
+        #romUrl:-webkit-autofill,
+        #romUrl:-webkit-autofill:hover, 
+        #romUrl:-webkit-autofill:focus, 
+        #romUrl:-webkit-autofill:active {
+            -webkit-text-fill-color: white !important;
+            -webkit-box-shadow: 0 0 0px 1000px #4CAF50 inset !important;
+            background-color: #4CAF50 !important;
+            color: white !important;
+            text-shadow: 
+                0.7px 0.7px 0 #000, 
+                -0.7px -0.7px 0 #000, 
+                0.7px -0.7px 0 #000, 
+                -0.7px 0.7px 0 #000,
+                0 0 3px #000 !important;
+            font-weight: 800 !important;
+        }
+
+        #romUrl::placeholder {
+            color: rgba(255, 255, 255, 0.9);
+            /* Contorno para placeholder também */
+            text-shadow: 
+                0.5px 0.5px 0 #000, 
+                -0.5px -0.5px 0 #000, 
+                0.5px -0.5px 0 #000, 
+                -0.5px 0.5px 0 #000,
+                0 0 2px #000;
         }
 
         /* Estilos para o rodapé */
@@ -162,31 +262,60 @@
             width: 100%;
             text-align: center;
             color: white;
-            font-family: monospace;
             font-weight: bold;
             font-size: 16px;
             z-index: 1000;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
 
-        /* Nova classe para posicionar o título */
-        .title {
-            position: fixed;
-            top: 10px;
-            width: 100%;
-            text-align: center;
-            z-index: 1000;
-            font-size: 125%;
-        }
-
-        /* Media query para mobile */
+        /* Media query para mobile - layout original */
         @media (max-width: 768px) {
             .icon-left, .icon-right {
                 display: none;
             }
             
             #box {
-                max-width: 95%;
-                max-height: 95%;
+                max-width: 95%; 
+                max-height: 95%; 
+                width: 15em; 
+                height: 26em; 
+                padding: 1em; 
+            }
+            
+            .custom-button, select, #romUrl {
+                font-size: 15px; 
+                padding: 1.0em 0.8em; 
+                width: 14em; 
+            }
+            
+            #exit-btn {
+                top: 10px !important; 
+                right: 10px !important; 
+                left: auto !important;
+                bottom: auto !important;
+                transform: none !important;
+                z-index: 10001 !important;
+                width: auto; 
+                text-align: center;
+                font-size: 16px;
+                padding: 0.5em 1em;
+            }
+            
+            #consoleIcon {
+                width: 120px;
+                height: 90px;
+            }
+            
+            .logo {
+                width: 130px;
+                height: 130px;
+            }
+
+            /* Ajuste extra para garantir alinhamento perfeito */
+            .button-container > * {
+                width: 100% !important;
+                max-width: 14em;
+                margin: 0.4em auto;
             }
         }
 
@@ -201,6 +330,8 @@
             border-radius: 0.4em;
             background-color: #333;
             display: none;
+            box-shadow: 0 0 15px rgba(0,0,0,0.7);
+            z-index: 1001;
         }
 
         #gameThumbnail img {
@@ -216,19 +347,27 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            width: 100%;
         }
 
         .button-container button, .button-container select, .button-container input[type="text"] {
-            width: 15em;
+            width: 14em; /* Largura uniforme */
             margin: 0.3em 0;
         }
 
-        /* Estilo para a mensagem de erro */
+        /* Estilo para a mensagem de erro - mais destaque */
         #error-message {
-            color: red;
+            color: #ffdddd; /* Vermelho mais claro para melhor contraste */
             font-weight: bold;
             display: none;
             text-align: center;
+            padding: 0.8em;
+            background-color: rgba(150, 0, 0, 0.7); /* Fundo mais escuro */
+            border-radius: 0.4em;
+            width: 100%;
+            text-shadow: 0 0 4px #000;
+            border: 1px solid #ff5555;
+            font-size: 16px;
         }
 
         /* Estilo do display do jogo */
@@ -238,103 +377,303 @@
             position: absolute;
             top: 0;
             left: 0;
+            aspect-ratio: 4/3;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            background-color: #000;
         }
-    
-.dual-buttons {
-    display: flex;
-    justify-content: space-between;
-    width: 11.2em;
-    max-width: 100%;
-    margin: 0.5em 0;
-}
 
-.dual-buttons button {
-    width: 9.0em;
-    padding: 0.5em 0.1em;
-    font-size: 12px;
-}
+        @media (max-aspect-ratio: 4/3) {
+            #display {
+                width: 100%;
+                height: auto;
+            }
+        }
 
-</style>
+        @media (min-aspect-ratio: 4/3) {
+            #display {
+                width: auto;
+                height: 100%;
+            }
+        }
+
+        .dual-buttons {
+            display: flex;
+            justify-content: space-between;
+            width: 14em; /* Largura igual aos outros elementos */
+            max-width: 100%;
+            margin: 0.5em 0;
+        }
+
+        .dual-buttons button {
+            width: 6.8em; /* Largura proporcional */
+            padding: 0.5em 0.1em;
+            font-size: 12px;
+            flex: 1;
+            margin: 0 0.2em;
+        }
+
+        /* Botão de saída - mais destaque */
+        #exit-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10000;
+            background-color: #ff3333;
+            color: white;
+            border: 2px solid white;
+            border-radius: 0.4em;
+            padding: 0.5em 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            /* Texto com excelente contraste */
+            text-shadow: 
+                0.7px 0.7px 0 #000, 
+                -0.7px -0.7px 0 #000, 
+                0.7px -0.7px 0 #000, 
+                -0.7px 0.7px 0 #000,
+                0 0 3px #000;
+            font-weight: 800;
+            font-size: 16px;
+        }
+
+        #exit-btn:hover {
+            background-color: #ff0000;
+            box-shadow: 0 0 15px 5px rgba(255, 0, 0, 0.6);
+            transform: scale(1.05);
+        }
+
+        /* Controles touch */
+        #touch-controls {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            z-index: 1000;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+
+        .touch-btn {
+            font-size: 24px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: rgba(76, 175, 80, 0.7);
+            color: white;
+            border: 2px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            touch-action: manipulation;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            transition: all 0.1s;
+            /* Texto com excelente contraste */
+            text-shadow: 
+                0.7px 0.7px 0 #000, 
+                -0.7px -0.7px 0 #000, 
+                0.7px -0.7px 0 #000, 
+                -0.7px 0.7px 0 #000,
+                0 0 3px #000;
+            font-weight: 800;
+        }
+
+        .touch-btn:active {
+            background-color: rgba(69, 160, 73, 0.9);
+            transform: scale(0.95);
+        }
+
+        /* Mensagem de carregamento */
+        .loading-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+            text-align: center;
+            z-index: 100;
+            text-shadow: 0 0 5px #000;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 1em 2em;
+            border-radius: 0.5em;
+            animation: pulse 1.5s infinite;
+            /* Texto com excelente contraste */
+            text-shadow: 
+                1px 1px 0 #000, 
+                -1px -1px 0 #000, 
+                1px -1px 0 #000, 
+                -1px 1px 0 #000,
+                0 0 5px #000;
+            font-weight: 800;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+
+        /* Notificação - texto mais legível */
+        #notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.85);
+            color: #ffcc00; /* Amarelo para melhor contraste */
+            padding: 12px 24px;
+            border-radius: 8px;
+            z-index: 10000;
+            display: none;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0,0,0,0.7);
+            border: 1px solid #ffcc00;
+            font-size: 18px;
+            /* Texto com excelente contraste */
+            text-shadow: 
+                0.7px 0.7px 0 #000, 
+                -0.7px -0.7px 0 #000, 
+                0.7px -0.7px 0 #000, 
+                -0.7px 0.7px 0 #000,
+                0 0 3px #000;
+            font-weight: 800;
+        }
+        
+        /* Indicador de modo mouse */
+        #mouse-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.85);
+            color: #ffcc00;
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-size: 16px;
+            display: none;
+            z-index: 10000;
+            border: 1px solid #ffcc00;
+            /* Texto com excelente contraste */
+            text-shadow: 
+                0.5px 0.5px 0 #000, 
+                -0.5px -0.5px 0 #000, 
+                0.5px -0.5px 0 #000, 
+                -0.5px 0.5px 0 #000,
+                0 0 2px #000;
+            font-weight: 800;
+        }
+    </style>
 </head>
 <body>
-<!-- Ícones e logo -->
-<img alt="Icon Left" class="icon-left" src="docs/huehue.png"/>
-<img alt="Icon Right" class="icon-right" src="docs/hue.png"/>
-<!-- Cabeçalho -->
-<header id="top">
-<h1 class="title"></h1>
-<img alt="Logo" class="logo" src="docs/Logo-light.png"/>
-</header>
-<!-- Caixa principal -->
-<main id="box">
-<div id="consoleIconContainer">
-<img alt="Ícone do Console" id="consoleIcon" src="icons/rahue.png"/>
-</div>
-<div class="button-container">
-<select id="selectCore">
-<option disabled="" hidden="" selected="" value="">👀Escolher Console👀</option>
-<!-- Opções de consoles -->
-<option data-icon="icons/atari2600.png" value="atari2600">Atari 2600</option>
-<option data-icon="icons/atari7800.png" value="atari7800">Atari 7800</option>
-<option data-icon="icons/lynx.png" value="lynx">Atari Lynx</option>
-<option data-icon="icons/jaguar.png" value="jaguar">Atari Jaguar</option>
-<option data-icon="icons/ws.png" value="ws">WonderSwan</option>
-<option data-icon="icons/wsc.png" value="ws">WonderSwan Color</option>
-<option data-icon="icons/coleco.png" value="coleco">ColecoVision</option>
-<option data-icon="icons/vice_x64sc.png" value="vice_x64sc">Commodore 64</option>
-<option data-icon="icons/vice_x128.png" value="vice_x128">Commodore 128</option>
-<option data-icon="icons/vice_xvic.png" value="vice_xvic">Commodore VIC20</option>
-<option data-icon="icons/vice_xplus4.png" value="vice_xplus4">Commodore Plus/4</option>
-<option data-icon="icons/vice_xpet.png" value="vice_xpet">Commodore PET</option>
-<option data-icon="icons/n64.png" value="n64">Nintendo 64</option>
-<option data-icon="icons/nds.png" value="nds">Nintendo DS</option>
-<option data-icon="icons/gb.png" value="gb">Game Boy</option>
-<option data-icon="icons/gba.png" value="gba">Game Boy Advance</option>
-<option data-icon="icons/gbc.png" value="gbc">Game Boy Color</option>
-<option data-icon="icons/nes.png" value="nes">Nintendo</option>
-<option data-icon="icons/snes.png" value="snes">Super Nintendo</option>
-<option data-icon="icons/vb.png" value="vb">Virtual Boy</option>
-<option data-icon="icons/pce.png" value="pce">TurboGrafx-16</option>
-<option data-icon="icons/pcen.png" value="pce">PC Engine</option>
-<option data-icon="icons/pces.png" value="pce">SuperGrafx</option>
-<option data-icon="icons/segaGG.png" value="segaGG">Game Gear</option>
-<option data-icon="icons/segaMD.png" value="segaMD">Mega Drive</option>
-<option data-icon="icons/segaMS.png" value="segaMS">Master System</option>
-<option data-icon="icons/segaSG100.png" value="segaMD">SG-1000</option>
-<option data-icon="icons/ngp.png" value="ngp">NeoGeo Pocket</option>
-<option data-icon="icons/ngpc.png" value="ngp">NeoGeo Pocket Color</option>
-<option data-icon="icons/psx.png" value="psx"> PlayStation</option>
-</select>
-<button class="custom-button" id="loadLocalBtn" onclick="openFile()">📁Carregar ROM📁</button>
-<input id="romUrl" placeholder="⛔Link URL da ROM⛔" type="text"/>
-<button class="custom-button" onclick="loadRom()">🔥Iniciar Jogo🔥</button>
-<button class="custom-button" id="raHueHueOnlineBtn" onclick="openRAHueHueOnline()">🌎RAHueHue Online🌎</button>
-<button class="custom-button" id="webHueHueBtn" onclick="openWebHueHue()">🎮WEBHueHue🎮</button>
-<div class="dual-buttons">
-<button class="custom-button" onclick="window.open('https://www.youtube.com/shorts/1GYQdSiKdXs')">📱 Android</button>
-<button class="custom-button" onclick="window.open('https://youtu.be/XLeFLg6SOuA?list=PLGlR7kZN64OgNBoSEZhOeUKn84XUY8qbd&amp;t=3032')">📺 Xbox</button>
-</div>
-<div id="error-message">Cole o Link da ROM ou abra uma ROM Local.</div>
-</div>
-</main>
-<!-- Miniatura do jogo -->
-<div id="gameThumbnail">
-<img alt="Miniatura do Jogo" id="gameThumbnailImage" src=""/>
-</div>
-<!-- Scripts -->
-<script>
+    <!-- Ícones e logo -->
+    <img alt="Icon Left" class="icon-left" src="docs/huehue.png"/>
+    <img alt="Icon Right" class="icon-right" src="docs/hue.png"/>
+    
+    <!-- Cabeçalho -->
+    <header id="top">
+        <img alt="Logo" class="logo" src="docs/Logo-light.png"/>
+    </header>
+    
+    <!-- Caixa principal -->
+    <main id="box">
+        <div id="consoleIconContainer">
+            <img alt="Ícone do Console" id="consoleIcon" src="icons/rahue.png"/>
+        </div>
+        <div class="button-container">
+            <select id="selectCore">
+                <option disabled hidden selected value="">👀Escolher Console👀</option>
+                <!-- Opções de consoles -->
+                <option data-icon="icons/atari2600.png" value="atari2600">Atari 2600</option>
+                <option data-icon="icons/atari7800.png" value="atari7800">Atari 7800</option>
+                <option data-icon="icons/lynx.png" value="lynx">Atari Lynx</option>
+                <option data-icon="icons/jaguar.png" value="jaguar">Atari Jaguar</option>
+                <option data-icon="icons/ws.png" value="ws">WonderSwan</option>
+                <option data-icon="icons/wsc.png" value="ws">WonderSwan Color</option>
+                <option data-icon="icons/coleco.png" value="coleco">ColecoVision</option>
+                <option data-icon="icons/vice_x64sc.png" value="vice_x64sc">Commodore 64</option>
+                <option data-icon="icons/vice_x128.png" value="vice_x128">Commodore 128</option>
+                <option data-icon="icons/vice_xvic.png" value="vice_xvic">Commodore VIC20</option>
+                <option data-icon="icons/vice_xplus4.png" value="vice_xplus4">Commodore Plus/4</option>
+                <option data-icon="icons/vice_xpet.png" value="vice_xpet">Commodore PET</option>
+                <option data-icon="icons/n64.png" value="n64">Nintendo 64</option>
+                <option data-icon="icons/nds.png" value="nds">Nintendo DS</option>
+                <option data-icon="icons/gb.png" value="gb">Game Boy</option>
+                <option data-icon="icons/gba.png" value="gba">Game Boy Advance</option>
+                <option data-icon="icons/gbc.png" value="gbc">Game Boy Color</option>
+                <option data-icon="icons/nes.png" value="nes">Nintendo</option>
+                <option data-icon="icons/snes.png" value="snes">Super Nintendo</option>
+                <option data-icon="icons/vb.png" value="vb">Virtual Boy</option>
+                <option data-icon="icons/pce.png" value="pce">TurboGrafx-16</option>
+                <option data-icon="icons/pcen.png" value="pce">PC Engine</option>
+                <option data-icon="icons/pces.png" value="pce">SuperGrafx</option>
+                <option data-icon="icons/segaGG.png" value="segaGG">Game Gear</option>
+                <option data-icon="icons/segaMD.png" value="segaMD">Mega Drive</option>
+                <option data-icon="icons/segaMS.png" value="segaMS">Master System</option>
+                <option data-icon="icons/segaSG100.png" value="segaMD">SG-1000</option>
+                <option data-icon="icons/ngp.png" value="ngp">NeoGeo Pocket</option>
+                <option data-icon="icons/ngpc.png" value="ngp">NeoGeo Pocket Color</option>
+                <option data-icon="icons/psx.png" value="psx"> PlayStation</option>
+            </select>
+            <button class="custom-button" id="loadLocalBtn" onclick="openFile()">📁Carregar ROM📁</button>
+            <input id="romUrl" placeholder="⛔Link URL da ROM⛔" type="text"/>
+            <button class="custom-button" onclick="loadRom()">🔥Iniciar Jogo🔥</button>
+            <button class="custom-button" id="raHueHueOnlineBtn" onclick="openRAHueHueOnline()">🌎RAHueHue Online🌎</button>
+            <button class="custom-button" id="webHueHueBtn" onclick="openWebHueHue()">🎮WEBHueHue🎮</button>
+            <div class="dual-buttons">
+                <button class="custom-button" onclick="window.open('https://www.youtube.com/shorts/1GYQdSiKdXs', '_blank')">📱 Android</button>
+                <button class="custom-button" onclick="window.open('https://youtu.be/XLeFLg6SOuA?list=PLGlR7kZN64OgNBoSEZhOeUKn84XUY8qbd&amp;t=3032', '_blank')">📺 Xbox</button>
+            </div>
+            <div id="error-message">Cole o Link da ROM ou abra uma ROM Local.</div>
+        </div>
+    </main>
+    
+    <!-- Miniatura do jogo -->
+    <div id="gameThumbnail">
+        <img alt="Miniatura do Jogo" id="gameThumbnailImage" src=""/>
+    </div>
+    
+    <!-- Notificação -->
+    <div id="notification"></div>
+    
+    <!-- Indicador de modo mouse -->
+    <div id="mouse-indicator">Modo Mouse Ativado</div>
+    
+    <!-- Scripts -->
+    <script>
+        // Configuração inicial
         let enableDebug = false;
+        let isGameActive = false;
+        let originalContent = null;
+        let viewTimer = null;
+        let optionsTimer = null;
+        let mouseModeActive = false;
+        let gamepadCheckInterval = null;
+        let gamepad = null;
 
+        // Verificar modo de depuração
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         if (urlParams.get('debug') === '1') {
             enableDebug = true;
         }
 
+        // Funções de detecção de dispositivo
         function isMobileDevice() {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         }
 
+        function isXboxEdge() {
+            return navigator.userAgent.includes('Xbox') && navigator.userAgent.includes('Edge');
+        }
+
+        // Elementos DOM
         const selectCore = document.getElementById('selectCore');
         const romUrlInput = document.getElementById('romUrl');
         const fileInput = document.createElement('input');
@@ -349,6 +688,40 @@
         const gameThumbnail = document.getElementById('gameThumbnail');
         const gameThumbnailImage = document.getElementById('gameThumbnailImage');
         const errorMessage = document.getElementById('error-message');
+        const box = document.getElementById('box');
+        const notification = document.getElementById('notification');
+        const mouseIndicator = document.getElementById('mouse-indicator');
+
+        // Mostrar notificação
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Pré-carregar assets importantes
+        function preloadAssets() {
+            const assets = [
+                'docs/huehue.png',
+                'docs/hue.png',
+                'docs/Logo-light.png',
+                'icons/rahue.png',
+                'https://cdn.emulatorjs.org/stable/data/loader.js'
+            ];
+            
+            assets.forEach(asset => {
+                const link = document.createElement('link');
+                link.rel = 'preload';
+                link.href = asset;
+                link.as = asset.endsWith('.js') ? 'script' : 'image';
+                document.head.appendChild(link);
+            });
+        }
+        
+        window.addEventListener('DOMContentLoaded', preloadAssets);
 
         // Ordenar opções do select
         const optionsArray = Array.from(selectCore.options);
@@ -360,13 +733,20 @@
         selectCore.addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
             const iconUrl = selectedOption.getAttribute('data-icon');
-            consoleIcon.src = iconUrl;
+            if (iconUrl) {
+                consoleIcon.src = iconUrl;
+            }
         });
 
         // Função principal para carregar ROM
         function loadRom() {
             const romUrl = romUrlInput.value;
             const core = selectCore.value;
+
+            if (core === "") {
+                showNotification("Selecione um console primeiro!");
+                return;
+            }
 
             if (romUrl) {
                 loadGameFromUrl(romUrl, core);
@@ -375,27 +755,34 @@
                 loadGameFromFile(file, core);
             } else {
                 errorMessage.style.display = 'block';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 3000);
             }
         }
 
         // Carregar jogo da URL
         function loadGameFromUrl(romUrl, core) {
+            // Salvar conteúdo original para restaurar depois
+            if (!originalContent) {
+                originalContent = box.innerHTML;
+            }
+            
             errorMessage.style.display = 'none';
+            isGameActive = true;
 
             const div = document.createElement("div");
-            const script = document.createElement("script");
-
             div.id = "display";
-            const box = document.getElementById("box");
             box.innerHTML = "";
             box.appendChild(div);
 
-            // Ativar fullscreen do container em mobile
-            if (isMobileDevice()) {
-                box.classList.add('fullscreen');
-                document.body.style.overflow = 'hidden';
-            }
+            // Adicionar mensagem de carregamento
+            const loadingMsg = document.createElement('div');
+            loadingMsg.className = 'loading-message';
+            loadingMsg.textContent = 'CARREGANDO...';
+            div.appendChild(loadingMsg);
 
+            // Configurar o emulador
             window.EJS_player = "#display";
             window.EJS_gameName = "ROM Carregada";
             window.EJS_biosUrl = "";
@@ -406,13 +793,250 @@
             window.EJS_DEBUG_XX = enableDebug;
             window.EJS_disableDatabases = true;
 
-            script.src = "https://cdn.emulatorjs.org/stable/data//loader.js";
+            // Adicionar botão de saída
+            addExitButton();
+            
+            // Adicionar controles touch para dispositivos móveis
+            if (isMobileDevice()) {
+                addTouchControls();
+            }
+            
+            // Iniciar detecção de gamepad para Xbox
+            if (isXboxEdge()) {
+                startGamepadDetection();
+            }
+            
+            // Bloquear orientação para dispositivos móveis
+            lockScreenOrientation();
+
+            // Carregar o script do emulador
+            const script = document.createElement("script");
+            script.src = "https://cdn.emulatorjs.org/stable/data/loader.js";
+            
+            // Adicionar fallback caso o CDN principal falhe
+            script.onerror = () => {
+                const fallbackScript = document.createElement('script');
+                fallbackScript.src = 'https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@main/data/loader.js';
+                document.body.appendChild(fallbackScript);
+                console.log("Usando CDN alternativo para o emulador");
+            };
+            
+            script.onload = () => {
+                // Remover mensagem de carregamento
+                if (loadingMsg.parentNode) {
+                    loadingMsg.parentNode.removeChild(loadingMsg);
+                }
+                
+                // Ativar fullscreen automático em Android
+                if (isMobileDevice()) {
+                    setTimeout(() => {
+                        const display = document.getElementById('display');
+                        if (display && display.requestFullscreen) {
+                            display.requestFullscreen().catch(e => console.log(e));
+                            showNotification("Modo Tela Cheia Ativado");
+                        }
+                    }, 1000);
+                }
+            };
+            
             document.body.appendChild(script);
 
             hideIconsAndHeader();
             expandBox();
             hideFooter();
             displayGameThumbnail(romUrl);
+            
+            // Mostrar notificação
+            showNotification("Jogo carregado! Aproveite!");
+        }
+
+        // Iniciar detecção de gamepad para Xbox
+        function startGamepadDetection() {
+            if (!isXboxEdge()) return;
+            
+            // Limpar intervalo anterior se existir
+            if (gamepadCheckInterval) {
+                clearInterval(gamepadCheckInterval);
+            }
+            
+            // Configurar listeners de gamepad
+            window.addEventListener("gamepadconnected", (e) => {
+                gamepad = e.gamepad;
+                showNotification(`Gamepad ${gamepad.id} conectado`);
+                startGamepadLoop();
+            });
+            
+            window.addEventListener("gamepaddisconnected", () => {
+                gamepad = null;
+                showNotification("Gamepad desconectado");
+            });
+        }
+
+        // Loop de verificação do gamepad
+        function startGamepadLoop() {
+            gamepadCheckInterval = setInterval(() => {
+                if (!gamepad) return;
+                
+                // Atualizar estado do gamepad
+                gamepad = navigator.getGamepads()[gamepad.index];
+                
+                // Verificar botões para funções especiais
+                checkGamepadButtons();
+            }, 100);
+        }
+
+        // Verificar botões do gamepad para funções especiais
+        function checkGamepadButtons() {
+            if (!isGameActive || !gamepad) return;
+            
+            // Botão View (índice 8)
+            const viewButton = gamepad.buttons[8];
+            
+            // Botão Options (índice 9)
+            const optionsButton = gamepad.buttons[9];
+            
+            // Verificar View pressionado por 3 segundos
+            if (viewButton.pressed) {
+                if (!viewTimer) {
+                    viewTimer = setTimeout(() => {
+                        toggleGameFullscreen();
+                        viewTimer = null;
+                    }, 3000);
+                }
+            } else {
+                if (viewTimer) {
+                    clearTimeout(viewTimer);
+                    viewTimer = null;
+                }
+            }
+            
+            // Verificar View e Options pressionados juntos por 3 segundos
+            if (viewButton.pressed && optionsButton.pressed) {
+                if (!optionsTimer) {
+                    optionsTimer = setTimeout(() => {
+                        toggleMouseMode();
+                        optionsTimer = null;
+                    }, 3000);
+                }
+            } else {
+                if (optionsTimer) {
+                    clearTimeout(optionsTimer);
+                    optionsTimer = null;
+                }
+            }
+        }
+
+        // Alternar modo de tela cheia na área de jogo (NOVO)
+        function toggleGameFullscreen() {
+            const display = document.getElementById('display');
+            if (!display) return;
+            
+            // Verificar se já está em fullscreen
+            if (document.fullscreenElement === display) {
+                document.exitFullscreen()
+                    .then(() => showNotification("Tela Cheia Desativada"))
+                    .catch(err => console.error("Erro ao sair do fullscreen:", err));
+            } else {
+                display.requestFullscreen()
+                    .then(() => showNotification("Tela Cheia Ativada"))
+                    .catch(err => console.error("Erro ao entrar em fullscreen:", err));
+            }
+        }
+
+        // Alternar modo mouse
+        function toggleMouseMode() {
+            mouseModeActive = !mouseModeActive;
+            
+            if (mouseModeActive) {
+                // Ativar modo mouse
+                document.body.style.cursor = 'default';
+                mouseIndicator.style.display = 'block';
+                showNotification("Modo Mouse Ativado");
+            } else {
+                // Desativar modo mouse
+                document.body.style.cursor = 'none';
+                mouseIndicator.style.display = 'none';
+                showNotification("Modo Mouse Desativado");
+            }
+        }
+
+        // Adicionar controles touch para dispositivos móveis
+        function addTouchControls() {
+            if (!isMobileDevice() || document.getElementById('touch-controls')) return;
+            
+            const controls = document.createElement('div');
+            controls.id = 'touch-controls';
+            
+            const buttons = [
+                { symbol: '⬅️', id: 'left-btn' },
+                { symbol: '➡️', id: 'right-btn' },
+                { symbol: '🅰', id: 'a-btn' },
+                { symbol: '🅱', id: 'b-btn' }
+            ];
+            
+            buttons.forEach(btn => {
+                const button = document.createElement('div');
+                button.className = 'touch-btn';
+                button.id = btn.id;
+                button.textContent = btn.symbol;
+                controls.appendChild(button);
+            });
+            
+            document.getElementById('display').appendChild(controls);
+        }
+
+        // Bloquear orientação da tela para paisagem
+        function lockScreenOrientation() {
+            if (!isMobileDevice()) return;
+            
+            try {
+                if (screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock('landscape')
+                        .catch(() => console.log("Bloqueio de orientação não suportado"));
+                }
+            } catch (e) {
+                console.error("Erro ao bloquear orientação:", e);
+            }
+        }
+
+        // Liberar orientação da tela
+        function unlockScreenOrientation() {
+            try {
+                if (screen.orientation && screen.orientation.unlock) {
+                    screen.orientation.unlock();
+                }
+            } catch (e) {
+                console.error("Erro ao desbloquear orientação:", e);
+            }
+        }
+
+        // Adicionar botão de saída
+        function addExitButton() {
+            if (document.getElementById('exit-btn')) return;
+            
+            const exitBtn = document.createElement('button');
+            exitBtn.id = 'exit-btn';
+            exitBtn.textContent = 'SAIR';
+            exitBtn.onclick = exitGame;
+            
+            box.appendChild(exitBtn);
+        }
+
+        // Sair do jogo e voltar ao menu
+        function exitGame() {
+            // Tentar sair do modo de tela cheia
+            if (document.fullscreenElement) {
+                document.exitFullscreen().catch(e => console.log(e));
+            }
+            
+            // Parar a verificação de gamepad
+            if (gamepadCheckInterval) {
+                clearInterval(gamepadCheckInterval);
+                gamepadCheckInterval = null;
+            }
+            
+            // Recarregar a página para garantir que tudo seja reiniciado
+            location.reload();
         }
 
         // Carregar jogo local
@@ -455,8 +1079,9 @@
         fileInput.addEventListener('change', () => {
             if (fileInput.files.length > 0) {
                 loadLocalBtn.textContent = fileInput.files[0].name;
+                showNotification("ROM selecionada! Clique em Iniciar Jogo");
             } else {
-                loadLocalBtn.textContent = 'Carregar ROM Localmente';
+                loadLocalBtn.textContent = '📁Carregar ROM📁';
             }
         });
 
@@ -469,8 +1094,7 @@
         }
 
         function expandBox() {
-            const box = document.getElementById('box');
-            if (!isMobileDevice()) {
+            if (!isMobileDevice() && !isXboxEdge()) {
                 box.style.height = '97em';
                 box.style.width = '97em';
                 box.style.maxWidth = '97%';
@@ -481,6 +1105,22 @@
         function hideFooter() {
             document.getElementById('footer').style.display = 'none';
         }
+        
+        // Adicionar atalho de teclado (ESC para sair)
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && isGameActive) {
+                exitGame();
+            }
+        });
+        
+        // Evento para fechar o modo mouse clicando em qualquer lugar
+        document.addEventListener('click', function() {
+            if (mouseModeActive) {
+                mouseModeActive = false;
+                document.body.style.cursor = 'none';
+                mouseIndicator.style.display = 'none';
+            }
+        });
     </script>
 </body>
 </html>
