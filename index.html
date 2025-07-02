@@ -32,12 +32,12 @@
                 -0.5px -0.5px 0 #000, 
                 0.5px -0.5px 0 #000, 
                 -0.5px 0.5px 0 #000,
-                0 0 2px #000; /* Contorno preto para melhor contraste */
+                0 0 2px #000;
         }
 
         /* Estilos da caixa principal */
         #box {
-            color: #fff; /* Branco puro para melhor contraste */
+            color: #fff;
             height: 26em;
             width: 15em;
             max-width: 80%;
@@ -53,7 +53,7 @@
             margin: 5px;
             padding: 1em;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
-            z-index: 10; /* Garante que fique acima dos ícones */
+            z-index: 10;
         }
 
         #box.fullscreen {
@@ -76,11 +76,11 @@
             color: #ddd;
         }
 
-        /* Estilos para botões e seleção - melhor contraste */
+        /* Estilos para botões e seleção */
         select, button, input[type="text"] {
             padding: 1.0em 0.8em;
             margin: 0.4em;
-            width: 14em; /* Largura igual para todos */
+            width: 14em;
             max-width: 100%;
             font-weight: bold;
             font-size: 15px;
@@ -91,15 +91,14 @@
             cursor: pointer;
             transition: all 0.3s;
             text-align: center;
-            /* Melhor contraste para texto em fundo verde */
             text-shadow: 
                 0.7px 0.7px 0 #000, 
                 -0.7px -0.7px 0 #000, 
                 0.7px -0.7px 0 #000, 
                 -0.7px 0.7px 0 #000,
                 0 0 3px #000;
-            font-weight: 800; /* Texto mais encorpado */
-            box-sizing: border-box; /* Garante que padding não altere a largura */
+            font-weight: 800;
+            box-sizing: border-box;
         }
 
         /* Destaque especial para lista de consoles em PC/Xbox */
@@ -144,7 +143,6 @@
             height: 130px;
             filter: drop-shadow(0 0 10px white);
             transition: transform 0.3s;
-            /* Nova animação de flutuação */
             animation: floatLogo 4s ease-in-out infinite;
             position: relative;
             z-index: 5;
@@ -214,16 +212,14 @@
 
         /* Estilos para entrada de URL da ROM */
         #romUrl {
-            /* Removido width específico - agora usa o padrão de 14em */
-            padding: 1.0em 0.8em; /* Padding igual aos outros elementos */
-            /* Melhor contraste para texto em fundo verde */
+            padding: 1.0em 0.8em;
             text-shadow: 
                 0.7px 0.7px 0 #000, 
                 -0.7px -0.7px 0 #000, 
                 0.7px -0.7px 0 #000, 
                 -0.7px 0.7px 0 #000,
                 0 0 3px #000;
-            font-weight: 800; /* Texto mais encorpado */
+            font-weight: 800;
         }
 
         /* Correção para cor do texto no autocomplete */
@@ -246,7 +242,6 @@
 
         #romUrl::placeholder {
             color: rgba(255, 255, 255, 0.9);
-            /* Contorno para placeholder também */
             text-shadow: 
                 0.5px 0.5px 0 #000, 
                 -0.5px -0.5px 0 #000, 
@@ -255,21 +250,8 @@
                 0 0 2px #000;
         }
 
-        /* Estilos para o rodapé */
-        #footer {
-            position: fixed;
-            bottom: 10px;
-            width: 100%;
-            text-align: center;
-            color: white;
-            font-weight: bold;
-            font-size: 16px;
-            z-index: 1000;
-            text-shadow: 0 0 5px rgba(0,0,0,0.5);
-        }
-
-        /* Media query para mobile - layout original */
-        @media (max-width: 768px) {
+        /* Media query para mobile */
+        @media (max-width: 768px), (max-height: 768px) and (orientation: portrait) {
             .icon-left, .icon-right {
                 display: none;
             }
@@ -288,17 +270,34 @@
                 width: 14em; 
             }
             
+            /* Ajuste para botão SAIR em dispositivos móveis */
             #exit-btn {
-                top: 10px !important; 
-                right: 10px !important; 
-                left: auto !important;
-                bottom: auto !important;
-                transform: none !important;
+                top: auto !important;
+                bottom: 20px !important;
+                left: 50% !important;
+                right: auto !important;
+                transform: translateX(-50%) !important;
                 z-index: 10001 !important;
                 width: auto; 
+                max-width: 120px; /* Largura reduzida para não interferir na gameplay */
                 text-align: center;
                 font-size: 16px;
                 padding: 0.5em 1em;
+                position: absolute;
+                background-color: #4CAF50; /* Cor dos botões principais */
+            }
+            
+            /* Contador de tempo na parte superior em dispositivos móveis */
+            #playtime-container {
+                top: 20px !important;
+                bottom: auto !important;
+                left: 50% !important;
+                right: auto !important;
+                transform: translateX(-50%) !important;
+                z-index: 10001 !important;
+                width: auto;
+                text-align: center;
+                position: absolute;
             }
             
             #consoleIcon {
@@ -311,11 +310,21 @@
                 height: 130px;
             }
 
-            /* Ajuste extra para garantir alinhamento perfeito */
             .button-container > * {
                 width: 100% !important;
                 max-width: 14em;
                 margin: 0.4em auto;
+            }
+            
+            /* Ajuste especial para tela de jogo em mobile */
+            #display {
+                width: 100% !important;
+                height: auto !important;
+                max-height: calc(100% - 100px) !important;
+                object-fit: contain;
+                position: relative;
+                top: 0;
+                left: 0;
             }
         }
 
@@ -351,18 +360,18 @@
         }
 
         .button-container button, .button-container select, .button-container input[type="text"] {
-            width: 14em; /* Largura uniforme */
+            width: 14em;
             margin: 0.3em 0;
         }
 
-        /* Estilo para a mensagem de erro - mais destaque */
+        /* Estilo para a mensagem de erro */
         #error-message {
-            color: #ffdddd; /* Vermelho mais claro para melhor contraste */
+            color: #ffdddd;
             font-weight: bold;
             display: none;
             text-align: center;
             padding: 0.8em;
-            background-color: rgba(150, 0, 0, 0.7); /* Fundo mais escuro */
+            background-color: rgba(150, 0, 0, 0.7);
             border-radius: 0.4em;
             width: 100%;
             text-shadow: 0 0 4px #000;
@@ -370,57 +379,50 @@
             font-size: 16px;
         }
 
-        /* Estilo do display do jogo */
+        /* Estilo do display do jogo - IMPORTANTE: Manter proporção original */
         #display {
             width: 100%;
             height: 100%;
             position: absolute;
             top: 0;
             left: 0;
-            aspect-ratio: 4/3;
+            object-fit: contain;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #display canvas {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
-            background-color: #000;
-        }
-
-        @media (max-aspect-ratio: 4/3) {
-            #display {
-                width: 100%;
-                height: auto;
-            }
-        }
-
-        @media (min-aspect-ratio: 4/3) {
-            #display {
-                width: auto;
-                height: 100%;
-            }
         }
 
         .dual-buttons {
             display: flex;
             justify-content: space-between;
-            width: 14em; /* Largura igual aos outros elementos */
+            width: 14em;
             max-width: 100%;
             margin: 0.5em 0;
         }
 
         .dual-buttons button {
-            width: 6.8em; /* Largura proporcional */
+            width: 6.8em;
             padding: 0.5em 0.1em;
             font-size: 12px;
             flex: 1;
             margin: 0 0.2em;
         }
 
-        /* Botão de saída - mais destaque */
+        /* Botão de saída - ATUALIZAÇÕES SOLICITADAS */
         #exit-btn {
             position: absolute;
             top: 10px;
             right: 10px;
             z-index: 10000;
-            background-color: #ff3333;
+            /* Alterado para mesma cor dos botões principais */
+            background-color: #4CAF50;
             color: white;
             border: 2px solid white;
             border-radius: 0.4em;
@@ -429,7 +431,6 @@
             cursor: pointer;
             transition: all 0.3s;
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
-            /* Texto com excelente contraste */
             text-shadow: 
                 0.7px 0.7px 0 #000, 
                 -0.7px -0.7px 0 #000, 
@@ -438,12 +439,63 @@
                 0 0 3px #000;
             font-weight: 800;
             font-size: 16px;
+            /* Largura reduzida para PC/Xbox */
+            max-width: 120px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Ajuste de largura para dispositivos não móveis */
+        @media not all and (max-width: 768px) {
+            #exit-btn {
+                max-width: 120px;
+            }
         }
 
         #exit-btn:hover {
-            background-color: #ff0000;
-            box-shadow: 0 0 15px 5px rgba(255, 0, 0, 0.6);
+            background-color: #45a049;
+            box-shadow: 0 0 15px 5px rgba(76, 175, 80, 0.6);
             transform: scale(1.05);
+        }
+
+        /* Contador de tempo de jogo - ATUALIZADO COM LEGENDA */
+        #playtime-container {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10000;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #ffcc00;
+            padding: 0.5em 1em;
+            border-radius: 0.4em;
+            font-weight: bold;
+            border: 1px solid #ffcc00;
+            text-align: center;
+            min-width: 100px;
+        }
+
+        #playtime {
+            font-size: 16px;
+            text-shadow: 
+                0.5px 0.5px 0 #000, 
+                -0.5px -0.5px 0 #000, 
+                0.5px -0.5px 0 #000, 
+                -0.5px 0.5px 0 #000,
+                0 0 2px #000;
+            font-weight: 800;
+        }
+
+        #playtime-caption {
+            font-size: 12px;
+            color: #ffcc00;
+            margin-top: 4px;
+            text-shadow: 
+                0.5px 0.5px 0 #000, 
+                -0.5px -0.5px 0 #000, 
+                0.5px -0.5px 0 #000, 
+                -0.5px 0.5px 0 #000,
+                0 0 2px #000;
         }
 
         /* Controles touch */
@@ -473,7 +525,6 @@
             touch-action: manipulation;
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
             transition: all 0.1s;
-            /* Texto com excelente contraste */
             text-shadow: 
                 0.7px 0.7px 0 #000, 
                 -0.7px -0.7px 0 #000, 
@@ -504,7 +555,6 @@
             padding: 1em 2em;
             border-radius: 0.5em;
             animation: pulse 1.5s infinite;
-            /* Texto com excelente contraste */
             text-shadow: 
                 1px 1px 0 #000, 
                 -1px -1px 0 #000, 
@@ -520,14 +570,14 @@
             100% { opacity: 0.7; }
         }
 
-        /* Notificação - texto mais legível */
+        /* Notificação */
         #notification {
             position: fixed;
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
             background-color: rgba(0, 0, 0, 0.85);
-            color: #ffcc00; /* Amarelo para melhor contraste */
+            color: #ffcc00;
             padding: 12px 24px;
             border-radius: 8px;
             z-index: 10000;
@@ -537,7 +587,6 @@
             box-shadow: 0 0 15px rgba(0,0,0,0.7);
             border: 1px solid #ffcc00;
             font-size: 18px;
-            /* Texto com excelente contraste */
             text-shadow: 
                 0.7px 0.7px 0 #000, 
                 -0.7px -0.7px 0 #000, 
@@ -546,28 +595,28 @@
                 0 0 3px #000;
             font-weight: 800;
         }
-        
-        /* Indicador de modo mouse */
-        #mouse-indicator {
+
+        /* Feedback para controles */
+        .control-feedback {
             position: fixed;
             bottom: 20px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.85);
-            color: #ffcc00;
-            padding: 10px 18px;
-            border-radius: 20px;
-            font-size: 16px;
+            right: 20px;
+            background: rgba(0,0,0,0.85);
+            color: yellow;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
             display: none;
-            z-index: 10000;
-            border: 1px solid #ffcc00;
-            /* Texto com excelente contraste */
+            z-index: 1000;
             text-shadow: 
-                0.5px 0.5px 0 #000, 
-                -0.5px -0.5px 0 #000, 
-                0.5px -0.5px 0 #000, 
-                -0.5px 0.5px 0 #000,
-                0 0 2px #000;
+                0.7px 0.7px 0 #000, 
+                -0.7px -0.7px 0 #000, 
+                0.7px -0.7px 0 #000, 
+                -0.7px 0.7px 0 #000,
+                0 0 3px #000;
             font-weight: 800;
+            border: 1px solid yellow;
+            font-size: 16px;
         }
     </style>
 </head>
@@ -646,20 +695,134 @@
     <!-- Notificação -->
     <div id="notification"></div>
     
-    <!-- Indicador de modo mouse -->
-    <div id="mouse-indicator">Modo Mouse Ativado</div>
+    <!-- Feedback para controles -->
+    <div id="controlFeedback" class="control-feedback"></div>
     
     <!-- Scripts -->
     <script>
+        // =============================================
+        // CONTROLES XBOX PARA NAVEGAÇÃO (ATUALIZADO)
+        // =============================================
+        // Variáveis para controle do gamepad
+        let selectPressed = false;
+        let startPressed = false;
+        let comboPressTimer = null;
+        let selectHoldTimer = null;
+        let gamepad = null;
+        let gamepadMonitorRunning = false;
+        let playtimeInterval = null;
+        let playtimeSeconds = 0;
+
+        // Função para mostrar feedback visual dos controles
+        function showControlFeedback(message) {
+            const feedbackElement = document.getElementById('controlFeedback');
+            feedbackElement.textContent = message;
+            feedbackElement.style.display = 'block';
+            setTimeout(() => {
+                feedbackElement.style.display = 'none';
+            }, 2000);
+        }
+
+        // Função para alternar fullscreen
+        function toggleGameFullscreen() {
+            const display = document.getElementById('display');
+            if (!display) return;
+            
+            if (document.fullscreenElement === display) {
+                document.exitFullscreen()
+                    .then(() => showControlFeedback("TELA CHEIA DESATIVADA"))
+                    .catch(err => console.error("Erro ao sair do fullscreen:", err));
+            } else {
+                display.requestFullscreen()
+                    .then(() => {
+                        showControlFeedback("TELA CHEIA ATIVADA");
+                        // Forçar proporção correta após entrar em fullscreen
+                        setTimeout(adjustDisplaySize, 100);
+                    })
+                    .catch(err => console.error("Erro ao entrar em fullscreen:", err));
+            }
+        }
+
+        // Função para ativar modo de navegação
+        function activateNavigationMode() {
+            // Focar no botão de saída para permitir navegação com controle
+            const exitBtn = document.getElementById('exit-btn');
+            if (exitBtn) {
+                exitBtn.focus();
+                showControlFeedback("MODO NAVEGAÇÃO ATIVADO");
+            }
+        }
+
+        // Monitoramento do gamepad
+        function monitorGamepad() {
+            if (!gamepadMonitorRunning) return;
+            
+            const gamepads = navigator.getGamepads();
+            if (!gamepads[0]) {
+                requestAnimationFrame(monitorGamepad);
+                return;
+            }
+            
+            gamepad = gamepads[0];
+            
+            // Botão 8 = SELECT/VIEW, Botão 9 = START/OPTIONS
+            selectPressed = gamepad.buttons[8]?.pressed || false;
+            startPressed = gamepad.buttons[9]?.pressed || false;
+            
+            // Segurar SELECT por 3 segundos (Fullscreen)
+            if (selectPressed && !startPressed) {
+                if (!selectHoldTimer) {
+                    selectHoldTimer = setTimeout(() => {
+                        toggleGameFullscreen();
+                        selectHoldTimer = null;
+                    }, 3000);
+                }
+            } else if (selectHoldTimer) {
+                clearTimeout(selectHoldTimer);
+                selectHoldTimer = null;
+            }
+            
+            // Segurar SELECT + START por 1 segundo (Ativar modo navegação)
+            if (selectPressed && startPressed) {
+                if (!comboPressTimer) {
+                    comboPressTimer = setTimeout(() => {
+                        activateNavigationMode();
+                        comboPressTimer = null;
+                    }, 1000);
+                }
+            } else if (comboPressTimer) {
+                clearTimeout(comboPressTimer);
+                comboPressTimer = null;
+            }
+            
+            requestAnimationFrame(monitorGamepad);
+        }
+
+        // Iniciar monitoramento quando um controle é conectado
+        window.addEventListener("gamepadconnected", (e) => {
+            gamepad = e.gamepad;
+            console.log("Controle conectado:", gamepad.id);
+            showControlFeedback('CONTROLE CONECTADO');
+            
+            if (!gamepadMonitorRunning) {
+                gamepadMonitorRunning = true;
+                monitorGamepad();
+            }
+        });
+
+        window.addEventListener("gamepaddisconnected", (e) => {
+            console.log("Controle desconectado:", e.gamepad.id);
+            gamepad = null;
+            showControlFeedback('CONTROLE DESCONECTADO');
+        });
+
+        // =============================================
+        // CÓDIGO PRINCIPAL DO EMULADOR
+        // =============================================
         // Configuração inicial
         let enableDebug = false;
         let isGameActive = false;
         let originalContent = null;
-        let viewTimer = null;
-        let optionsTimer = null;
-        let mouseModeActive = false;
-        let gamepadCheckInterval = null;
-        let gamepad = null;
 
         // Verificar modo de depuração
         const queryString = window.location.search;
@@ -694,7 +857,6 @@
         const errorMessage = document.getElementById('error-message');
         const box = document.getElementById('box');
         const notification = document.getElementById('notification');
-        const mouseIndicator = document.getElementById('mouse-indicator');
 
         // Mostrar notificação
         function showNotification(message) {
@@ -706,6 +868,67 @@
             }, 3000);
         }
 
+        // Função para ajustar o tamanho do display
+        function adjustDisplaySize() {
+            const display = document.getElementById('display');
+            if (!display) return;
+            
+            // Obter proporção original 4:3
+            const aspectRatio = 4/3;
+            const containerWidth = display.clientWidth;
+            const containerHeight = display.clientHeight;
+            
+            let newWidth, newHeight;
+            
+            if (containerWidth / containerHeight > aspectRatio) {
+                // Container é mais largo que a proporção
+                newHeight = containerHeight;
+                newWidth = containerHeight * aspectRatio;
+            } else {
+                // Container é mais alto que a proporção
+                newWidth = containerWidth;
+                newHeight = containerWidth / aspectRatio;
+            }
+            
+            // Aplicar dimensões calculadas
+            display.style.width = newWidth + 'px';
+            display.style.height = newHeight + 'px';
+            display.style.position = 'absolute';
+            display.style.top = '50%';
+            display.style.left = '50%';
+            display.style.transform = 'translate(-50%, -50%)';
+        }
+
+        // Iniciar contador de tempo de jogo
+        function startPlaytimeCounter() {
+            const playtimeElement = document.getElementById('playtime');
+            if (!playtimeElement) return;
+            
+            playtimeSeconds = 0;
+            
+            if (playtimeInterval) {
+                clearInterval(playtimeInterval);
+            }
+            
+            playtimeInterval = setInterval(() => {
+                playtimeSeconds++;
+                const hours = Math.floor(playtimeSeconds / 3600);
+                const minutes = Math.floor((playtimeSeconds % 3600) / 60);
+                const seconds = playtimeSeconds % 60;
+                
+                playtimeElement.textContent = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // Parar contador de tempo de jogo
+        function stopPlaytimeCounter() {
+            if (playtimeInterval) {
+                clearInterval(playtimeInterval);
+                playtimeInterval = null;
+            }
+        }
+
         // Pré-carregar assets importantes
         function preloadAssets() {
             const assets = [
@@ -713,7 +936,7 @@
                 'docs/hue.png',
                 'docs/Logo-light.png',
                 'icons/rahue.png',
-                'https://cdn.emulatorjs.org/stable/data/loader.js'
+                'data/loader.js'
             ];
             
             assets.forEach(asset => {
@@ -792,7 +1015,7 @@
             window.EJS_biosUrl = "";
             window.EJS_gameUrl = romUrl;
             window.EJS_core = core;
-            window.EJS_pathtodata = "https://cdn.emulatorjs.org/stable/data/";
+            window.EJS_pathtodata = "data/";
             window.EJS_startOnLoaded = true;
             window.EJS_DEBUG_XX = enableDebug;
             window.EJS_disableDatabases = true;
@@ -800,14 +1023,15 @@
             // Adicionar botão de saída
             addExitButton();
             
+            // Adicionar contador de tempo
+            addPlaytimeCounter();
+            
+            // Iniciar contador
+            startPlaytimeCounter();
+            
             // Adicionar controles touch para dispositivos móveis
             if (isMobileDevice()) {
                 addTouchControls();
-            }
-            
-            // Iniciar detecção de gamepad para Xbox
-            if (isXboxEdge()) {
-                startGamepadDetection();
             }
             
             // Bloquear orientação para dispositivos móveis
@@ -815,12 +1039,12 @@
 
             // Carregar o script do emulador
             const script = document.createElement("script");
-            script.src = "https://cdn.emulatorjs.org/stable/data/loader.js";
+            script.src = "data/loader.js";
             
             // Adicionar fallback caso o CDN principal falhe
             script.onerror = () => {
                 const fallbackScript = document.createElement('script');
-                fallbackScript.src = 'https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@main/data/loader.js';
+                fallbackScript.src = 'data/loader.js';
                 document.body.appendChild(fallbackScript);
                 console.log("Usando CDN alternativo para o emulador");
             };
@@ -830,6 +1054,14 @@
                 if (loadingMsg.parentNode) {
                     loadingMsg.parentNode.removeChild(loadingMsg);
                 }
+                
+                // Ajustar tamanho do display após carregar
+                setTimeout(() => {
+                    adjustDisplaySize();
+                    
+                    // Adicionar listener para redimensionamento
+                    window.addEventListener('resize', adjustDisplaySize);
+                }, 500);
                 
                 // Ativar fullscreen automático em Android
                 if (isMobileDevice()) {
@@ -841,127 +1073,53 @@
                         }
                     }, 1000);
                 }
+                
+                // Iniciar monitoramento do gamepad
+                gamepadMonitorRunning = true;
+                monitorGamepad();
             };
             
             document.body.appendChild(script);
 
             hideIconsAndHeader();
             expandBox();
-            hideFooter();
             displayGameThumbnail(romUrl);
             
             // Mostrar notificação
             showNotification("Jogo carregado! Aproveite!");
         }
 
-        // Iniciar detecção de gamepad para Xbox
-        function startGamepadDetection() {
-            if (!isXboxEdge()) return;
+        // Adicionar contador de tempo de jogo com legenda
+        function addPlaytimeCounter() {
+            if (document.getElementById('playtime-container')) return;
             
-            // Limpar intervalo anterior se existir
-            if (gamepadCheckInterval) {
-                clearInterval(gamepadCheckInterval);
-            }
+            const container = document.createElement('div');
+            container.id = 'playtime-container';
+            container.style.position = 'absolute';
+            container.style.top = '10px';
+            container.style.left = '10px';
+            container.style.zIndex = '10000';
+            container.style.textAlign = 'center';
             
-            // Configurar listeners de gamepad
-            window.addEventListener("gamepadconnected", (e) => {
-                gamepad = e.gamepad;
-                showNotification(`Gamepad ${gamepad.id} conectado`);
-                startGamepadLoop();
-            });
+            const playtimeElement = document.createElement('div');
+            playtimeElement.id = 'playtime';
+            playtimeElement.textContent = '00:00:00';
+            playtimeElement.style.fontSize = '16px';
+            playtimeElement.style.fontWeight = 'bold';
+            playtimeElement.style.color = '#ffcc00';
+            playtimeElement.style.textShadow = '0.5px 0.5px 0 #000, -0.5px -0.5px 0 #000, 0.5px -0.5px 0 #000, -0.5px 0.5px 0 #000, 0 0 2px #000';
             
-            window.addEventListener("gamepaddisconnected", () => {
-                gamepad = null;
-                showNotification("Gamepad desconectado");
-            });
-        }
-
-        // Loop de verificação do gamepad
-        function startGamepadLoop() {
-            gamepadCheckInterval = setInterval(() => {
-                if (!gamepad) return;
-                
-                // Atualizar estado do gamepad
-                gamepad = navigator.getGamepads()[gamepad.index];
-                
-                // Verificar botões para funções especiais
-                checkGamepadButtons();
-            }, 100);
-        }
-
-        // Verificar botões do gamepad para funções especiais
-        function checkGamepadButtons() {
-            if (!isGameActive || !gamepad) return;
+            const caption = document.createElement('div');
+            caption.id = 'playtime-caption';
+            caption.textContent = 'Tempo jogado';
+            caption.style.fontSize = '12px';
+            caption.style.color = '#ffcc00';
+            caption.style.textShadow = '0.5px 0.5px 0 #000, -0.5px -0.5px 0 #000, 0.5px -0.5px 0 #000, -0.5px 0.5px 0 #000, 0 0 2px #000';
+            caption.style.marginTop = '4px';
             
-            // Botão View (índice 8)
-            const viewButton = gamepad.buttons[8];
-            
-            // Botão Options (índice 9)
-            const optionsButton = gamepad.buttons[9];
-            
-            // Verificar View pressionado por 3 segundos
-            if (viewButton.pressed) {
-                if (!viewTimer) {
-                    viewTimer = setTimeout(() => {
-                        toggleGameFullscreen();
-                        viewTimer = null;
-                    }, 3000);
-                }
-            } else {
-                if (viewTimer) {
-                    clearTimeout(viewTimer);
-                    viewTimer = null;
-                }
-            }
-            
-            // Verificar View e Options pressionados juntos por 3 segundos
-            if (viewButton.pressed && optionsButton.pressed) {
-                if (!optionsTimer) {
-                    optionsTimer = setTimeout(() => {
-                        toggleMouseMode();
-                        optionsTimer = null;
-                    }, 3000);
-                }
-            } else {
-                if (optionsTimer) {
-                    clearTimeout(optionsTimer);
-                    optionsTimer = null;
-                }
-            }
-        }
-
-        // Alternar modo de tela cheia na área de jogo (NOVO)
-        function toggleGameFullscreen() {
-            const display = document.getElementById('display');
-            if (!display) return;
-            
-            // Verificar se já está em fullscreen
-            if (document.fullscreenElement === display) {
-                document.exitFullscreen()
-                    .then(() => showNotification("Tela Cheia Desativada"))
-                    .catch(err => console.error("Erro ao sair do fullscreen:", err));
-            } else {
-                display.requestFullscreen()
-                    .then(() => showNotification("Tela Cheia Ativada"))
-                    .catch(err => console.error("Erro ao entrar em fullscreen:", err));
-            }
-        }
-
-        // Alternar modo mouse
-        function toggleMouseMode() {
-            mouseModeActive = !mouseModeActive;
-            
-            if (mouseModeActive) {
-                // Ativar modo mouse
-                document.body.style.cursor = 'default';
-                mouseIndicator.style.display = 'block';
-                showNotification("Modo Mouse Ativado");
-            } else {
-                // Desativar modo mouse
-                document.body.style.cursor = 'none';
-                mouseIndicator.style.display = 'none';
-                showNotification("Modo Mouse Desativado");
-            }
+            container.appendChild(playtimeElement);
+            container.appendChild(caption);
+            box.appendChild(container);
         }
 
         // Adicionar controles touch para dispositivos móveis
@@ -1022,6 +1180,7 @@
             exitBtn.id = 'exit-btn';
             exitBtn.textContent = 'SAIR';
             exitBtn.onclick = exitGame;
+            exitBtn.tabIndex = 1; // Permitir foco para navegação
             
             box.appendChild(exitBtn);
         }
@@ -1033,11 +1192,17 @@
                 document.exitFullscreen().catch(e => console.log(e));
             }
             
-            // Parar a verificação de gamepad
-            if (gamepadCheckInterval) {
-                clearInterval(gamepadCheckInterval);
-                gamepadCheckInterval = null;
-            }
+            // Liberar orientação da tela
+            unlockScreenOrientation();
+            
+            // Parar monitoramento do gamepad
+            gamepadMonitorRunning = false;
+            
+            // Parar contador de tempo
+            stopPlaytimeCounter();
+            
+            // Remover listener de redimensionamento
+            window.removeEventListener('resize', adjustDisplaySize);
             
             // Recarregar a página para garantir que tudo seja reiniciado
             location.reload();
@@ -1094,7 +1259,7 @@
             const icons = document.querySelectorAll('.icon-left, .icon-right');
             const header = document.getElementById('top');
             icons.forEach(icon => icon.style.display = 'none');
-            header.style.display = 'none';
+            if (header) header.style.display = 'none';
         }
 
         function expandBox() {
@@ -1105,10 +1270,6 @@
                 box.style.maxHeight = '97%';
             }
         }
-
-        function hideFooter() {
-            document.getElementById('footer').style.display = 'none';
-        }
         
         // Adicionar atalho de teclado (ESC para sair)
         document.addEventListener('keydown', function(event) {
@@ -1117,12 +1278,14 @@
             }
         });
         
-        // Evento para fechar o modo mouse clicando em qualquer lugar
-        document.addEventListener('click', function() {
-            if (mouseModeActive) {
-                mouseModeActive = false;
-                document.body.style.cursor = 'none';
-                mouseIndicator.style.display = 'none';
+        // Inicialização
+        window.addEventListener('DOMContentLoaded', function() {
+            // Iniciar monitoramento de gamepad se já estiver conectado
+            const gamepads = navigator.getGamepads();
+            if (gamepads[0]) {
+                gamepad = gamepads[0];
+                gamepadMonitorRunning = true;
+                monitorGamepad();
             }
         });
     </script>
