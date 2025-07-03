@@ -6,7 +6,6 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>RetroGames HueHue</title>
     <style>
-        /* Estilos gerais */
         body, html {
             height: 100%;
             background: url('docs/bg_hue.png') no-repeat center center fixed;
@@ -25,7 +24,6 @@
             flex-direction: column;
         }
 
-        /* Melhorias de legibilidade - contorno preto em todos os textos */
         body, button, select, input, div, span {
             text-shadow: 
                 0.5px 0.5px 0 #000, 
@@ -35,7 +33,6 @@
                 0 0 2px #000;
         }
 
-        /* Estilos da caixa principal */
         #box {
             color: #fff;
             height: 26em;
@@ -76,7 +73,6 @@
             color: #ddd;
         }
 
-        /* Estilos para botões e seleção */
         select, button, input[type="text"] {
             padding: 1.0em 0.8em;
             margin: 0.4em;
@@ -101,7 +97,6 @@
             box-sizing: border-box;
         }
 
-        /* Destaque especial para lista de consoles em PC/Xbox */
         @media not all and (max-width: 768px) {
             select option {
                 text-shadow: 
@@ -137,7 +132,6 @@
             background-size: 1.5em auto;
         }
 
-        /* Estilos para ícones e logo */
         .logo {
             width: 130px;
             height: 130px;
@@ -185,7 +179,6 @@
             100% { transform: translateY(-50%) translateY(0px); }
         }
 
-        /* Estilos para ícones de consoles */
         #consoleIcon {
             width: 120px;
             height: 90px;
@@ -198,7 +191,6 @@
             transform: scale(1.05);
         }
 
-        /* Estilos para botões personalizados */
         .custom-button {
             background-color: #4CAF50;
             color: white;
@@ -210,7 +202,6 @@
             background-color: #45a049;
         }
 
-        /* Estilos para entrada de URL da ROM */
         #romUrl {
             padding: 1.0em 0.8em;
             text-shadow: 
@@ -222,7 +213,6 @@
             font-weight: 800;
         }
 
-        /* Correção para cor do texto no autocomplete */
         #romUrl:-webkit-autofill,
         #romUrl:-webkit-autofill:hover, 
         #romUrl:-webkit-autofill:focus, 
@@ -250,7 +240,6 @@
                 0 0 2px #000;
         }
 
-        /* Media query para mobile */
         @media (max-width: 768px), (max-height: 768px) and (orientation: portrait) {
             .icon-left, .icon-right {
                 display: none;
@@ -270,7 +259,6 @@
                 width: 14em; 
             }
             
-            /* Ajuste para botão SAIR em dispositivos móveis */
             #exit-btn {
                 top: auto !important;
                 bottom: 20px !important;
@@ -279,15 +267,14 @@
                 transform: translateX(-50%) !important;
                 z-index: 10001 !important;
                 width: auto; 
-                max-width: 120px; /* Largura reduzida para não interferir na gameplay */
+                max-width: 120px;
                 text-align: center;
                 font-size: 16px;
                 padding: 0.5em 1em;
                 position: absolute;
-                background-color: #4CAF50; /* Cor dos botões principais */
+                background-color: #4CAF50;
             }
             
-            /* Contador de tempo na parte superior em dispositivos móveis */
             #playtime-container {
                 top: 20px !important;
                 bottom: auto !important;
@@ -316,7 +303,6 @@
                 margin: 0.4em auto;
             }
             
-            /* Ajuste especial para tela de jogo em mobile */
             #display {
                 width: 100% !important;
                 height: auto !important;
@@ -328,7 +314,6 @@
             }
         }
 
-        /* Estilos para exibição de miniaturas de jogos */
         #gameThumbnail {
             position: fixed;
             bottom: 10px;
@@ -350,7 +335,6 @@
             border-radius: 0.4em;
         }
 
-        /* Ajuste para o layout dos botões */
         .button-container {
             display: flex;
             flex-direction: column;
@@ -364,22 +348,6 @@
             margin: 0.3em 0;
         }
 
-        /* Estilo para a mensagem de erro */
-        #error-message {
-            color: #ffdddd;
-            font-weight: bold;
-            display: none;
-            text-align: center;
-            padding: 0.8em;
-            background-color: rgba(150, 0, 0, 0.7);
-            border-radius: 0.4em;
-            width: 100%;
-            text-shadow: 0 0 4px #000;
-            border: 1px solid #ff5555;
-            font-size: 16px;
-        }
-
-        /* Estilo do display do jogo - IMPORTANTE: Manter proporção original */
         #display {
             width: 100%;
             height: 100%;
@@ -415,13 +383,11 @@
             margin: 0 0.2em;
         }
 
-        /* Botão de saída - ATUALIZAÇÕES SOLICITADAS */
         #exit-btn {
             position: absolute;
             top: 10px;
             right: 10px;
             z-index: 10000;
-            /* Alterado para mesma cor dos botões principais */
             background-color: #4CAF50;
             color: white;
             border: 2px solid white;
@@ -439,14 +405,12 @@
                 0 0 3px #000;
             font-weight: 800;
             font-size: 16px;
-            /* Largura reduzida para PC/Xbox */
             max-width: 120px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        /* Ajuste de largura para dispositivos não móveis */
         @media not all and (max-width: 768px) {
             #exit-btn {
                 max-width: 120px;
@@ -459,7 +423,6 @@
             transform: scale(1.05);
         }
 
-        /* Contador de tempo de jogo - ATUALIZADO COM LEGENDA */
         #playtime-container {
             position: absolute;
             top: 10px;
@@ -498,7 +461,6 @@
                 0 0 2px #000;
         }
 
-        /* Controles touch */
         #touch-controls {
             position: absolute;
             bottom: 20px;
@@ -539,7 +501,6 @@
             transform: scale(0.95);
         }
 
-        /* Mensagem de carregamento */
         .loading-message {
             position: absolute;
             top: 50%;
@@ -570,7 +531,6 @@
             100% { opacity: 0.7; }
         }
 
-        /* Notificação */
         #notification {
             position: fixed;
             top: 20px;
@@ -596,7 +556,6 @@
             font-weight: 800;
         }
 
-        /* Feedback para controles */
         .control-feedback {
             position: fixed;
             bottom: 20px;
@@ -621,16 +580,13 @@
     </style>
 </head>
 <body>
-    <!-- Ícones e logo -->
     <img alt="Icon Left" class="icon-left" src="docs/huehue.png"/>
     <img alt="Icon Right" class="icon-right" src="docs/hue.png"/>
     
-    <!-- Cabeçalho -->
     <header id="top">
         <img alt="Logo" class="logo" src="docs/Logo-light.png"/>
     </header>
     
-    <!-- Caixa principal -->
     <main id="box">
         <div id="consoleIconContainer">
             <img alt="Ícone do Console" id="consoleIcon" src="icons/rahue.png"/>
@@ -638,7 +594,6 @@
         <div class="button-container">
             <select id="selectCore">
                 <option disabled hidden selected value="">👀Escolher Console👀</option>
-                <!-- Opções de consoles -->
                 <option data-icon="icons/fbneo.png" value="fbneo">Arcades FBNeo</option>
                 <option data-icon="icons/mame.png" value="mame2003_plus">Arcades MAME</option>
                 <option data-icon="icons/atari2600.png" value="atari2600">Atari 2600</option>
@@ -683,27 +638,18 @@
                 <button class="custom-button" onclick="window.open('https://www.youtube.com/shorts/1GYQdSiKdXs', '_blank')">📱 Android</button>
                 <button class="custom-button" onclick="window.open('https://youtu.be/XLeFLg6SOuA?list=PLGlR7kZN64OgNBoSEZhOeUKn84XUY8qbd&amp;t=3032', '_blank')">📺 Xbox</button>
             </div>
-            <div id="error-message">Link URL ou Carregar ROM</div>
         </div>
     </main>
     
-    <!-- Miniatura do jogo -->
     <div id="gameThumbnail">
         <img alt="Miniatura do Jogo" id="gameThumbnailImage" src=""/>
     </div>
     
-    <!-- Notificação -->
     <div id="notification"></div>
     
-    <!-- Feedback para controles -->
     <div id="controlFeedback" class="control-feedback"></div>
     
-    <!-- Scripts -->
     <script>
-        // =============================================
-        // CONTROLES XBOX PARA NAVEGAÇÃO (ATUALIZADO)
-        // =============================================
-        // Variáveis para controle do gamepad
         let selectPressed = false;
         let startPressed = false;
         let comboPressTimer = null;
@@ -713,7 +659,6 @@
         let playtimeInterval = null;
         let playtimeSeconds = 0;
 
-        // Função para mostrar feedback visual dos controles
         function showControlFeedback(message) {
             const feedbackElement = document.getElementById('controlFeedback');
             feedbackElement.textContent = message;
@@ -723,7 +668,6 @@
             }, 2000);
         }
 
-        // Função para alternar fullscreen
         function toggleGameFullscreen() {
             const display = document.getElementById('display');
             if (!display) return;
@@ -736,16 +680,13 @@
                 display.requestFullscreen()
                     .then(() => {
                         showControlFeedback("TELA CHEIA ATIVADA");
-                        // Forçar proporção correta após entrar em fullscreen
                         setTimeout(adjustDisplaySize, 100);
                     })
                     .catch(err => console.error("Erro ao entrar em fullscreen:", err));
             }
         }
 
-        // Função para ativar modo de navegação
         function activateNavigationMode() {
-            // Focar no botão de saída para permitir navegação com controle
             const exitBtn = document.getElementById('exit-btn');
             if (exitBtn) {
                 exitBtn.focus();
@@ -753,7 +694,6 @@
             }
         }
 
-        // Monitoramento do gamepad
         function monitorGamepad() {
             if (!gamepadMonitorRunning) return;
             
@@ -765,11 +705,9 @@
             
             gamepad = gamepads[0];
             
-            // Botão 8 = SELECT/VIEW, Botão 9 = START/OPTIONS
             selectPressed = gamepad.buttons[8]?.pressed || false;
             startPressed = gamepad.buttons[9]?.pressed || false;
             
-            // Segurar SELECT por 3 segundos (Fullscreen)
             if (selectPressed && !startPressed) {
                 if (!selectHoldTimer) {
                     selectHoldTimer = setTimeout(() => {
@@ -782,7 +720,6 @@
                 selectHoldTimer = null;
             }
             
-            // Segurar SELECT + START por 1 segundo (Ativar modo navegação)
             if (selectPressed && startPressed) {
                 if (!comboPressTimer) {
                     comboPressTimer = setTimeout(() => {
@@ -798,10 +735,8 @@
             requestAnimationFrame(monitorGamepad);
         }
 
-        // Iniciar monitoramento quando um controle é conectado
         window.addEventListener("gamepadconnected", (e) => {
             gamepad = e.gamepad;
-            console.log("Controle conectado:", gamepad.id);
             showControlFeedback('CONTROLE CONECTADO');
             
             if (!gamepadMonitorRunning) {
@@ -811,27 +746,20 @@
         });
 
         window.addEventListener("gamepaddisconnected", (e) => {
-            console.log("Controle desconectado:", e.gamepad.id);
             gamepad = null;
             showControlFeedback('CONTROLE DESCONECTADO');
         });
 
-        // =============================================
-        // CÓDIGO PRINCIPAL DO EMULADOR
-        // =============================================
-        // Configuração inicial
         let enableDebug = false;
         let isGameActive = false;
         let originalContent = null;
 
-        // Verificar modo de depuração
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         if (urlParams.get('debug') === '1') {
             enableDebug = true;
         }
 
-        // Funções de detecção de dispositivo
         function isMobileDevice() {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         }
@@ -840,7 +768,6 @@
             return navigator.userAgent.includes('Xbox') && navigator.userAgent.includes('Edge');
         }
 
-        // Elementos DOM
         const selectCore = document.getElementById('selectCore');
         const romUrlInput = document.getElementById('romUrl');
         const fileInput = document.createElement('input');
@@ -854,11 +781,9 @@
         const consoleIcon = document.getElementById('consoleIcon');
         const gameThumbnail = document.getElementById('gameThumbnail');
         const gameThumbnailImage = document.getElementById('gameThumbnailImage');
-        const errorMessage = document.getElementById('error-message');
         const box = document.getElementById('box');
         const notification = document.getElementById('notification');
 
-        // Mostrar notificação
         function showNotification(message) {
             notification.textContent = message;
             notification.style.display = 'block';
@@ -868,12 +793,10 @@
             }, 3000);
         }
 
-        // Função para ajustar o tamanho do display
         function adjustDisplaySize() {
             const display = document.getElementById('display');
             if (!display) return;
             
-            // Obter proporção original 4:3
             const aspectRatio = 4/3;
             const containerWidth = display.clientWidth;
             const containerHeight = display.clientHeight;
@@ -881,16 +804,13 @@
             let newWidth, newHeight;
             
             if (containerWidth / containerHeight > aspectRatio) {
-                // Container é mais largo que a proporção
                 newHeight = containerHeight;
                 newWidth = containerHeight * aspectRatio;
             } else {
-                // Container é mais alto que a proporção
                 newWidth = containerWidth;
                 newHeight = containerWidth / aspectRatio;
             }
             
-            // Aplicar dimensões calculadas
             display.style.width = newWidth + 'px';
             display.style.height = newHeight + 'px';
             display.style.position = 'absolute';
@@ -899,7 +819,6 @@
             display.style.transform = 'translate(-50%, -50%)';
         }
 
-        // Iniciar contador de tempo de jogo
         function startPlaytimeCounter() {
             const playtimeElement = document.getElementById('playtime');
             if (!playtimeElement) return;
@@ -921,7 +840,6 @@
             }, 1000);
         }
 
-        // Parar contador de tempo de jogo
         function stopPlaytimeCounter() {
             if (playtimeInterval) {
                 clearInterval(playtimeInterval);
@@ -929,7 +847,6 @@
             }
         }
 
-        // Pré-carregar assets importantes
         function preloadAssets() {
             const assets = [
                 'docs/huehue.png',
@@ -950,13 +867,11 @@
         
         window.addEventListener('DOMContentLoaded', preloadAssets);
 
-        // Ordenar opções do select
         const optionsArray = Array.from(selectCore.options);
         optionsArray.sort((a, b) => a.text.localeCompare(b.text));
         selectCore.innerHTML = "";
         optionsArray.forEach(option => selectCore.appendChild(option));
 
-        // Atualizar ícone do console selecionado
         selectCore.addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
             const iconUrl = selectedOption.getAttribute('data-icon');
@@ -965,7 +880,6 @@
             }
         });
 
-        // Função principal para carregar ROM
         function loadRom() {
             const romUrl = romUrlInput.value;
             const core = selectCore.value;
@@ -981,21 +895,15 @@
                 const file = fileInput.files[0];
                 loadGameFromFile(file, core);
             } else {
-                errorMessage.style.display = 'block';
-                setTimeout(() => {
-                    errorMessage.style.display = 'none';
-                }, 3000);
+                showNotification("Link URL ou Carregar ROM");
             }
         }
 
-        // Carregar jogo da URL
         function loadGameFromUrl(romUrl, core) {
-            // Salvar conteúdo original para restaurar depois
             if (!originalContent) {
                 originalContent = box.innerHTML;
             }
             
-            errorMessage.style.display = 'none';
             isGameActive = true;
 
             const div = document.createElement("div");
@@ -1003,13 +911,11 @@
             box.innerHTML = "";
             box.appendChild(div);
 
-            // Adicionar mensagem de carregamento
             const loadingMsg = document.createElement('div');
             loadingMsg.className = 'loading-message';
             loadingMsg.textContent = 'CARREGANDO...';
             div.appendChild(loadingMsg);
 
-            // Configurar o emulador
             window.EJS_player = "#display";
             window.EJS_gameName = "ROM Carregada";
             window.EJS_biosUrl = "";
@@ -1020,50 +926,35 @@
             window.EJS_DEBUG_XX = enableDebug;
             window.EJS_disableDatabases = true;
 
-            // Adicionar botão de saída
             addExitButton();
-            
-            // Adicionar contador de tempo
             addPlaytimeCounter();
-            
-            // Iniciar contador
             startPlaytimeCounter();
             
-            // Adicionar controles touch para dispositivos móveis
             if (isMobileDevice()) {
                 addTouchControls();
             }
             
-            // Bloquear orientação para dispositivos móveis
             lockScreenOrientation();
 
-            // Carregar o script do emulador
             const script = document.createElement("script");
             script.src = "data/loader.js";
             
-            // Adicionar fallback caso o CDN principal falhe
             script.onerror = () => {
                 const fallbackScript = document.createElement('script');
                 fallbackScript.src = 'data/loader.js';
                 document.body.appendChild(fallbackScript);
-                console.log("Usando CDN alternativo para o emulador");
             };
             
             script.onload = () => {
-                // Remover mensagem de carregamento
                 if (loadingMsg.parentNode) {
                     loadingMsg.parentNode.removeChild(loadingMsg);
                 }
                 
-                // Ajustar tamanho do display após carregar
                 setTimeout(() => {
                     adjustDisplaySize();
-                    
-                    // Adicionar listener para redimensionamento
                     window.addEventListener('resize', adjustDisplaySize);
                 }, 500);
                 
-                // Ativar fullscreen automático em Android
                 if (isMobileDevice()) {
                     setTimeout(() => {
                         const display = document.getElementById('display');
@@ -1074,7 +965,6 @@
                     }, 1000);
                 }
                 
-                // Iniciar monitoramento do gamepad
                 gamepadMonitorRunning = true;
                 monitorGamepad();
             };
@@ -1084,12 +974,9 @@
             hideIconsAndHeader();
             expandBox();
             displayGameThumbnail(romUrl);
-            
-            // Mostrar notificação
             showNotification("Jogo carregado! Aproveite!");
         }
 
-        // Adicionar contador de tempo de jogo com legenda
         function addPlaytimeCounter() {
             if (document.getElementById('playtime-container')) return;
             
@@ -1122,7 +1009,6 @@
             box.appendChild(container);
         }
 
-        // Adicionar controles touch para dispositivos móveis
         function addTouchControls() {
             if (!isMobileDevice() || document.getElementById('touch-controls')) return;
             
@@ -1147,7 +1033,6 @@
             document.getElementById('display').appendChild(controls);
         }
 
-        // Bloquear orientação da tela para paisagem
         function lockScreenOrientation() {
             if (!isMobileDevice()) return;
             
@@ -1161,7 +1046,6 @@
             }
         }
 
-        // Liberar orientação da tela
         function unlockScreenOrientation() {
             try {
                 if (screen.orientation && screen.orientation.unlock) {
@@ -1172,7 +1056,6 @@
             }
         }
 
-        // Adicionar botão de saída
         function addExitButton() {
             if (document.getElementById('exit-btn')) return;
             
@@ -1180,35 +1063,22 @@
             exitBtn.id = 'exit-btn';
             exitBtn.textContent = 'SAIR';
             exitBtn.onclick = exitGame;
-            exitBtn.tabIndex = 1; // Permitir foco para navegação
-            
+            exitBtn.tabIndex = 1;
             box.appendChild(exitBtn);
         }
 
-        // Sair do jogo e voltar ao menu
         function exitGame() {
-            // Tentar sair do modo de tela cheia
             if (document.fullscreenElement) {
                 document.exitFullscreen().catch(e => console.log(e));
             }
             
-            // Liberar orientação da tela
             unlockScreenOrientation();
-            
-            // Parar monitoramento do gamepad
             gamepadMonitorRunning = false;
-            
-            // Parar contador de tempo
             stopPlaytimeCounter();
-            
-            // Remover listener de redimensionamento
             window.removeEventListener('resize', adjustDisplaySize);
-            
-            // Recarregar a página para garantir que tudo seja reiniciado
             location.reload();
         }
 
-        // Carregar jogo local
         function loadGameFromFile(file, core) {
             const reader = new FileReader();
             reader.onload = function(event) {
@@ -1218,7 +1088,6 @@
             reader.readAsDataURL(file);
         }
 
-        // Exibir miniatura
         function displayGameThumbnail(romUrl) {
             const image = new Image();
             image.src = romUrl;
@@ -1231,7 +1100,6 @@
             };
         }
 
-        // Funções auxiliares
         function openFile() {
             fileInput.click();
         }
@@ -1244,7 +1112,6 @@
             window.open('https://play.webrcade.com/?feed=https://tinyurl.com/retrohue', '_blank');
         }
 
-        // Event listeners
         fileInput.addEventListener('change', () => {
             if (fileInput.files.length > 0) {
                 loadLocalBtn.textContent = fileInput.files[0].name;
@@ -1254,7 +1121,6 @@
             }
         });
 
-        // Controle de layout
         function hideIconsAndHeader() {
             const icons = document.querySelectorAll('.icon-left, .icon-right');
             const header = document.getElementById('top');
@@ -1271,16 +1137,13 @@
             }
         }
         
-        // Adicionar atalho de teclado (ESC para sair)
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape' && isGameActive) {
                 exitGame();
             }
         });
         
-        // Inicialização
         window.addEventListener('DOMContentLoaded', function() {
-            // Iniciar monitoramento de gamepad se já estiver conectado
             const gamepads = navigator.getGamepads();
             if (gamepads[0]) {
                 gamepad = gamepads[0];
