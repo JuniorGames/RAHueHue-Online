@@ -592,7 +592,7 @@
             <img alt="Ícone do Console" id="consoleIcon" src="icons/rahue.png"/>
         </div>
         <div class="button-container">
-            <select id="selectCore">
+            <select id="selectCore" title="Selecione o console para jogar">
                 <option disabled hidden selected value="">👀 Escolher Console</option>
                 <option data-icon="icons/fbneo.png" value="fbneo">Arcades FBNeo</option>
                 <option data-icon="icons/mame.png" value="mame2003_plus">Arcades MAME</option>
@@ -629,14 +629,14 @@
                 <option data-icon="icons/ngpc.png" value="ngp">NeoGeo Pocket Color</option>
                 <option data-icon="icons/psx.png" value="psx">PlayStation</option>
             </select>
-            <button class="custom-button" id="loadLocalBtn" onclick="openFile()">📁 Carregar ROM</button>
-            <input id="romUrl" placeholder="⛔ Link URL da ROM" type="text"/>
-            <button class="custom-button" onclick="loadRom()">🎮 Iniciar Jogo</button>
-            <button class="custom-button" id="raHueHueOnlineBtn" onclick="openRAHueHueOnline()">🌎 RAHueHue Online</button>
-            <button class="custom-button" id="webHueHueBtn" onclick="openWebHueHue()">💣 WEBHueHue</button>
+            <button class="custom-button" id="loadLocalBtn" onclick="openFile()" title="Carregar ROM do seu dispositivo">📁 Carregar ROM</button>
+            <input id="romUrl" placeholder="⛔ Link URL da ROM" type="text" title="Digite a URL de uma ROM online"/>
+            <button class="custom-button" onclick="loadRom()" title="Iniciar jogo com a ROM carregada">🎮 Iniciar Jogo</button>
+            <button class="custom-button" id="raHueHueOnlineBtn" onclick="openRAHueHueOnline()" title="Acessar lista de jogos online">🌎 RAHueHue Online</button>
+            <button class="custom-button" id="webHueHueBtn" onclick="openWebHueHue()" title="Abrir WebHueHue em nova aba">💣 WEBHueHue</button>
             <div class="dual-buttons">
-                <button class="custom-button" onclick="window.open('https://www.youtube.com/shorts/1GYQdSiKdXs', '_blank')">📱 Android</button>
-                <button class="custom-button" onclick="window.open('https://youtu.be/XLeFLg6SOuA?list=PLGlR7kZN64OgNBoSEZhOeUKn84XUY8qbd&amp;t=3032', '_blank')">📺 Xbox</button>
+                <button class="custom-button" onclick="window.open('https://www.youtube.com/shorts/1GYQdSiKdXs', '_blank')" title="Ver tutorial para Android">📱 Android</button>
+                <button class="custom-button" onclick="window.open('https://youtu.be/XLeFLg6SOuA?list=PLGlR7kZN64OgNBoSEZhOeUKn84XUY8qbd&amp;t=3032', '_blank')" title="Ver tutorial para Xbox">📺 Xbox</button>
             </div>
         </div>
     </main>
@@ -1062,6 +1062,7 @@
             const exitBtn = document.createElement('button');
             exitBtn.id = 'exit-btn';
             exitBtn.textContent = 'SAIR';
+            exitBtn.title = 'Sair do jogo e voltar ao menu principal';
             exitBtn.onclick = exitGame;
             exitBtn.tabIndex = 1;
             box.appendChild(exitBtn);
