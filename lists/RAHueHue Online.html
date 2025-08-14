@@ -252,19 +252,19 @@
 
     <!-- Navegação Mobile -->
     <div class="mobile-nav">
-        <div class="arrow-btn arrow-up" onclick="navigateConsoles('up')">▲</div>
-        <div class="arrow-btn arrow-down" onclick="navigateConsoles('down')">▼</div>
+        <div class="arrow-btn arrow-up" onclick="navigateConsoles('up')" title="Navegar para o console acima">▲</div>
+        <div class="arrow-btn arrow-down" onclick="navigateConsoles('down')" title="Navegar para o console abaixo">▼</div>
     </div>
 
     <div class="search-container">
-        <input type="text" id="searchInput" class="search-input" placeholder="Buscar Console..." aria-label="Buscar consoles">
+        <input type="text" id="searchInput" class="search-input" placeholder="Buscar Console..." aria-label="Buscar consoles" title="Digite para buscar um console específico">
     </div>
     <div class="no-console-message" id="noConsoleMessage">Nenhum console encontrado</div>
     <div class="console-container" id="consoleContainer"></div>
     
-    <div class="button back-button" onclick="window.history.back()" aria-label="Voltar">Voltar</div>
-    <div class="button reload-button" onclick="location.reload()" aria-label="Recarregar">Recarregar</div>
-    <div class="button music-button" onclick="toggleMusic()" aria-label="Música">Tocar Música</div>
+    <div class="button back-button" onclick="window.history.back()" aria-label="Voltar" title="Voltar para a página anterior">Voltar</div>
+    <div class="button reload-button" onclick="location.reload()" aria-label="Recarregar" title="Recarregar esta página">Recarregar</div>
+    <div class="button music-button" onclick="toggleMusic()" aria-label="Música" title="Ligar/desligar música de fundo">Tocar Música</div>
 
     <script>
         // Configurações Globais
@@ -332,6 +332,7 @@
                 const link = document.createElement('a');
                 link.className = `console-link${index === 0 ? ' active' : ''}`;
                 link.href = console.file;
+                link.title = "Aperte as setas ↑↓ para navegar entre consoles (PC/Xbox)";
                 link.innerHTML = `
                     <span>${console.name}</span>
                     <img src="${console.icon}" alt="${console.name}" loading="lazy">
