@@ -867,10 +867,15 @@
         
         window.addEventListener('DOMContentLoaded', preloadAssets);
 
-        const optionsArray = Array.from(selectCore.options);
-        optionsArray.sort((a, b) => a.text.localeCompare(b.text));
-        selectCore.innerHTML = "";
-        optionsArray.forEach(option => selectCore.appendChild(option));
+	const placeholder = selectCore.querySelector('option[value=""]');
+	const optionsArray = Array.from(selectCore.options).filter(opt => opt.value !== "");
+	optionsArray.sort((a, b) => a.text.localeCompare(b.text));
+
+	selectCore.innerHTML = "";
+	if (placeholder) selectCore.appendChild(placeholder);
+	optionsArray.forEach(option => selectCore.appendChild(option));
+
+	selectCore.value = "";
 
         selectCore.addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
